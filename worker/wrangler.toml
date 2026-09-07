@@ -1,0 +1,17 @@
+# Configuración del Cloudflare Worker que genera recetas con IA.
+# Deploy:  npm run worker:deploy      (ver README-worker.md)
+
+name = "recetario-ia"
+main = "index.js"
+compatibility_date = "2025-09-01"
+
+# --- API KEY ---
+# La clave de Anthropic NO se pone aquí. Se guarda cifrada como "secret":
+#   npm run worker:secret
+#   (equivale a: npx wrangler secret put ANTHROPIC_API_KEY --config worker/wrangler.toml)
+
+# --- CORS (opcional) ---
+# El Worker ya permite por defecto tu GitHub Pages (luifelipecd.github.io) y localhost.
+# Si sirves el sitio desde otro dominio, añádelo aquí (separados por coma):
+# [vars]
+# ALLOWED_ORIGIN = "https://midominio.com,https://www.midominio.com"

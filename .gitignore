@@ -1,0 +1,16 @@
+# Dependencias
+node_modules/
+
+# Wrangler / Cloudflare
+.wrangler/
+.dev.vars
+.dev.vars.*
+wrangler.toml.bak
+
+# Secretos locales (NUNCA subir claves)
+.env
+.env.*
+*.local
+
+# Sistema
+.DS_Store
