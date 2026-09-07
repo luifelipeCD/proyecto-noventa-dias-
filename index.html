@@ -238,6 +238,17 @@
   .cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--border);
     border-radius:7px;font-size:11px;font-weight:700;color:var(--muted);background:#fcfbf9;cursor:pointer;user-select:none;}
   .cal-day.done{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+  /* Calendario de 90 días: compacto, agrupado por semanas de 7 */
+  #cal-grid{display:flex;flex-wrap:wrap;gap:8px 10px;margin:10px 0;}
+  #cal-grid .cal-week{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;
+    flex:0 0 auto;width:calc((100% - 4 * 10px) / 5);}
+  @media (max-width:920px){#cal-grid .cal-week{width:calc((100% - 2 * 10px) / 3);}}
+  @media (max-width:560px){#cal-grid .cal-week{width:calc((100% - 10px) / 2);}}
+  #cal-grid .cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+    border:1px solid var(--border);border-radius:4px;font-size:9.5px;font-weight:700;line-height:1;
+    color:var(--muted);background:#fcfbf9;cursor:pointer;user-select:none;}
+  #cal-grid .cal-day.done{background:var(--accent);border-color:var(--accent);color:#fff;}
   .tracker-stat{display:flex;align-items:baseline;gap:8px;}
   .tracker-stat .big{font-size:26px;font-weight:800;color:var(--accent-dark);}
   .weight-form{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-top:8px;}
@@ -1452,8 +1463,15 @@ let pesos = lsGet(LS.pesos, []); // [{semana, peso}]
 function renderCalendario(){
   const grid = document.getElementById('cal-grid');
   let html = '';
-  for(let d=1; d<=90; d++){
-    html += `<div class="cal-day ${diasDone.has(d)?'done':''}" onclick="toggleDia(${d})">${d}</div>`;
+  for(let w = 0; w < 13; w++){
+    let semana = '<div class="cal-week">';
+    for(let i = 1; i <= 7; i++){
+      const d = w * 7 + i;
+      if(d > 90) break;
+      semana += `<div class="cal-day ${diasDone.has(d)?'done':''}" onclick="toggleDia(${d})">${d}</div>`;
+    }
+    semana += '</div>';
+    html += semana;
   }
   grid.innerHTML = html;
   const n = diasDone.size;
