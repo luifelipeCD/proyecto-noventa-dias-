@@ -318,6 +318,70 @@
   .weight-list{list-style:none;padding:0;margin:12px 0 0;font-size:13px;color:var(--muted);}
   .weight-list li{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed var(--border);}
 
+  /* CHECK-IN QUINCENAL */
+  .checkin-panel{
+    background:var(--card);border:1px solid var(--border);border-radius:18px;
+    box-shadow:var(--shadow);padding:24px;
+  }
+  .checkin-due{
+    background:var(--orange-light);border:1px solid #f3cdb8;border-radius:12px;
+    padding:14px 16px;margin-bottom:16px;font-size:14px;color:#8a4a26;
+  }
+  .checkin-ok{
+    background:var(--accent-light);border:1px solid #bfe0cd;border-radius:12px;
+    padding:14px 16px;margin-bottom:16px;font-size:14px;color:var(--accent-dark);
+  }
+  .adjust-msg{
+    background:var(--accent-light);border-left:4px solid var(--accent);border-radius:10px;
+    padding:14px 16px;margin-top:16px;font-size:14px;color:var(--accent-dark);
+  }
+  .adjust-msg b{color:var(--accent-dark);}
+  .checkin-list{list-style:none;padding:0;margin:14px 0 0;font-size:13px;color:var(--muted);}
+  .checkin-list li{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px dashed var(--border);}
+  .checkin-list li b{color:var(--ink);}
+
+  /* BATCH COOKING */
+  .batch-toggle{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 18px;border-radius:999px;border:1.5px solid var(--accent);
+    background:#fff;color:var(--accent-dark);font-weight:700;font-size:14px;cursor:pointer;margin-bottom:18px;
+  }
+  .batch-toggle:hover{background:var(--accent-light);}
+  .batch-toggle.active{background:var(--accent-dark);border-color:var(--accent-dark);color:#fff;}
+  #batch-panel{display:none;margin-bottom:24px;}
+  #batch-panel.open{display:block;}
+  .batch-card{
+    background:var(--card);border:1px solid var(--border);border-left:4px solid var(--accent);
+    border-radius:14px;padding:18px 20px;margin-bottom:14px;box-shadow:var(--shadow);
+  }
+  .batch-card h4{margin:0 0 4px;font-size:16px;color:var(--accent-dark);}
+  .batch-card .batch-meta{font-size:13px;color:var(--muted);margin-bottom:10px;}
+  .batch-card ul{margin:0;padding-left:18px;font-size:14px;color:var(--ink);}
+  .batch-card ul li{margin-bottom:4px;}
+  .batch-card .batch-tip{
+    margin-top:10px;font-size:13px;color:var(--muted);
+    background:var(--accent-light);border-radius:8px;padding:8px 12px;
+  }
+  .cost-pill{
+    display:inline-block;font-size:12px;font-weight:700;color:#8a4a26;
+    background:var(--orange-light);border-radius:999px;padding:3px 9px;margin-left:5px;
+  }
+
+  /* MODAL TARJETA DE PROGRESO */
+  .modal-bg{
+    position:fixed;inset:0;background:rgba(20,30,24,0.6);z-index:100;
+    display:none;align-items:center;justify-content:center;padding:20px;
+  }
+  .modal-bg.open{display:flex;}
+  .modal-card{
+    background:var(--card);border-radius:18px;padding:22px;max-width:420px;width:100%;
+    text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.3);
+  }
+  .modal-card h3{margin:0 0 12px;}
+  .modal-card canvas{width:100%;max-width:360px;border-radius:12px;border:1px solid var(--border);}
+  .modal-actions{display:flex;gap:10px;margin-top:16px;}
+  .modal-actions button{flex:1;}
+
   footer{
     background:var(--accent-dark);
     color:rgba(255,255,255,0.75);
@@ -508,16 +572,50 @@
     </div>
   </section>
 
+  <!-- CHECK-IN QUINCENAL / RECÁLCULO ADAPTATIVO -->
+  <section id="checkin">
+    <h2>Check-in cada 2 semanas</h2>
+    <p class="section-sub">Tu cuerpo cambia mientras bajas de peso, así que tu plan también debe cambiar. Cada 14 días registra tu peso actual y recalculamos tus calorías y proteína objetivo con la misma fórmula.</p>
+    <div class="checkin-panel">
+      <div id="checkin-status"></div>
+      <div class="weight-form">
+        <div class="field">
+          <label for="ci-peso">Peso actual (kg)</label>
+          <input type="number" id="ci-peso" min="30" max="300" step="0.1" placeholder="Ej. 76.4">
+        </div>
+        <button class="btn-primary" style="width:auto;margin-top:0;" onclick="registrarCheckin()">Registrar check-in y recalcular</button>
+      </div>
+      <div id="checkin-adjust"></div>
+      <h3>Historial de check-ins</h3>
+      <div class="chart-box"><div id="checkin-chart"></div></div>
+      <ul class="checkin-list" id="checkin-list"></ul>
+    </div>
+  </section>
+
   <!-- 1. RECETARIO -->
   <section id="recetario">
     <h2>Recetario completo</h2>
     <p class="section-sub">Más de 60 recetas altas en proteína, con opciones <span class="tag veg">Vegetariana</span> y <span class="tag vegan">Vegana</span> etiquetadas. Toca una tarjeta para ver ingredientes y preparación, o pulsa "Agregar a mi día".</p>
+    <button class="batch-toggle" id="batch-toggle" onclick="toggleBatch()">🍲 Modo cocina por lote (batch cooking)</button>
+    <div id="batch-panel"></div>
     <div class="filters" id="filtros"></div>
     <div id="lista-recetas"></div>
   </section>
 </div>
 
 <button class="fab" id="fab" onclick="document.getElementById('mi-dia').scrollIntoView({behavior:'smooth'})">🍽️ Mi día (<span id="fab-count">0</span>)</button>
+
+<!-- MODAL: tarjeta de progreso para compartir -->
+<div class="modal-bg" id="share-modal" onclick="if(event.target===this)cerrarTarjeta()">
+  <div class="modal-card">
+    <h3>¡Día completado! 🎉</h3>
+    <canvas id="share-canvas" width="1080" height="1080"></canvas>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="cerrarTarjeta()">Cerrar</button>
+      <button class="btn-primary" style="margin-top:0;" onclick="descargarTarjeta()">⬇️ Descargar PNG</button>
+    </div>
+  </div>
+</div>
 
 <footer>
   <div><strong>Recetario Proteico 90 Días</strong> — hecho para acompañarte en tu proceso.</div>
@@ -732,6 +830,29 @@ const RECETAS = [
     pasos:["Sirve el skyr en un bowl.","Agrega los frutos rojos y la canela."]},
 ];
 
+// ============================================================
+// Costo aproximado por porción en USD — estimado con precios
+// típicos de supermercado/mercado en Ecuador (2024-2025).
+// Son referencias: varían por ciudad, marca y temporada.
+// ============================================================
+const COSTOS = {
+  // Desayunos
+  1:1.10, 2:2.60, 3:1.25, 4:1.15, 5:0.85, 6:2.05, 7:1.05, 8:1.65,
+  33:1.75, 34:1.80, 35:1.30, 36:1.60, 37:1.80, 38:0.70, 39:2.15, 40:1.20,
+  // Comidas
+  9:2.35, 10:4.50, 11:2.10, 12:2.60, 13:2.70, 14:3.60, 15:2.10, 16:2.50,
+  17:2.80, 18:2.20, 19:1.75, 20:1.70, 21:2.40, 22:2.75, 23:2.50, 24:2.30,
+  41:1.90, 42:1.20, 43:1.30, 44:2.45, 45:1.80, 46:1.40, 47:2.20, 48:1.05,
+  49:2.25, 50:0.95, 51:1.60, 52:1.45, 53:3.10, 54:2.65, 55:4.00, 56:2.60,
+  // Snacks
+  25:0.80, 26:1.55, 27:0.35, 28:0.65, 29:1.30, 30:0.85, 31:0.55, 32:1.30,
+  57:0.50, 58:1.35, 59:1.15, 60:0.60, 61:1.35, 62:1.70, 63:0.80, 64:2.40
+};
+RECETAS.forEach(r => { r.costo = COSTOS[r.id] != null ? COSTOS[r.id] : 1.50; });
+
+function fmtUSD(n){ return '$' + (Math.round(n*100)/100).toFixed(2); }
+function sumaCosto(recetas){ return recetas.reduce((s,r)=> s + (r.costo||0), 0); }
+
 </script>
 <script>
 // ============================================================
@@ -744,7 +865,9 @@ const LS = {
   dias:'rp90_dias',
   pesos:'rp90_pesos',
   miDia:'rp90_midia',
-  plan:'rp90_plan'
+  plan:'rp90_plan',
+  datos:'rp90_datos',      // datos crudos de la calculadora, para poder recalcular
+  checkins:'rp90_checkins' // historial de check-ins quincenales [{fecha, peso, plan}]
 };
 
 function lsGet(key, fallback){
@@ -757,8 +880,13 @@ function lsSet(key, val){
 
 let genero = null;
 let plan = lsGet(LS.plan, null); // {calorias, proteina, carbos, grasa}
+let datos = lsGet(LS.datos, null); // {peso, altura, edad, genero, actividad, intensidad}
+let checkins = lsGet(LS.checkins, []); // [{fecha:'YYYY-MM-DD', peso, plan:{...}}]
 let filtroActivo = 'todas';
 let miDia = lsGet(LS.miDia, []);  // array de ids de receta (permite repetidos)
+
+// Restaura el sexo guardado para que el recálculo funcione tras recargar
+if(datos && datos.genero) genero = datos.genero;
 
 function getReceta(id){ return RECETAS.find(r => r.id === id); }
 
@@ -768,76 +896,92 @@ function setGender(g){
   document.getElementById('btn-mujer').classList.toggle('active', g==='mujer');
 }
 
-function calcular(){
-  const peso = parseFloat(document.getElementById('peso').value);
-  const altura = parseFloat(document.getElementById('altura').value);
-  const edad = parseFloat(document.getElementById('edad').value);
-  const actividad = parseFloat(document.getElementById('actividad').value);
-  const intensidad = parseFloat(document.getElementById('intensidad').value);
-
-  if(!peso || !altura || !edad || !genero){
-    alert('Por favor completa peso, estatura, edad y selecciona tu sexo antes de calcular.');
-    return;
-  }
+// ---------- Fórmula del plan (pura, reutilizable en cada check-in) ----------
+// Recibe {peso, altura, edad, genero, actividad, intensidad} y devuelve
+// {bmr, tdee, calorias, proteina, carbos, grasa, limitado}
+function computePlan(d){
+  const peso = parseFloat(d.peso);
+  const altura = parseFloat(d.altura);
+  const edad = parseFloat(d.edad);
+  const actividad = parseFloat(d.actividad);
+  const intensidad = parseFloat(d.intensidad);
 
   // Mifflin-St Jeor
-  let bmr;
-  if(genero === 'hombre'){
-    bmr = 10*peso + 6.25*altura - 5*edad + 5;
-  } else {
-    bmr = 10*peso + 6.25*altura - 5*edad - 161;
-  }
+  let bmr = d.genero === 'hombre'
+    ? 10*peso + 6.25*altura - 5*edad + 5
+    : 10*peso + 6.25*altura - 5*edad - 161;
 
   const tdee = bmr * actividad;
   let target = tdee * (1 - intensidad);
 
   // Piso de seguridad: no bajar de un mínimo saludable ni de ~85% de la TMB
-  const pisoGenero = genero === 'hombre' ? 1500 : 1200;
-  const pisoBMR = bmr * 0.85;
-  const piso = Math.max(pisoGenero, pisoBMR);
+  const piso = Math.max(d.genero === 'hombre' ? 1500 : 1200, bmr * 0.85);
   let limitado = false;
-  if(target < piso){
-    target = piso;
-    limitado = true;
-  }
+  if(target < piso){ target = piso; limitado = true; }
 
-  // Proteína: 2.0 g/kg de peso corporal (rango alto recomendado para preservar músculo en déficit)
+  // Proteína: 2.0 g/kg de peso corporal
   const proteinaG = Math.round(peso * 2.0);
   const proteinaKcal = proteinaG * 4;
-
   // Grasa: ~25% de las calorías objetivo
-  const grasaKcal = target * 0.25;
-  const grasaG = Math.round(grasaKcal / 9);
-
+  const grasaG = Math.round((target * 0.25) / 9);
   // Carbohidratos: el resto
-  const carbosKcal = Math.max(target - proteinaKcal - grasaKcal, 0);
-  const carbosG = Math.round(carbosKcal / 4);
+  const carbosG = Math.round(Math.max(target - proteinaKcal - grasaG*9, 0) / 4);
 
-  plan = {
+  return {
+    bmr: Math.round(bmr),
+    tdee: Math.round(tdee),
     calorias: Math.round(target),
     proteina: proteinaG,
     carbos: carbosG,
-    grasa: grasaG
+    grasa: grasaG,
+    limitado
   };
+}
+
+// Pinta los 6 cuadros de resultado + nota
+function pintarResultado(res, nota){
+  document.getElementById('r-bmr').textContent = (res.bmr ? res.bmr + ' kcal' : '—');
+  document.getElementById('r-tdee').textContent = (res.tdee ? res.tdee + ' kcal' : '—');
+  document.getElementById('r-target').textContent = res.calorias + ' kcal';
+  document.getElementById('r-protein').textContent = res.proteina + ' g';
+  document.getElementById('r-carbs').textContent = res.carbos + ' g';
+  document.getElementById('r-fat').textContent = res.grasa + ' g';
+  if(nota) document.getElementById('r-note').textContent = nota;
+  document.getElementById('resultado').style.display = 'block';
+}
+
+function calcular(){
+  const nuevosDatos = {
+    peso: parseFloat(document.getElementById('peso').value),
+    altura: parseFloat(document.getElementById('altura').value),
+    edad: parseFloat(document.getElementById('edad').value),
+    genero: genero,
+    actividad: parseFloat(document.getElementById('actividad').value),
+    intensidad: parseFloat(document.getElementById('intensidad').value)
+  };
+
+  if(!nuevosDatos.peso || !nuevosDatos.altura || !nuevosDatos.edad || !genero){
+    alert('Por favor completa peso, estatura, edad y selecciona tu sexo antes de calcular.');
+    return;
+  }
+
+  datos = nuevosDatos;
+  lsSet(LS.datos, datos);
+
+  const res = computePlan(datos);
+  plan = { calorias: res.calorias, proteina: res.proteina, carbos: res.carbos, grasa: res.grasa };
   lsSet(LS.plan, plan);
 
-  document.getElementById('r-bmr').textContent = Math.round(bmr) + ' kcal';
-  document.getElementById('r-tdee').textContent = Math.round(tdee) + ' kcal';
-  document.getElementById('r-target').textContent = plan.calorias + ' kcal';
-  document.getElementById('r-protein').textContent = plan.proteina + ' g';
-  document.getElementById('r-carbs').textContent = plan.carbos + ' g';
-  document.getElementById('r-fat').textContent = plan.grasa + ' g';
-
-  const nota = limitado
+  const nota = res.limitado
     ? 'Ajustamos tu meta calórica a un mínimo seguro para tu perfil — un déficit demasiado agresivo puede ser contraproducente y difícil de sostener 90 días.'
     : 'Este es un déficit calórico alto pero calculado para ser sostenible durante 90 días, priorizando una ingesta alta de proteína para cuidar tu masa muscular.';
-  document.getElementById('r-note').textContent = nota;
+  pintarResultado(res, nota);
 
-  document.getElementById('resultado').style.display = 'block';
   const subtitulo = document.querySelector('#plan-dia .section-sub');
   if(subtitulo) subtitulo.textContent = 'Generado según tu objetivo de ' + plan.calorias + ' kcal y ' + plan.proteina + ' g de proteína al día.';
   generarMenu();
   renderMiDia();
+  renderCheckin();
   document.getElementById('resultado').scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
@@ -881,8 +1025,9 @@ function generarMenu(){
 
   const totalKcal = seleccion.reduce((s,x)=>s+x.r.kcal, 0);
   const totalProt = seleccion.reduce((s,x)=>s+x.r.proteina, 0);
+  const totalCosto = sumaCosto(seleccion.map(x=>x.r));
 
-  let html = `<div class="note" style="margin-bottom:18px;">Este menú suma aproximadamente <b>${totalKcal} kcal</b> y <b>${totalProt} g de proteína</b>, frente a tu objetivo de ${plan.calorias} kcal y ${plan.proteina} g. Genera otro menú si quieres más variedad.</div>`;
+  let html = `<div class="note" style="margin-bottom:18px;">Este menú suma aproximadamente <b>${totalKcal} kcal</b> y <b>${totalProt} g de proteína</b>, frente a tu objetivo de ${plan.calorias} kcal y ${plan.proteina} g.<br>Costo estimado del día: <b>${fmtUSD(totalCosto)}</b> (~${fmtUSD(totalCosto*30)} al mes). Genera otro menú si quieres más variedad.</div>`;
   html += renderListaCompras(seleccion.map(x=>x.r), 'Lista de compras del menú');
   seleccion.forEach(({label, r}) => {
     html += renderRecetaCard(r, label);
@@ -930,6 +1075,7 @@ function renderRecetaCard(r, etiqueta){
         <span><b>${r.proteina}g</b> proteína</span>
         <span><b>${r.carbos}g</b> carbos</span>
         <span><b>${r.grasa}g</b> grasa</span>
+        <span title="Costo aproximado por porción, precios de Ecuador">💵 <b>${fmtUSD(r.costo)}</b></span>
       </div>
       <button class="add-btn" onclick="event.stopPropagation(); agregarAMiDia(${r.id});">➕ Agregar a mi día</button>
       <div class="details" id="details-${r.id}">
@@ -984,6 +1130,83 @@ function initFiltros(){
 }
 
 // ============================================================
+// 3. MODO COCINA POR LOTE (BATCH COOKING)
+// Agrupa recetas por ingrediente base en común y sugiere
+// prepararlo una sola vez para varios días.
+// ============================================================
+function normaliza(s){
+  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+}
+
+// Ingredientes base que vale la pena cocinar por lote
+const BATCH_BASES = [
+  {nombre:'Pechuga de pollo', emoji:'🍗', keys:['pechuga de pollo','pollo desmenuzado','pollo en cubos','pollo a la plancha','pollo cocida','de pollo'],
+   tip:'Cocina toda la pechuga de una vez (a la plancha o al horno), córtala/desménuzala y guárdala 3-4 días en refrigeración o congela en porciones.'},
+  {nombre:'Pavo (molido y pechuga)', emoji:'🦃', keys:['pavo'],
+   tip:'Dora todo el pavo molido con sal y especias base; sirve para chili, albóndigas y salteados de la semana.'},
+  {nombre:'Tofu firme', emoji:'🧊', keys:['tofu'],
+   tip:'Prensa y hornea todo el bloque de tofu en cubos; úsalo en bowls, salteados y revueltos durante 4 días.'},
+  {nombre:'Quinoa cocida', emoji:'🌾', keys:['quinoa'],
+   tip:'Cocina 2-3 tazas de quinoa de una vez; aguanta 5 días en refrigeración y es base de ensaladas y bowls.'},
+  {nombre:'Arroz integral cocido', emoji:'🍚', keys:['arroz integral'],
+   tip:'Prepara una olla grande de arroz integral y refrigéralo; recaliéntalo con unas gotas de agua.'},
+  {nombre:'Lentejas', emoji:'🫘', keys:['lenteja'],
+   tip:'Cocina una tanda grande de lentejas; divídelas para guisos, sopas, boloñesa y bowls.'},
+  {nombre:'Garbanzos', emoji:'🫛', keys:['garbanzo'],
+   tip:'Cocina o escurre un lote de garbanzos: parte para hummus/falafel, parte para ensaladas y curries.'},
+  {nombre:'Frijoles', emoji:'🫘', keys:['frijol','frijoles'],
+   tip:'Cocina una olla de frijoles y congela en porciones planas para hamburguesas, chili y desayunos.'},
+  {nombre:'Camote', emoji:'🍠', keys:['camote'],
+   tip:'Hornea varias bandejas de camote en cubos a la vez; se guarda 4 días y sirve de guarnición lista.'},
+  {nombre:'Huevos duros', emoji:'🥚', keys:['huevo duro','huevos duros','huevo cocido'],
+   tip:'Hierve media docena de huevos de una vez para snacks y desayunos rápidos de varios días.'},
+  {nombre:'Edamame', emoji:'🟢', keys:['edamame'],
+   tip:'Cocina toda la bolsa de edamame; parte con vaina para snack y parte pelado para ensaladas y hummus.'},
+  {nombre:'Verduras asadas (pimiento, calabacín, cebolla)', emoji:'🫑', keys:['calabacin','pimiento','verduras asadas','vegetales al gusto','vegetales mixtos'],
+   tip:'Asa dos bandejas de verduras variadas; se reparten en bowls, wraps, pastas y omelettes.'},
+];
+
+function toggleBatch(){
+  const panel = document.getElementById('batch-panel');
+  const btn = document.getElementById('batch-toggle');
+  const abierto = panel.classList.toggle('open');
+  btn.classList.toggle('active', abierto);
+  if(abierto){
+    renderBatch();
+    panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+}
+
+function renderBatch(){
+  const panel = document.getElementById('batch-panel');
+  const grupos = BATCH_BASES.map(base => {
+    const recetas = RECETAS.filter(r =>
+      r.ingredientes.some(ing => base.keys.some(k => normaliza(ing).includes(k)))
+    );
+    return {base, recetas};
+  }).filter(g => g.recetas.length >= 2)
+    .sort((a,b) => b.recetas.length - a.recetas.length);
+
+  let html = `<div class="note" style="margin:0 0 16px;">Cocina un ingrediente base <b>una sola vez</b> y resuélvelo en varias recetas de la semana. Cada grupo te dice cuántos días cubre y qué preparar.</div>`;
+
+  html += grupos.map(({base, recetas}) => {
+    const costoTotal = sumaCosto(recetas);
+    const items = recetas.map(r => {
+      const cat = r.categoria === 'desayuno' ? 'Desayuno' : r.categoria === 'comida' ? 'Almuerzo/Cena' : 'Snack';
+      return `<li><b>${r.nombre}</b> <span style="color:var(--muted);">— ${cat} · ${r.proteina}g proteína · ${fmtUSD(r.costo)}</span></li>`;
+    }).join('');
+    return `<div class="batch-card">
+      <h4>${base.emoji} ${base.nombre}</h4>
+      <div class="batch-meta">${recetas.length} recetas la usan · alcanza para ~${recetas.length} días de comidas</div>
+      <ul>${items}</ul>
+      <div class="batch-tip">👨‍🍳 <b>Prepara una vez:</b> ${base.tip}</div>
+    </div>`;
+  }).join('');
+
+  panel.innerHTML = html;
+}
+
+// ============================================================
 // 5. MI DÍA — selección manual con resumen en tiempo real
 // ============================================================
 function agregarAMiDia(id){
@@ -1027,6 +1250,7 @@ function renderMiDia(){
   const tot = recetas.reduce((s,r)=>({
     kcal:s.kcal+r.kcal, prot:s.prot+r.proteina, carbos:s.carbos+r.carbos, grasa:s.grasa+r.grasa
   }), {kcal:0,prot:0,carbos:0,grasa:0});
+  const totCosto = sumaCosto(recetas);
 
   const obj = plan || null;
   let barsHtml = '';
@@ -1037,6 +1261,9 @@ function renderMiDia(){
   barsHtml += barra('Proteína', tot.prot, obj && obj.proteina, 'g');
   barsHtml += barra('Carbohidratos', tot.carbos, obj && obj.carbos, 'g');
   barsHtml += barra('Grasa', tot.grasa, obj && obj.grasa, 'g');
+  if(recetas.length){
+    barsHtml += `<div class="bar-row" style="margin-bottom:0;"><div class="bar-top"><span>Costo estimado del día</span><span><b>${fmtUSD(totCosto)}</b> · ~${fmtUSD(totCosto*30)}/mes</span></div></div>`;
+  }
   barsEl.innerHTML = barsHtml;
 
   if(recetas.length === 0){
@@ -1050,7 +1277,7 @@ function renderMiDia(){
       const r = getReceta(id);
       if(!r) return '';
       return `<div class="miday-item">
-        <div><div>${r.nombre}</div><div class="mi-macros">${r.kcal} kcal · ${r.proteina}g prot · ${r.carbos}g carb · ${r.grasa}g grasa</div></div>
+        <div><div>${r.nombre}</div><div class="mi-macros">${r.kcal} kcal · ${r.proteina}g prot · ${r.carbos}g carb · ${r.grasa}g grasa · 💵 ${fmtUSD(r.costo)}</div></div>
         <button class="rm-btn" onclick="quitarDeMiDia(${i})">Quitar ✕</button>
       </div>`;
     }).join('');
@@ -1083,9 +1310,168 @@ function renderCalendario(){
 }
 
 function toggleDia(d){
+  const marcandoComoHecho = !diasDone.has(d);
   if(diasDone.has(d)) diasDone.delete(d); else diasDone.add(d);
   lsSet(LS.dias, [...diasDone]);
   renderCalendario();
+  if(marcandoComoHecho) mostrarTarjetaProgreso(d);
+}
+
+// ============================================================
+// 4. TARJETA DE PROGRESO PARA COMPARTIR (canvas -> PNG)
+// ============================================================
+// Racha = mejor secuencia de días consecutivos completados
+function rachaMaxima(){
+  const arr = [...diasDone].sort((a,b)=>a-b);
+  let mejor = 0, actual = 0, prev = null;
+  arr.forEach(d => {
+    actual = (prev !== null && d === prev + 1) ? actual + 1 : 1;
+    if(actual > mejor) mejor = actual;
+    prev = d;
+  });
+  return mejor;
+}
+
+function macrosDelDia(){
+  const recetas = miDia.map(getReceta).filter(Boolean);
+  if(recetas.length){
+    const t = recetas.reduce((s,r)=>({
+      kcal:s.kcal+r.kcal, prot:s.prot+r.proteina, carbos:s.carbos+r.carbos, grasa:s.grasa+r.grasa
+    }), {kcal:0,prot:0,carbos:0,grasa:0});
+    t.fuente = 'mi día';
+    return t;
+  }
+  if(plan) return {kcal:plan.calorias, prot:plan.proteina, carbos:plan.carbos, grasa:plan.grasa, fuente:'plan objetivo'};
+  return {kcal:0, prot:0, carbos:0, grasa:0, fuente:null};
+}
+
+function mostrarTarjetaProgreso(dia){
+  const data = {
+    dia,
+    total: diasDone.size,
+    racha: rachaMaxima(),
+    macros: macrosDelDia(),
+    fecha: new Date().toLocaleDateString('es-EC', {day:'numeric', month:'long', year:'numeric'})
+  };
+  dibujarTarjeta(data);
+  document.getElementById('share-modal').classList.add('open');
+}
+
+function cerrarTarjeta(){
+  document.getElementById('share-modal').classList.remove('open');
+}
+
+function dibujarTarjeta(data){
+  const canvas = document.getElementById('share-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  // Fondo degradado
+  const g = ctx.createLinearGradient(0, 0, W, H);
+  g.addColorStop(0, '#1f4a36');
+  g.addColorStop(1, '#2f6b4f');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+
+  // Marco sutil
+  ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+  ctx.lineWidth = 6;
+  ctx.strokeRect(40, 40, W - 80, H - 110);
+
+  ctx.textAlign = 'center';
+
+  // Eyebrow
+  ctx.fillStyle = 'rgba(255,255,255,0.75)';
+  ctx.font = '600 34px "Segoe UI", Arial, sans-serif';
+  ctx.fillText('RECETARIO PROTEICO · 90 DÍAS', W/2, 145);
+
+  // Día completado
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '800 128px "Segoe UI", Arial, sans-serif';
+  ctx.fillText('Día ' + data.dia + '  ✓', W/2, 300);
+
+  ctx.font = '600 38px "Segoe UI", Arial, sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.fillText('completado · ' + data.fecha, W/2, 365);
+
+  // Racha (chip naranja)
+  const chipW = 640, chipH = 120, chipX = (W - chipW)/2, chipY = 420;
+  ctx.fillStyle = '#e0703a';
+  roundRect(ctx, chipX, chipY, chipW, chipH, 60);
+  ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '800 58px "Segoe UI", Arial, sans-serif';
+  ctx.fillText('🔥 Racha: ' + data.racha + (data.racha === 1 ? ' día' : ' días'), W/2, chipY + 78);
+
+  // Progreso 90 días
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.font = '600 40px "Segoe UI", Arial, sans-serif';
+  ctx.fillText(data.total + ' de 90 días completados', W/2, 640);
+
+  // Barra de progreso
+  const barW = 820, barX = (W - barW)/2, barY = 672, barH = 32;
+  ctx.fillStyle = 'rgba(255,255,255,0.2)';
+  roundRect(ctx, barX, barY, barW, barH, 16); ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  roundRect(ctx, barX, barY, Math.max(barW * data.total/90, barH), barH, 16); ctx.fill();
+
+  // Caja de macros
+  const boxW = 880, boxX = (W - boxW)/2, boxY = 748, boxH = 205;
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  roundRect(ctx, boxX, boxY, boxW, boxH, 28); ctx.fill();
+
+  const m = data.macros;
+  const cols = [
+    {v: Math.round(m.kcal), l: 'kcal'},
+    {v: Math.round(m.prot) + 'g', l: 'proteína'},
+    {v: Math.round(m.carbos) + 'g', l: 'carbos'},
+    {v: Math.round(m.grasa) + 'g', l: 'grasa'},
+  ];
+  cols.forEach((c, i) => {
+    const cx = boxX + boxW/8 + i * boxW/4;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '800 56px "Segoe UI", Arial, sans-serif';
+    ctx.fillText(String(c.v), cx, boxY + 95);
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    ctx.font = '600 30px "Segoe UI", Arial, sans-serif';
+    ctx.fillText(c.l, cx, boxY + 150);
+  });
+
+  // Nota de fuente + footer
+  if(m.fuente){
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = '400 26px "Segoe UI", Arial, sans-serif';
+    ctx.fillText('macros de ' + m.fuente, W/2, 1005);
+  }
+  ctx.fillStyle = 'rgba(255,255,255,0.8)';
+  ctx.font = '600 30px "Segoe UI", Arial, sans-serif';
+  ctx.fillText('Alta en proteína · Hecho para mi cuerpo', W/2, 1050);
+}
+
+function roundRect(ctx, x, y, w, h, r){
+  r = Math.min(r, w/2, h/2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+function descargarTarjeta(){
+  const canvas = document.getElementById('share-canvas');
+  try{
+    const url = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'progreso-90-dias.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }catch(e){
+    alert('No se pudo generar la imagen en este navegador.');
+  }
 }
 
 function resetTracker(){
@@ -1161,6 +1547,170 @@ function renderPesos(){
 }
 
 // ============================================================
+// 1. RECÁLCULO ADAPTATIVO — check-in quincenal
+// ============================================================
+const DIAS_ENTRE_CHECKINS = 14;
+
+function hoyISO(){ return new Date().toISOString().slice(0,10); }
+function diasEntre(a, b){
+  return Math.round((new Date(b+'T00:00:00') - new Date(a+'T00:00:00')) / 86400000);
+}
+
+// Peso de partida y último peso conocido para mostrar progreso
+function pesoInicial(){
+  if(checkins.length) return checkins[0].pesoPrevio;
+  return datos ? datos.peso : null;
+}
+
+function registrarCheckin(){
+  const nuevoPeso = parseFloat(document.getElementById('ci-peso').value);
+  if(!nuevoPeso || nuevoPeso < 30 || nuevoPeso > 300){
+    alert('Ingresa un peso válido en kg (ej. 76.4).');
+    return;
+  }
+  if(!datos){
+    alert('Primero calcula tu plan en la calculadora de arriba: necesitamos tu estatura, edad, sexo y actividad para recalcular.');
+    document.getElementById('calculadora').scrollIntoView({behavior:'smooth'});
+    return;
+  }
+
+  const pesoPrevio = datos.peso;
+  const planPrevio = plan ? {...plan} : null;
+
+  // Recalcula con la MISMA fórmula, solo cambia el peso
+  datos = {...datos, peso: nuevoPeso};
+  lsSet(LS.datos, datos);
+
+  const res = computePlan(datos);
+  plan = { calorias: res.calorias, proteina: res.proteina, carbos: res.carbos, grasa: res.grasa };
+  lsSet(LS.plan, plan);
+
+  checkins.push({
+    fecha: hoyISO(),
+    peso: nuevoPeso,
+    pesoPrevio: pesoPrevio,
+    plan: {...plan}
+  });
+  lsSet(LS.checkins, checkins);
+
+  // Refleja el nuevo plan en toda la página
+  document.getElementById('peso').value = nuevoPeso;
+  pintarResultado(res, res.limitado
+    ? 'Ajustamos tu meta calórica a un mínimo seguro para tu perfil.'
+    : 'Plan recalculado con tu peso actual.');
+  const subtitulo = document.querySelector('#plan-dia .section-sub');
+  if(subtitulo) subtitulo.textContent = 'Generado según tu objetivo de ' + plan.calorias + ' kcal y ' + plan.proteina + ' g de proteína al día.';
+  generarMenu();
+  renderMiDia();
+  document.getElementById('ci-peso').value = '';
+
+  // Mensaje explicativo del ajuste
+  const adjEl = document.getElementById('checkin-adjust');
+  if(planPrevio){
+    const dKcal = plan.calorias - planPrevio.calorias;
+    const dProt = plan.proteina - planPrevio.proteina;
+    const dPeso = (nuevoPeso - pesoPrevio).toFixed(1);
+    const signo = n => (n > 0 ? '+' : '') + n;
+    const dirPeso = dPeso < 0 ? 'bajaste' : (dPeso > 0 ? 'subiste' : 'mantuviste');
+    adjEl.innerHTML = `<div class="adjust-msg">
+      <b>Tu plan se ajustó porque tu cuerpo cambió.</b><br>
+      Desde tu último dato ${dirPeso} ${Math.abs(dPeso)} kg (de ${pesoPrevio} a ${nuevoPeso} kg).
+      Como tus calorías y tu proteína objetivo dependen de tu peso, ahora tu meta es
+      <b>${plan.calorias} kcal</b> (${signo(dKcal)} kcal) y <b>${plan.proteina} g de proteína</b> (${signo(dProt)} g).
+      El menú del día y "mi día" ya usan estos nuevos números.
+    </div>`;
+  } else {
+    adjEl.innerHTML = `<div class="adjust-msg"><b>Primer check-in registrado.</b> A partir del próximo verás cómo se ajusta tu plan.</div>`;
+  }
+
+  renderCheckin();
+  document.getElementById('checkin').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function eliminarCheckin(idx){
+  if(!confirm('¿Eliminar este check-in del historial? No cambia tu plan actual.')) return;
+  checkins.splice(idx, 1);
+  lsSet(LS.checkins, checkins);
+  renderCheckin();
+}
+
+function renderCheckin(){
+  const statusEl = document.getElementById('checkin-status');
+  const listEl = document.getElementById('checkin-list');
+  const chartEl = document.getElementById('checkin-chart');
+
+  // --- Estado / recordatorio ---
+  if(!datos){
+    statusEl.innerHTML = `<div class="checkin-due">Aún no has calculado tu plan. Hazlo en la calculadora para poder recalcular en cada check-in.</div>`;
+  } else {
+    const ultima = checkins.length ? checkins[checkins.length-1].fecha : null;
+    if(!ultima){
+      statusEl.innerHTML = `<div class="checkin-due">📅 Este es tu primer check-in. Registra tu peso actual para empezar el seguimiento adaptativo.</div>`;
+    } else {
+      const d = diasEntre(ultima, hoyISO());
+      const faltan = DIAS_ENTRE_CHECKINS - d;
+      statusEl.innerHTML = faltan <= 0
+        ? `<div class="checkin-due">⏰ Han pasado ${d} días desde tu último check-in (${ultima}). Toca hacer uno: registra tu peso actual y ajustamos tu plan.</div>`
+        : `<div class="checkin-ok">✅ Último check-in: ${ultima}. Tu próximo check-in es en ${faltan} día${faltan===1?'':'s'}.</div>`;
+    }
+  }
+
+  // --- Gráfica de progreso de peso a lo largo de los check-ins ---
+  const puntos = [];
+  const pIni = pesoInicial();
+  if(pIni != null && checkins.length) puntos.push({etq:'Inicio', peso:pIni});
+  checkins.forEach((c,i) => puntos.push({etq:'C'+(i+1), peso:c.peso}));
+
+  if(puntos.length < 1){
+    chartEl.innerHTML = `<p style="color:var(--muted);margin:0;font-size:13px;">Todavía no hay check-ins. Tu gráfica de progreso aparecerá aquí.</p>`;
+    listEl.innerHTML = '';
+    return;
+  }
+
+  if(puntos.length === 1){
+    chartEl.innerHTML = `<p style="color:var(--muted);margin:0;font-size:13px;">Primer punto registrado: ${puntos[0].peso} kg. La línea de progreso aparece desde el segundo check-in.</p>`;
+  } else {
+    const W = 340, H = 170, pad = 36;
+    const vals = puntos.map(p=>p.peso);
+    let pMin = Math.min(...vals), pMax = Math.max(...vals);
+    if(pMin === pMax){ pMin -= 1; pMax += 1; }
+    const x = i => pad + i/(puntos.length-1) * (W - pad - 10);
+    const y = v => H - pad - (v - pMin)/(pMax - pMin) * (H - pad - 14);
+    const pts = puntos.map((p,i)=>`${x(i).toFixed(1)},${y(p.peso).toFixed(1)}`).join(' ');
+    const circles = puntos.map((p,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(p.peso).toFixed(1)}" r="3.5" fill="#2f6b4f"/>`).join('');
+    const xLabels = puntos.map((p,i)=>`<text x="${x(i).toFixed(1)}" y="${H-12}" font-size="10" fill="#6b7268" text-anchor="middle">${p.etq}</text>`).join('');
+    const yLabels = `
+      <text x="4" y="${(y(pMax)+4).toFixed(1)}" font-size="10" fill="#6b7268">${pMax.toFixed(1)}</text>
+      <text x="4" y="${(y(pMin)+4).toFixed(1)}" font-size="10" fill="#6b7268">${pMin.toFixed(1)}</text>`;
+    chartEl.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:440px;display:block;">
+      <line x1="${pad}" y1="${H-pad}" x2="${W-4}" y2="${H-pad}" stroke="#e7e2d8"/>
+      <line x1="${pad}" y1="12" x2="${pad}" y2="${H-pad}" stroke="#e7e2d8"/>
+      ${yLabels}
+      <polyline points="${pts}" fill="none" stroke="#2f6b4f" stroke-width="2.5" stroke-linejoin="round"/>
+      ${circles}
+      ${xLabels}
+    </svg>`;
+  }
+
+  // --- Lista de check-ins ---
+  const filas = checkins.map((c,i) => {
+    const prev = i === 0 ? c.pesoPrevio : checkins[i-1].peso;
+    const dp = prev != null ? (c.peso - prev) : null;
+    const dpTxt = dp == null ? '' : ` (${dp>0?'+':''}${dp.toFixed(1)} kg)`;
+    return `<li>
+      <span><b>${c.fecha}</b> · ${c.peso} kg${dpTxt}</span>
+      <span>${c.plan.calorias} kcal / ${c.plan.proteina} g prot
+        <button class="rm-btn" style="margin-left:8px;padding:2px 7px;" onclick="eliminarCheckin(${i})">✕</button></span>
+    </li>`;
+  }).join('');
+  const total = checkins.length && pesoInicial() != null
+    ? (checkins[checkins.length-1].peso - pesoInicial()).toFixed(1) : null;
+  listEl.innerHTML = (total != null
+      ? `<li style="border:none;font-weight:700;color:var(--ink);"><span>Cambio desde el inicio</span><span>${total>0?'+':''}${total} kg</span></li>`
+      : '') + filas;
+}
+
+// ============================================================
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -1169,19 +1719,26 @@ document.addEventListener('DOMContentLoaded', () => {
   renderMiDia();
   renderCalendario();
   renderPesos();
+  renderCheckin();
 
   // Si ya había un plan guardado, restaurar resultados y menú
   if(plan){
-    document.getElementById('r-target').textContent = plan.calorias + ' kcal';
-    document.getElementById('r-protein').textContent = plan.proteina + ' g';
-    document.getElementById('r-carbs').textContent = plan.carbos + ' g';
-    document.getElementById('r-fat').textContent = plan.grasa + ' g';
-    document.getElementById('r-bmr').textContent = '—';
-    document.getElementById('r-tdee').textContent = '—';
-    document.getElementById('r-note').textContent = 'Plan guardado en este navegador. Vuelve a calcular si tus datos cambiaron.';
-    document.getElementById('resultado').style.display = 'block';
+    if(datos){
+      document.getElementById('peso').value = datos.peso;
+      document.getElementById('altura').value = datos.altura;
+      document.getElementById('edad').value = datos.edad;
+      if(datos.genero) setGender(datos.genero);
+      document.getElementById('actividad').value = datos.actividad;
+      document.getElementById('intensidad').value = datos.intensidad;
+    }
+    pintarResultado(
+      {bmr:null, tdee:null, calorias:plan.calorias, proteina:plan.proteina, carbos:plan.carbos, grasa:plan.grasa},
+      'Plan guardado en este navegador. Se recalcula solo en cada check-in, o vuelve a calcular si tus datos cambiaron.'
+    );
     const subtitulo = document.querySelector('#plan-dia .section-sub');
     if(subtitulo) subtitulo.textContent = 'Tu objetivo guardado: ' + plan.calorias + ' kcal y ' + plan.proteina + ' g de proteína al día.';
+    generarMenu();
+    renderMiDia();
   }
 });
 </script>
