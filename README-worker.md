@@ -6,9 +6,10 @@ actúa de intermediario seguro: el navegador llama al Worker, y el Worker llama 
 Anthropic con la clave guardada como *secret*.
 
 ```
-navegador  ──POST { ingredientes:[...] }──▶  Cloudflare Worker  ──▶  API de Anthropic (claude-haiku-4-5)
-   ▲                                              │  (usa ANTHROPIC_API_KEY, un secret)
-   └──────────────  { ok:true, receta:{...} }  ◀──┘
+navegador ──POST { ingredientes:[...], turnstileToken }──▶  Cloudflare Worker
+   ▲                                                          │  CORS estricto + Turnstile + límite por IP
+   │                                                          ├──▶  Turnstile /siteverify   (TURNSTILE_SECRET_KEY)
+   └────────────  { ok:true, receta:{...}, restantes }  ◀──────┴──▶  API de Anthropic         (ANTHROPIC_API_KEY)
 ```
 
 ---
@@ -36,16 +37,29 @@ npm run worker:login
 
 Se abre el navegador para autorizar Wrangler. (Equivale a `npx wrangler login`.)
 
-## Paso 2 — Guardar la API key como secret
+## Paso 2 — Guardar los secrets
 
-**Nunca** pongas la clave en un archivo. Guárdala cifrada en Cloudflare:
+**Nunca** pongas claves en un archivo. Guárdalas cifradas en Cloudflare:
 
 ```bash
+# API key de Anthropic
 npm run worker:secret
+
+# Secret Key de Cloudflare Turnstile (captcha)
+npx wrangler secret put TURNSTILE_SECRET_KEY --config worker/wrangler.toml
 ```
 
-Te pedirá pegar el valor de tu `ANTHROPIC_API_KEY`. Se guarda en Cloudflare, no en el repo.
-(Equivale a `npx wrangler secret put ANTHROPIC_API_KEY --config worker/wrangler.toml`.)
+En cada prompt "Enter a secret value:" pegas **solo el valor** (sin comillas ni espacios).
+Se guardan en Cloudflare, no en el repo.
+
+| Secret | De dónde sale | Para qué |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | console.anthropic.com → API Keys (`sk-ant-api03-…`) | llamar al modelo |
+| `TURNSTILE_SECRET_KEY` | dash.cloudflare.com → Turnstile → tu widget → *Secret Key* (`0x4A…`) | validar el captcha |
+
+> La **Site Key** de Turnstile (`0x4AAAAAAEr6xThiKA2d4tpi`) es pública y ya está en `index.html`.
+> En el panel de Turnstile, en *Allowed hostnames*, deja solo `luifelipecd.github.io`.
+> Si `TURNSTILE_SECRET_KEY` no está configurado, el Worker **no** bloquea (lo registra en los logs).
 
 ## Paso 3 — Deploy del Worker
 
@@ -86,20 +100,24 @@ Guarda, haz commit y push. GitHub Pages se actualiza solo y la sección
 npm run worker:dev          # levanta el Worker en http://localhost:8787
 ```
 
-Para que use tu clave en local, crea un archivo `worker/.dev.vars` (ya está en
-`.gitignore`, no se sube):
+Para que use tus secrets en local, crea `worker/.dev.vars` (ya está en `.gitignore`):
 
 ```
 ANTHROPIC_API_KEY=sk-ant-...
+# TURNSTILE_SECRET_KEY=0x4A...   (déjalo comentado para probar sin captcha en local)
 ```
 
-Prueba con curl:
+Prueba con curl (el header `Origin` es obligatorio por el CORS estricto):
 
 ```bash
 curl -X POST http://localhost:8787 \
   -H "Content-Type: application/json" \
+  -H "Origin: https://luifelipecd.github.io" \
   -d '{"ingredientes":["pollo","arroz integral","brócoli"]}'
 ```
+
+Sin `Origin` (o con otro) responde `403 Origen no permitido`. Con `TURNSTILE_SECRET_KEY`
+definido necesitarías un token real de Turnstile, así que para probar en local déjalo sin definir.
 
 > Si `wrangler dev` falla al arrancar el runtime local, aprueba los scripts de
 > instalación con `npm install-scripts approve workerd esbuild` y reinténtalo.
@@ -164,16 +182,25 @@ O desde el panel: **Cloudflare → Storage & Databases → KV → `RATE_LIMIT`**
 
 ---
 
+## Seguridad
+
+| Capa | Qué hace |
+|---|---|
+| **CORS estricto** | Solo se acepta el `Origin` `https://luifelipecd.github.io` (o los de la var `ALLOWED_ORIGIN`). Cualquier otro origen, o sin origen → **403**. `Access-Control-Allow-Origin` nunca es `*`. |
+| **Turnstile** | Antes de generar nada, el token del captcha se valida contra `siteverify` con `TURNSTILE_SECRET_KEY`. Si falla → **403 `{ captcha: true }`**. Sin el secret, la verificación queda desactivada (aviso en logs). |
+| **Prompt anti-inyección** | El system prompt ordena tratar la lista de ingredientes **solo como datos** e ignorar cualquier instrucción dentro (cambiar rol, revelar el prompt, etc.). Los ingredientes van delimitados (`<<<INGREDIENTES>>> … <<<FIN>>>`) y saneados (se quitan `<` `>`). |
+| **Validación de entrada** | Lista corta: máx. **15** ingredientes, **≤48** caracteres y **≤8** palabras cada uno, **≤300** en total. Un párrafo largo → **400** pidiendo ingredientes sueltos. |
+| **Límite por IP** | Máx. 5 generaciones OK por IP cada 24 h (ver arriba). |
+| **Sin secretos en el código** | `ANTHROPIC_API_KEY` y `TURNSTILE_SECRET_KEY` se leen de `env`. El repo nunca los contiene. Los errores de Anthropic no se reenvían al cliente. |
+
 ## Qué hace el Worker (resumen)
 
-- Solo acepta `POST` con `{ "ingredientes": string[] }` (máx. 20, recorta cada uno a 60 caracteres).
-- **Límite de 5 generaciones OK por IP cada 24 h** (KV `RATE_LIMIT`); la 6ª devuelve 429 sin llamar a la IA.
-- Llama a `claude-haiku-4-5` pidiendo **una** receta alta en proteína en el
-  formato exacto del sitio (`nombre`, `categoria`, `dieta`, `kcal`, `proteina`,
-  `carbos`, `grasa`, `ingredientes[]`, `pasos[]`), respondiendo **solo JSON**.
-- Valida y normaliza la respuesta. Si la IA falla o el JSON no es válido, devuelve
-  `{ "ok": false, "error": "mensaje claro" }` — nunca filtra detalles internos ni la clave.
-- Lee `ANTHROPIC_API_KEY` de una variable de entorno (secret). No hay ninguna clave en el código.
+- Solo `POST` con `{ "ingredientes": string[], "turnstileToken": string }` desde el origen del sitio.
+- Valida la entrada → límite por IP → Turnstile → llama a `claude-haiku-4-5` pidiendo **una**
+  receta alta en proteína en el formato del sitio (`nombre`, `categoria`, `dieta`, `kcal`,
+  `proteina`, `carbos`, `grasa`, `ingredientes[]`, `pasos[]`), **solo JSON**.
+- Valida y normaliza la respuesta. Si algo falla → `{ "ok": false, "error": "mensaje claro" }`.
+- Cada respuesta OK trae `"restantes": N`.
 
 ## Coste
 
