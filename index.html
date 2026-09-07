@@ -3,8 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Recetario Proteico 90 Días</title>
+<title>Transforma tu Cuerpo en 90 Días</title>
+<meta name="description" content="Calcula tu déficit calórico y tu proteína, arma tu menú con más de 60 recetas altas en proteína y sigue tu avance durante 90 días. Todo funciona en tu navegador, sin cuenta.">
+<meta name="theme-color" content="#1f4a36">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232f6b4f'/><text x='50' y='71' font-size='54' text-anchor='middle' fill='white' font-family='Arial,Helvetica,sans-serif' font-weight='bold'>90</text></svg>">
+<!-- PWA: instalable en el celular + caché offline -->
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="90 Días">
 <!-- Tipografía: Fraunces (títulos con carácter) + Inter (texto limpio). Si no hay internet, cae a fuentes del sistema. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -455,7 +464,7 @@
 <!-- BARRA SUPERIOR -->
 <header class="appbar">
   <div class="appbar-in">
-    <div class="brand"><span class="brand-badge">90</span> Recetario Proteico <span class="tagline">· alta en proteína · 90 días</span></div>
+    <div class="brand"><span class="brand-badge">90</span> Transforma tu Cuerpo <span class="tagline">en 90 días</span></div>
   </div>
 </header>
 
@@ -729,13 +738,13 @@
 </section>
 
 <footer>
-  <div><strong>Recetario Proteico 90 Días</strong> — hecho para acompañarte en tu proceso.</div>
+  <div><strong>Transforma tu Cuerpo en 90 Días</strong> — hecho para acompañarte en tu proceso.</div>
   <p class="disclaimer">Material educativo; no reemplaza la consulta con un médico o nutricionista. Los cálculos de calorías y proteína son estimaciones generales.</p>
 </footer>
 
 <script>
 // ============================================================
-// Base de recetas altas en proteína — Recetario 90 Días
+// Base de recetas altas en proteína — Transforma tu Cuerpo en 90 Días
 // Cada receta: id, nombre, categoria (desayuno | comida | snack),
 //   dieta ('omnivora' | 'vegetariana' | 'vegana'),
 //   kcal, proteina(g), carbos(g), grasa(g), ingredientes[], pasos[]
@@ -2281,6 +2290,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if(!localStorage.getItem(TOUR_KEY)) setTimeout(() => startTour(0), 800);
   }catch(e){}
 });
+</script>
+
+<!-- PWA: registra el service worker (caché offline). Silencioso si falla o si se abre como file://. -->
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
 </script>
 </body>
 </html>

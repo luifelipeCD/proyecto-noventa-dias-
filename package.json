@@ -1,8 +1,8 @@
 {
-  "name": "recetario-proteico-90-dias",
+  "name": "transforma-tu-cuerpo-90-dias",
   "version": "1.0.0",
   "private": true,
-  "description": "Recetario Proteico 90 Días — sitio estático + Cloudflare Worker para generar recetas con IA",
+  "description": "Transforma tu Cuerpo en 90 Días — app web (PWA) + Cloudflare Worker para generar recetas con IA",
   "scripts": {
     "worker:dev": "wrangler dev --config worker/wrangler.toml",
     "worker:deploy": "wrangler deploy --config worker/wrangler.toml",
