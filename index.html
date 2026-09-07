@@ -18,6 +18,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Cloudflare Turnstile (captcha invisible) para el generador de recetas con IA -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script>
+  // El widget entrega el token aquí (se define antes de nada por si Turnstile carga temprano).
+  window.turnstileToken = '';
+  function onTurnstileOK(token){ window.turnstileToken = token || ''; }
+  function onTurnstileErr(){ window.turnstileToken = ''; }
+  function onTurnstileExpired(){ window.turnstileToken = ''; }
+</script>
 <style>
   :root{
     --bg:#f4f1ea;
@@ -441,6 +450,8 @@
   .ia-chip.on{background:var(--fat);border-color:var(--fat);color:#fff;}
   .ia-chip.on b{font-weight:800;opacity:.75;}
   .ia-box #ia-generar{margin-top:0;}
+  .ia-turnstile{margin-bottom:10px;}
+  .ia-turnstile:empty{margin:0;}
   .tag.tag-ia{background:var(--fat-bg);color:var(--fat);}
   .ia-msg{font-size:12.5px;border-radius:10px;padding:10px 12px;margin-top:10px;
     background:var(--accent-light);color:var(--accent-dark);}
@@ -582,6 +593,11 @@
           <button class="btn-secondary" type="button" onclick="agregarIngrediente()">Añadir</button>
         </div>
         <div class="ia-chips" id="ia-chips"></div>
+        <!-- Captcha invisible: solo pide interacción si Cloudflare detecta algo raro -->
+        <div class="cf-turnstile ia-turnstile" data-sitekey="0x4AAAAAAEr6xThiKA2d4tpi"
+             data-appearance="interaction-only" data-callback="onTurnstileOK"
+             data-error-callback="onTurnstileErr" data-expired-callback="onTurnstileExpired"
+             data-timeout-callback="onTurnstileErr"></div>
         <button class="btn-primary" id="ia-generar" type="button" onclick="generarRecetaIA()">Generar receta con IA</button>
         <div id="ia-estado"></div>
         <div id="ia-resultado"></div>
@@ -1329,12 +1345,20 @@ function renderIngredientes(){
 }
 
 function agregarIngredienteTxt(txt){
-  const t = String(txt).trim().toLowerCase().slice(0, 60);
-  if(t && !favIng.includes(t)){
-    favIng.push(t);
-    lsSet(LS.favIng, favIng);
-    renderIngredientes();
+  // Ingredientes cortos y sueltos (el Worker rechaza frases largas).
+  const t = String(txt).replace(/\s+/g, ' ').trim().toLowerCase().slice(0, 40);
+  if(!t || favIng.includes(t)) return;
+  if(favIng.length >= 15){
+    toast('Ya tienes bastantes ingredientes (máx. 15)');
+    return;
   }
+  if(t.split(' ').length > 8){
+    toast('Escribe ingredientes sueltos, no frases');
+    return;
+  }
+  favIng.push(t);
+  lsSet(LS.favIng, favIng);
+  renderIngredientes();
 }
 
 function agregarIngrediente(){
@@ -1366,6 +1390,14 @@ async function generarRecetaIA(){
     return;
   }
 
+  // Token del captcha invisible (Turnstile). Suele estar listo a los ~1–2 s de cargar la página.
+  const token = window.turnstileToken || (window.turnstile ? (turnstile.getResponse() || '') : '');
+  if(!token){
+    estado.innerHTML = `<div class="ia-msg">Verificando que eres una persona… espera un momento y vuelve a pulsar <b>Generar</b>.</div>`;
+    try{ if(window.turnstile) turnstile.reset(); }catch(e){}
+    return;
+  }
+
   btn.disabled = true;
   cont.innerHTML = '';
   estado.innerHTML = `<div class="ia-msg ia-loading">Generando receta… (puede tardar unos segundos)</div>`;
@@ -1374,9 +1406,14 @@ async function generarRecetaIA(){
     const resp = await fetch(IA_WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ingredientes: favIng })
+      body: JSON.stringify({ ingredientes: favIng, turnstileToken: token })
     });
     const data = await resp.json().catch(() => ({}));
+    // Captcha rechazado: aviso amigable, no error feo
+    if(resp.status === 403 && data.captcha){
+      estado.innerHTML = `<div class="ia-msg ia-limit">🔒 ${data.error || 'No pudimos verificar que eres una persona. Recarga la página e inténtalo de nuevo.'}</div>`;
+      return;
+    }
     // Límite diario alcanzado: aviso tranquilo, no error
     if(resp.status === 429 || data.limited){
       estado.innerHTML = `<div class="ia-msg ia-limit">⏳ ${data.error || 'Ya generaste el máximo de recetas con IA por hoy. Vuelve mañana.'}</div>`;
@@ -1399,6 +1436,9 @@ async function generarRecetaIA(){
     estado.innerHTML = `<div class="ia-msg ia-error">No se pudo contactar el servicio de IA. Revisa tu conexión e inténtalo de nuevo.</div>`;
   }finally{
     btn.disabled = false;
+    // El token de Turnstile es de un solo uso: se pide uno nuevo para el próximo intento.
+    window.turnstileToken = '';
+    try{ if(window.turnstile) turnstile.reset(); }catch(e){}
   }
 }
 
