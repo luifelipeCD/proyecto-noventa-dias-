@@ -5,9 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Recetario Proteico 90 Días</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232f6b4f'/><text x='50' y='71' font-size='54' text-anchor='middle' fill='white' font-family='Arial,Helvetica,sans-serif' font-weight='bold'>90</text></svg>">
+<!-- Tipografía: Fraunces (títulos con carácter) + Inter (texto limpio). Si no hay internet, cae a fuentes del sistema. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#faf7f2;
+    --bg:#f4f1ea;
     --card:#ffffff;
     --ink:#20241f;
     --muted:#6b7268;
@@ -18,455 +22,433 @@
     --orange-light:#fdece3;
     --border:#e7e2d8;
     --veg:#3f8f4f;
-    --veg-light:#e4f4e2;
     --vegan:#2f7d68;
-    --vegan-light:#dff2ec;
-    --shadow: 0 8px 24px rgba(31,74,54,0.08);
+    --shadow:0 6px 20px rgba(31,74,54,0.08);
+    --radius:16px;
+    /* Tipografía */
+    --font-head:'Fraunces',Georgia,'Times New Roman',serif;
+    --font-body:'Inter','Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    /* Color por macronutriente — se usa igual en toda la página */
+    --kcal:#2f6b4f;  --kcal-bg:#e5f0e9;
+    --prot:#c0453b;  --prot-bg:#f7e5e3;
+    --carb:#c1841c;  --carb-bg:#f7ecd8;
+    --fat:#7b6cb0;   --fat-bg:#ebe8f5;
+    --veg-bg:#e4f4e2;
+    /* Color por categoría de receta */
+    --cat-desayuno:var(--carb);
+    --cat-comida:var(--prot);
+    --cat-snack:var(--veg);
   }
   *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
   body{
-    margin:0;
-    background:var(--bg);
-    color:var(--ink);
-    font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--font-body);
     line-height:1.5;
+    -webkit-font-smoothing:antialiased;
   }
-  .wrap{max-width:960px;margin:0 auto;padding:0 20px;}
+  h1,h2,h3,h4,h5{color:var(--accent-dark);font-family:var(--font-head);
+    font-weight:600;letter-spacing:-0.005em;line-height:1.2;}
+  a{color:var(--accent);}
+  .stat .num,.tracker-stat .big,.ring-mid,.count-up{
+    font-family:var(--font-head);font-weight:600;font-variant-numeric:tabular-nums;}
 
-  /* HERO */
-  .hero{
-    background: linear-gradient(135deg, var(--accent-dark), var(--accent) 70%);
-    color:#fff;
-    padding:60px 20px 60px;
-    text-align:center;
+  /* ---------- BARRA SUPERIOR ---------- */
+  .appbar{background:var(--accent-dark);color:#fff;}
+  .appbar-in{max-width:1280px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:12px;}
+  .brand{display:flex;align-items:center;gap:10px;font-family:var(--font-head);font-weight:600;
+    font-size:16px;letter-spacing:-0.01em;}
+  .brand-badge{background:#fff;color:var(--accent-dark);border-radius:8px;width:28px;height:28px;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;}
+  .brand .tagline{opacity:.8;font-size:12.5px;font-weight:400;}
+
+  /* ---------- PESTANAS (celular) ---------- */
+  .tabbar{position:sticky;top:0;z-index:38;display:flex;gap:6px;padding:8px 10px;background:var(--bg);
+    overflow-x:auto;border-bottom:1px solid var(--border);}
+  .tab-btn{flex:1 0 auto;white-space:nowrap;padding:9px 13px;border-radius:999px;border:1.5px solid var(--border);
+    background:var(--card);color:var(--muted);font-size:12.5px;font-weight:700;cursor:pointer;}
+  .tab-btn.active{background:var(--accent-dark);border-color:var(--accent-dark);color:#fff;}
+
+  /* ---------- LAYOUT ---------- */
+  .app{max-width:1280px;margin:0 auto;padding:16px 18px 72px;}
+  .panel{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:20px;}
+  .panel > h2{margin:0 0 4px;font-size:19px;}
+  .panel h3{font-size:15px;margin:20px 0 8px;}
+  .hint{color:var(--muted);font-size:13px;margin:0 0 14px;}
+  .section-sub{color:var(--muted);font-size:13px;margin:0 0 10px;}
+
+  @media (min-width:981px){
+    .tabbar{display:none;}
+    .app{display:grid;grid-template-columns:360px minmax(0,1fr);gap:20px;align-items:start;}
+    .app-side{display:flex;flex-direction:column;gap:18px;position:sticky;top:14px;
+      max-height:calc(100vh - 28px);overflow-y:auto;overflow-x:hidden;padding-right:4px;}
+    .app-main{min-width:0;}
+    .main-nav{display:flex;}
+    .side-panel{display:block;}
+    .main-panel{display:none;}
+    .main-panel.active{display:block;}
   }
-  .hero .eyebrow{
-    text-transform:uppercase;
-    letter-spacing:2px;
-    font-size:13px;
-    opacity:0.85;
-    margin-bottom:14px;
-  }
-  .hero h1{
-    font-size:38px;
-    margin:0 0 16px;
-    font-weight:800;
-    line-height:1.15;
-  }
-  .hero p{
-    font-size:17px;
-    max-width:600px;
-    margin:0 auto;
-    opacity:0.92;
-  }
-  .hero .badges{
-    margin-top:28px;
-    display:flex;
-    gap:12px;
-    justify-content:center;
-    flex-wrap:wrap;
-  }
-  .badge{
-    background:rgba(255,255,255,0.14);
-    border:1px solid rgba(255,255,255,0.3);
-    padding:8px 16px;
-    border-radius:999px;
-    font-size:13px;
+  @media (max-width:980px){
+    .app-side > .panel{margin-bottom:16px;}
+    .main-nav{display:none;}
+    .panel{display:none;}
+    .panel.active{display:block;}
   }
 
-  section{padding:44px 0;}
-  h2{font-size:26px;margin:0 0 8px;color:var(--accent-dark);}
-  h3{font-size:19px;margin:22px 0 10px;color:var(--accent-dark);}
-  .section-sub{color:var(--muted);margin:0 0 24px;font-size:15px;max-width:640px;}
+  /* ---------- FORMULARIO ---------- */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media (max-width:400px){.grid2{grid-template-columns:1fr;}}
+  label{display:block;font-size:12px;font-weight:700;color:var(--accent-dark);margin-bottom:5px;}
+  input[type=number],select{width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);
+    font-size:14px;background:#fcfbf9;color:var(--ink);}
+  input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;}
+  .field{margin-bottom:12px;}
+  .gender-toggle{display:flex;gap:8px;}
+  .gender-toggle button{flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);
+    background:#fcfbf9;cursor:pointer;font-size:13px;font-weight:700;color:var(--muted);}
+  .gender-toggle button.active{background:var(--accent);border-color:var(--accent);color:#fff;}
 
-  /* INTRO */
-  .intro-card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:20px;
-    box-shadow:var(--shadow);
-    padding:28px;
-    margin-top:14px;
-  }
-  .intro-card p{font-size:15px;color:var(--ink);}
-  .intro-goals{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px;}
-  @media (max-width:640px){.intro-goals{grid-template-columns:1fr;}}
-  .goal{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--muted);}
-  .goal .ck{color:var(--accent);font-weight:800;flex-shrink:0;}
-
-  /* CALCULATOR CARD */
-  .calc-card{
-    background:var(--card);
-    border-radius:20px;
-    box-shadow:var(--shadow);
-    padding:32px;
-    position:relative;
-    border:1px solid var(--border);
-  }
-  @media (max-width:640px){.calc-card{padding:22px;}}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
-  @media (max-width:640px){.grid2{grid-template-columns:1fr;}}
-  label{display:block;font-size:13px;font-weight:600;color:var(--accent-dark);margin-bottom:6px;}
-  input[type=number], select{
-    width:100%;
-    padding:12px 14px;
-    border-radius:10px;
-    border:1.5px solid var(--border);
-    font-size:15px;
-    background:#fcfbf9;
-    color:var(--ink);
-  }
-  input[type=number]:focus, select:focus{outline:2px solid var(--accent);outline-offset:1px;}
-  .field{margin-bottom:16px;}
-  .gender-toggle{display:flex;gap:10px;}
-  .gender-toggle button{
-    flex:1;
-    padding:12px;
-    border-radius:10px;
-    border:1.5px solid var(--border);
-    background:#fcfbf9;
-    cursor:pointer;
-    font-size:14px;
-    font-weight:600;
-    color:var(--muted);
-  }
-  .gender-toggle button.active{
-    background:var(--accent);
-    border-color:var(--accent);
-    color:#fff;
-  }
-  .btn-primary{
-    margin-top:8px;
-    width:100%;
-    padding:15px;
-    border:none;
-    border-radius:12px;
-    background:var(--orange);
-    color:#fff;
-    font-size:16px;
-    font-weight:700;
-    cursor:pointer;
-    transition:transform .1s ease, background .15s ease;
-  }
+  .btn-primary{margin-top:6px;width:100%;padding:13px;border:none;border-radius:11px;background:var(--orange);
+    color:#fff;font-size:15px;font-weight:800;cursor:pointer;transition:background .15s ease;}
   .btn-primary:hover{background:#c85f2e;}
-  .btn-secondary{
-    padding:10px 18px;
-    border-radius:10px;
-    border:1.5px solid var(--accent);
-    background:#fff;
-    color:var(--accent-dark);
-    font-weight:600;
-    font-size:14px;
-    cursor:pointer;
-  }
+  .btn-secondary{padding:9px 15px;border-radius:10px;border:1.5px solid var(--accent);background:#fff;
+    color:var(--accent-dark);font-weight:700;font-size:13px;cursor:pointer;}
   .btn-secondary:hover{background:var(--accent-light);}
+  .btn-link{background:none;border:none;color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;
+    text-decoration:underline;padding:8px 2px;}
 
-  /* RESULTS */
-  #resultado{display:none;margin-top:28px;}
-  .result-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:14px;
-    margin:20px 0 8px;
-  }
-  @media (max-width:640px){.result-grid{grid-template-columns:1fr 1fr;}}
-  .stat{
-    background:var(--accent-light);
-    border-radius:14px;
-    padding:18px;
-    text-align:center;
-  }
-  .stat .num{font-size:24px;font-weight:800;color:var(--accent-dark);}
-  .stat .label{font-size:12.5px;color:var(--muted);margin-top:4px;}
-  .note{
-    font-size:13px;
-    color:var(--muted);
-    background:var(--orange-light);
-    border-radius:10px;
-    padding:12px 14px;
-    margin-top:14px;
-  }
+  /* ---------- RESULTADO ---------- */
+  #resultado{display:none;margin-top:16px;}
+  .result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
+  .stat{background:var(--accent-light);border-radius:10px;padding:10px 6px;text-align:center;
+    border-bottom:3px solid transparent;}
+  .stat .num{font-size:16px;color:var(--accent-dark);}
+  .stat .label{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.25;}
+  .stat.m-kcal{background:var(--kcal-bg);border-color:var(--kcal);} .stat.m-kcal .num{color:var(--kcal);}
+  .stat.m-prot{background:var(--prot-bg);border-color:var(--prot);} .stat.m-prot .num{color:var(--prot);}
+  .stat.m-carb{background:var(--carb-bg);border-color:var(--carb);} .stat.m-carb .num{color:var(--carb);}
+  .stat.m-fat{background:var(--fat-bg);border-color:var(--fat);}   .stat.m-fat .num{color:var(--fat);}
+  .note{font-size:12.5px;color:var(--muted);background:var(--orange-light);border-radius:10px;
+    padding:10px 12px;margin-top:10px;}
 
-  /* MEAL PLAN */
-  .plan-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
-  .recipe-card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:16px;
-    padding:20px;
-    margin-bottom:14px;
-    box-shadow:var(--shadow);
-    cursor:pointer;
-  }
-  .recipe-card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
-  .recipe-card h4{margin:0 0 4px;font-size:17px;color:var(--ink);}
-  .tag{
-    display:inline-block;
-    font-size:11px;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:.4px;
-    color:var(--accent-dark);
-    background:var(--accent-light);
-    padding:3px 9px;
-    border-radius:999px;
-    margin-bottom:6px;
-    margin-right:5px;
-  }
-  .tag.veg{color:#fff;background:var(--veg);}
-  .tag.vegan{color:#fff;background:var(--vegan);}
-  .macros{display:flex;gap:14px;font-size:13px;color:var(--muted);margin-top:8px;flex-wrap:wrap;}
-  .macros b{color:var(--ink);}
-  .add-btn{
-    margin-top:12px;
-    padding:9px 14px;
-    border-radius:10px;
-    border:1.5px solid var(--accent);
-    background:var(--accent-light);
-    color:var(--accent-dark);
-    font-weight:700;
-    font-size:13px;
-    cursor:pointer;
-  }
-  .add-btn:hover{background:var(--accent);color:#fff;}
-  .details{
-    display:none;
-    margin-top:14px;
-    padding-top:14px;
-    border-top:1px dashed var(--border);
-    font-size:14px;
-    color:var(--muted);
-  }
-  .details.open{display:block;}
-  .details h5{margin:0 0 6px;color:var(--accent-dark);font-size:13px;text-transform:uppercase;letter-spacing:.3px;}
-  .details ul{margin:0 0 12px;padding-left:18px;}
-  .details ol{margin:0;padding-left:18px;}
+  /* ---------- ANILLOS DE PROGRESO ---------- */
+  .rings{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+  @media (max-width:460px){.rings{grid-template-columns:repeat(2,1fr);}}
+  .ring{position:relative;text-align:center;}
+  .ring svg{width:100%;max-width:78px;height:auto;display:block;margin:0 auto;}
+  .ring-bg{fill:none;stroke:var(--ring-bgc,var(--accent-light));stroke-width:8;}
+  .ring-fg{fill:none;stroke:var(--ring-c,var(--accent));stroke-width:8;stroke-linecap:round;
+    transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset .55s cubic-bezier(.4,0,.2,1);}
+  .ring.over .ring-fg{stroke:var(--orange);}
+  .ring-mid{position:absolute;left:0;right:0;top:0;height:78px;display:flex;align-items:center;justify-content:center;
+    font-size:13px;color:var(--ring-c,var(--accent-dark));}
+  @media (max-width:460px){.ring-mid{height:auto;top:22%;}}
+  .ring-cap{font-size:11px;font-weight:700;color:var(--ink);margin-top:2px;line-height:1.2;}
+  .ring-cap span{display:block;font-weight:400;color:var(--muted);font-size:10px;}
+  .day-cost{margin-top:12px;font-size:12.5px;color:var(--muted);background:var(--accent-light);
+    border-radius:10px;padding:8px 10px;}
+  .midia-actions{margin:14px 0 4px;}
 
-  /* SHOPPING LIST */
-  .shopping{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-left:4px solid var(--orange);
-    border-radius:14px;
-    padding:18px 20px;
-    margin-bottom:18px;
-    box-shadow:var(--shadow);
-  }
-  .shopping h4{margin:0 0 10px;font-size:15px;color:var(--accent-dark);}
-  .shopping ul{margin:0;padding-left:18px;columns:2;font-size:13.5px;color:var(--muted);}
-  @media (max-width:640px){.shopping ul{columns:1;}}
-
-  /* MI DÍA — selección manual */
-  .miday-panel{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:18px;
-    box-shadow:var(--shadow);
-    padding:24px;
-  }
-  .bar-row{margin-bottom:14px;}
-  .bar-row .bar-top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;color:var(--muted);}
-  .bar-row .bar-top b{color:var(--ink);}
-  .bar-track{height:14px;border-radius:999px;background:var(--accent-light);overflow:hidden;}
-  .bar-fill{height:100%;border-radius:999px;background:var(--accent);transition:width .35s ease;width:0;}
-  .bar-fill.over{background:var(--orange);}
-  .miday-list{margin-top:18px;}
-  .miday-item{
-    display:flex;justify-content:space-between;align-items:center;gap:10px;
-    padding:10px 12px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;font-size:14px;
-  }
-  .miday-item .mi-macros{font-size:12px;color:var(--muted);}
-  .rm-btn{
-    border:none;background:var(--orange-light);color:var(--orange);
-    font-weight:800;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;flex-shrink:0;
-  }
+  /* ---------- MI DIA: lista ---------- */
+  .miday-list{margin-top:12px;}
+  .miday-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;
+    border:1px solid var(--border);border-radius:10px;margin-bottom:7px;font-size:13px;}
+  .mi-macros{font-size:11px;color:var(--muted);}
+  .rm-btn{border:none;background:var(--orange-light);color:var(--orange);font-weight:800;border-radius:8px;
+    padding:5px 9px;cursor:pointer;font-size:11px;flex-shrink:0;}
   .rm-btn:hover{background:var(--orange);color:#fff;}
 
-  /* RECIPE BROWSER FILTERS */
-  .filters{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
-  .filter-btn{
-    padding:8px 16px;
-    border-radius:999px;
-    border:1.5px solid var(--border);
-    background:#fff;
-    color:var(--muted);
-    font-size:13px;
-    font-weight:600;
-    cursor:pointer;
-  }
+  /* ---------- LISTA DE COMPRAS ---------- */
+  .shopping{background:#fff;border:1px solid var(--border);border-left:4px solid var(--orange);
+    border-radius:12px;padding:14px 16px;margin-top:14px;}
+  .shopping h4{margin:0 0 8px;font-size:14px;}
+  .shopping ul{margin:0;padding-left:16px;columns:1;font-size:12.5px;color:var(--muted);}
+
+  /* ---------- FILTROS ---------- */
+  .filters{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+  .filter-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:999px;
+    border:1.5px solid var(--border);background:#fff;color:var(--muted);font-size:12.5px;font-weight:700;
+    cursor:pointer;transition:border-color .15s ease,background .15s ease;}
+  .filter-btn:hover{border-color:var(--accent);}
   .filter-btn.active{background:var(--accent-dark);border-color:var(--accent-dark);color:#fff;}
+  .filter-btn .cat-icon{width:15px;height:15px;}
+  .filter-btn.active .cat-icon{color:#fff;}
+  .filter-btn:hover .cat-icon{animation:cat-pop .5s ease both;}
 
-  /* TRACKER 90 DÍAS */
-  .tracker-panel{
-    background:var(--card);border:1px solid var(--border);border-radius:18px;
-    box-shadow:var(--shadow);padding:24px;
-  }
-  .cal-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:12px;}
-  @media (max-width:640px){.cal-grid{grid-template-columns:repeat(6,1fr);}}
-  .cal-day{
-    aspect-ratio:1;display:flex;align-items:center;justify-content:center;
-    border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:700;
-    color:var(--muted);background:#fcfbf9;cursor:pointer;user-select:none;
-  }
-  .cal-day.done{background:var(--accent);border-color:var(--accent);color:#fff;}
-  .tracker-stat{display:flex;align-items:baseline;gap:8px;margin-top:8px;}
-  .tracker-stat .big{font-size:30px;font-weight:800;color:var(--accent-dark);}
-  .weight-form{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-top:8px;}
-  .weight-form .field{margin-bottom:0;flex:1;min-width:120px;}
-  .weight-form button{flex-shrink:0;}
-  .chart-box{margin-top:16px;border:1px solid var(--border);border-radius:12px;padding:12px;background:#fcfbf9;overflow-x:auto;}
-  .weight-list{list-style:none;padding:0;margin:12px 0 0;font-size:13px;color:var(--muted);}
-  .weight-list li{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed var(--border);}
+  /* ---------- RECETARIO EN CUADRICULA ---------- */
+  .recipe-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  @media (max-width:1180px){.recipe-list{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:620px){.recipe-list{grid-template-columns:1fr;}}
+  .recipe-card{display:flex;flex-direction:column;height:100%;background:var(--card);border:1px solid var(--border);
+    border-radius:14px;padding:14px;cursor:pointer;transition:box-shadow .15s ease,transform .15s ease;}
+  .recipe-card:hover{box-shadow:var(--shadow);transform:translateY(-2px);}
+  .rc-tags{margin-bottom:8px;display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
+  .recipe-card h4{margin:0 0 8px;font-size:14.5px;line-height:1.3;color:var(--ink);font-family:var(--font-head);
+    font-weight:600;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em;}
+  .rc-macros{display:grid;grid-template-columns:1fr 1fr;gap:4px 8px;font-size:11.5px;color:var(--muted);margin-bottom:10px;}
+  .rc-macros .mc{display:flex;align-items:center;gap:4px;}
+  .rc-macros .mc::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--mc-c,var(--muted));flex-shrink:0;}
+  .rc-macros .mc b{color:var(--mc-c,var(--ink));}
+  .mc-kcal{--mc-c:var(--kcal);} .mc-prot{--mc-c:var(--prot);}
+  .mc-carb{--mc-c:var(--carb);} .mc-fat{--mc-c:var(--fat);}
+  .rc-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:6px;}
+  .rc-cost{font-size:11.5px;color:#8a4a26;font-weight:700;background:var(--orange-light);border-radius:999px;padding:3px 8px;}
+  .add-btn{padding:7px 10px;border-radius:9px;border:1.5px solid var(--accent);background:var(--accent-light);
+    color:var(--accent-dark);font-weight:800;font-size:11.5px;cursor:pointer;flex-shrink:0;}
+  .add-btn:hover{background:var(--accent);color:#fff;}
+  .menu-grid{margin-top:12px;grid-template-columns:1fr;}
 
-  /* CHECK-IN QUINCENAL */
-  .checkin-panel{
-    background:var(--card);border:1px solid var(--border);border-radius:18px;
-    box-shadow:var(--shadow);padding:24px;
-  }
-  .checkin-due{
-    background:var(--orange-light);border:1px solid #f3cdb8;border-radius:12px;
-    padding:14px 16px;margin-bottom:16px;font-size:14px;color:#8a4a26;
-  }
-  .checkin-ok{
-    background:var(--accent-light);border:1px solid #bfe0cd;border-radius:12px;
-    padding:14px 16px;margin-bottom:16px;font-size:14px;color:var(--accent-dark);
-  }
-  .adjust-msg{
-    background:var(--accent-light);border-left:4px solid var(--accent);border-radius:10px;
-    padding:14px 16px;margin-top:16px;font-size:14px;color:var(--accent-dark);
-  }
-  .adjust-msg b{color:var(--accent-dark);}
-  .checkin-list{list-style:none;padding:0;margin:14px 0 0;font-size:13px;color:var(--muted);}
-  .checkin-list li{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px dashed var(--border);}
-  .checkin-list li b{color:var(--ink);}
+  /* ---------- ETIQUETAS ---------- */
+  .tag{display:inline-block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;
+    color:var(--accent-dark);background:var(--accent-light);padding:3px 8px;border-radius:999px;}
+  .tag.veg{color:#fff;background:var(--veg);}
+  .tag.vegan{color:#fff;background:var(--vegan);}
 
-  /* BATCH COOKING */
-  .batch-toggle{
-    display:inline-flex;align-items:center;gap:8px;
-    padding:10px 18px;border-radius:999px;border:1.5px solid var(--accent);
-    background:#fff;color:var(--accent-dark);font-weight:700;font-size:14px;cursor:pointer;margin-bottom:18px;
-  }
-  .batch-toggle:hover{background:var(--accent-light);}
-  .batch-toggle.active{background:var(--accent-dark);border-color:var(--accent-dark);color:#fff;}
-  #batch-panel{display:none;margin-bottom:24px;}
-  #batch-panel.open{display:block;}
-  .batch-card{
-    background:var(--card);border:1px solid var(--border);border-left:4px solid var(--accent);
-    border-radius:14px;padding:18px 20px;margin-bottom:14px;box-shadow:var(--shadow);
-  }
-  .batch-card h4{margin:0 0 4px;font-size:16px;color:var(--accent-dark);}
-  .batch-card .batch-meta{font-size:13px;color:var(--muted);margin-bottom:10px;}
-  .batch-card ul{margin:0;padding-left:18px;font-size:14px;color:var(--ink);}
-  .batch-card ul li{margin-bottom:4px;}
-  .batch-card .batch-tip{
-    margin-top:10px;font-size:13px;color:var(--muted);
-    background:var(--accent-light);border-radius:8px;padding:8px 12px;
-  }
-  .cost-pill{
-    display:inline-block;font-size:12px;font-weight:700;color:#8a4a26;
-    background:var(--orange-light);border-radius:999px;padding:3px 9px;margin-left:5px;
-  }
-
-  /* MODAL TARJETA DE PROGRESO */
-  .modal-bg{
-    position:fixed;inset:0;background:rgba(20,30,24,0.6);z-index:100;
-    display:none;align-items:center;justify-content:center;padding:20px;
-  }
+  /* ---------- MODALES ---------- */
+  .modal-bg{position:fixed;inset:0;background:rgba(20,30,24,0.6);z-index:120;display:none;
+    align-items:center;justify-content:center;padding:16px;}
   .modal-bg.open{display:flex;}
-  .modal-card{
-    background:var(--card);border-radius:18px;padding:22px;max-width:420px;width:100%;
-    text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.3);
-  }
-  .modal-card h3{margin:0 0 12px;}
+  .modal-card{background:var(--card);border-radius:16px;padding:20px;max-width:420px;width:100%;
+    text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.3);position:relative;max-height:90vh;overflow-y:auto;}
+  .modal-card.receta{max-width:520px;text-align:left;}
+  .modal-x{position:absolute;right:10px;top:10px;border:none;background:var(--accent-light);color:var(--accent-dark);
+    width:30px;height:30px;border-radius:50%;font-weight:800;cursor:pointer;font-size:13px;}
+  .modal-card h3{margin:0 0 10px;font-size:17px;}
+  .modal-card h5{margin:12px 0 5px;font-size:12px;text-transform:uppercase;letter-spacing:.3px;}
+  .modal-card ul,.modal-card ol{margin:0;padding-left:18px;font-size:13.5px;color:var(--muted);}
+  .modal-card .macros{display:flex;gap:8px 12px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:10px 0;}
+  .modal-card .macros .mc{display:flex;align-items:center;gap:5px;}
+  .modal-card .macros .mc::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--mc-c,var(--muted));}
+  .modal-card .macros .mc b{color:var(--mc-c,var(--ink));}
+  .modal-card .macros b{color:var(--ink);}
+  .modal-head{display:flex;align-items:flex-start;gap:12px;}
+  .modal-head .cat-icon{width:40px;height:40px;flex-shrink:0;margin-top:2px;}
+  .modal-head h3{margin:0;}
   .modal-card canvas{width:100%;max-width:360px;border-radius:12px;border:1px solid var(--border);}
-  .modal-actions{display:flex;gap:10px;margin-top:16px;}
+  .modal-actions{display:flex;gap:10px;margin-top:14px;}
   .modal-actions button{flex:1;}
 
-  footer{
-    background:var(--accent-dark);
-    color:rgba(255,255,255,0.75);
-    text-align:center;
-    padding:32px 20px;
-    font-size:13px;
-  }
-  footer strong{color:#fff;}
-  .disclaimer{max-width:640px;margin:10px auto 0;opacity:0.8;}
+  /* ---------- TRACKER 90 DIAS ---------- */
+  .bar-track{height:12px;border-radius:999px;background:var(--accent-light);overflow:hidden;margin-top:6px;}
+  .bar-fill{height:100%;border-radius:999px;background:var(--accent);transition:width .35s ease;width:0;}
+  .bar-fill.over{background:var(--orange);}
+  .cal-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin:10px 0;}
+  @media (max-width:520px){.cal-grid{grid-template-columns:repeat(6,1fr);}}
+  .cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--border);
+    border-radius:7px;font-size:11px;font-weight:700;color:var(--muted);background:#fcfbf9;cursor:pointer;user-select:none;}
+  .cal-day.done{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .tracker-stat{display:flex;align-items:baseline;gap:8px;}
+  .tracker-stat .big{font-size:26px;font-weight:800;color:var(--accent-dark);}
+  .weight-form{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-top:8px;}
+  .weight-form .field{margin-bottom:0;flex:1;min-width:88px;}
+  .chart-box{margin-top:12px;border:1px solid var(--border);border-radius:12px;padding:10px;background:#fcfbf9;overflow-x:auto;}
+  .weight-list,.checkin-list{list-style:none;padding:0;margin:10px 0 0;font-size:12.5px;color:var(--muted);}
+  .weight-list li,.checkin-list li{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px dashed var(--border);}
+  .checkin-due{background:var(--orange-light);border:1px solid #f3cdb8;border-radius:10px;padding:10px 12px;
+    margin-bottom:12px;font-size:12.5px;color:#8a4a26;}
+  .checkin-ok{background:var(--accent-light);border:1px solid #bfe0cd;border-radius:10px;padding:10px 12px;
+    margin-bottom:12px;font-size:12.5px;color:var(--accent-dark);}
+  .adjust-msg{background:var(--accent-light);border-left:4px solid var(--accent);border-radius:10px;padding:12px 14px;
+    margin-top:12px;font-size:12.5px;color:var(--accent-dark);}
 
-  .how-it-works{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
-  @media (max-width:640px){.how-it-works{grid-template-columns:1fr;}}
-  .step{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;}
-  .step .n{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;margin-bottom:12px;}
-  .step h4{margin:0 0 6px;font-size:16px;}
-  .step p{margin:0;font-size:14px;color:var(--muted);}
+  /* ---------- BATCH COOKING ---------- */
+  .batch-card{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--accent);
+    border-radius:12px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);}
+  .batch-card h4{margin:0 0 4px;font-size:14px;}
+  .batch-meta{font-size:12px;color:var(--muted);margin-bottom:8px;}
+  .batch-card ul{margin:0;padding-left:16px;font-size:12.5px;color:var(--ink);}
+  .batch-tip{margin-top:8px;font-size:12px;color:var(--muted);background:var(--accent-light);border-radius:8px;padding:7px 10px;}
+  .cost-pill{display:inline-block;font-size:11px;font-weight:700;color:#8a4a26;background:var(--orange-light);
+    border-radius:999px;padding:3px 8px;margin-left:5px;}
 
-  /* Botón flotante "mi día" */
-  .fab{
-    position:fixed;right:16px;bottom:16px;z-index:50;
-    background:var(--orange);color:#fff;border:none;border-radius:999px;
-    padding:14px 20px;font-size:14px;font-weight:800;cursor:pointer;
-    box-shadow:0 10px 24px rgba(224,112,58,0.4);display:none;
-  }
+  /* ---------- BOTONES FLOTANTES ---------- */
+  .fab{position:fixed;right:14px;bottom:14px;z-index:50;background:var(--orange);color:#fff;border:none;
+    border-radius:999px;padding:12px 18px;font-size:13px;font-weight:800;cursor:pointer;
+    box-shadow:0 10px 24px rgba(224,112,58,0.4);display:none;}
   .fab.show{display:block;}
+  .help-fab{position:fixed;left:14px;bottom:14px;z-index:50;width:44px;height:44px;border-radius:50%;
+    border:none;background:var(--accent-dark);color:#fff;font-size:20px;font-weight:800;cursor:pointer;
+    box-shadow:0 8px 20px rgba(31,74,54,0.35);}
+  .help-fab:hover{background:var(--accent);}
+
+  /* ---------- AVISO (toast) ---------- */
+  .toast{position:fixed;left:50%;bottom:72px;transform:translateX(-50%) translateY(10px);background:var(--accent-dark);
+    color:#fff;padding:10px 18px;border-radius:999px;font-size:13px;font-weight:700;z-index:130;opacity:0;
+    transition:opacity .2s ease,transform .2s ease;pointer-events:none;max-width:88vw;text-align:center;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* ---------- GUIA INTERACTIVA (tour) ---------- */
+  .tour-guard{position:fixed;inset:0;z-index:998;display:none;background:rgba(16,26,20,0.62);}
+  body.tour-active .app-side{overflow:visible;max-height:none;}
+  .tour-lift{position:relative;z-index:999;}
+  .tour-spot{position:relative;z-index:1;border-radius:12px;
+    box-shadow:0 0 0 4px var(--accent), 0 0 0 9px rgba(47,107,79,0.30);}
+  .tour-tip{position:fixed;z-index:1001;display:none;max-width:300px;width:calc(100vw - 32px);
+    background:var(--card);border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,0.35);padding:16px;}
+  .tour-progress{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--accent);}
+  .tour-tip h4{margin:4px 0 6px;font-size:15px;}
+  .tour-tip p{margin:0 0 12px;font-size:13px;color:var(--muted);}
+  .tour-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+
+  /* ---------- ICONOS DE CATEGORÍA (SVG interactivos) ---------- */
+  .cat-icon{width:26px;height:26px;flex-shrink:0;color:var(--muted);
+    transition:transform .3s cubic-bezier(.34,1.56,.64,1);will-change:transform;}
+  .cat-desayuno{color:var(--cat-desayuno);}
+  .cat-comida{color:var(--cat-comida);}
+  .cat-snack{color:var(--cat-snack);}
+  @keyframes cat-pop{
+    0%{transform:rotate(0) scale(1);}
+    30%{transform:rotate(-14deg) scale(1.18);}
+    62%{transform:rotate(9deg) scale(1.1);}
+    100%{transform:rotate(0) scale(1.06);}
+  }
+  .recipe-card:hover .cat-icon,
+  .recipe-card:focus-visible .cat-icon,
+  .recipe-card:active .cat-icon{animation:cat-pop .55s ease both;}
+  .modal-head .cat-icon{animation:cat-pop .6s ease both;}
+  @media (prefers-reduced-motion:reduce){
+    .cat-icon,
+    .recipe-card:hover .cat-icon,
+    .recipe-card:active .cat-icon,
+    .filter-btn:hover .cat-icon,
+    .modal-head .cat-icon{animation:none;transition:none;}
+  }
+
+  /* ---------- BANDAS: "por qué funciona" y FAQ ---------- */
+  .band{border-top:1px solid var(--border);}
+  .band-in{max-width:1180px;margin:0 auto;padding:44px 18px;}
+  .band h2{font-size:23px;margin:0 0 6px;}
+  .band-sub{color:var(--muted);font-size:14px;margin:0 0 26px;max-width:620px;}
+
+  .why{background:linear-gradient(180deg,var(--card),var(--bg));}
+  .why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+  @media (max-width:900px){.why-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:560px){.why-grid{grid-template-columns:1fr;}}
+  .why-card{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--border);
+    border-radius:14px;padding:16px;box-shadow:var(--shadow);}
+  .why-ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;flex-shrink:0;
+    background:var(--wc-bg,var(--accent-light));color:var(--wc,var(--accent));}
+  .why-ic svg{width:21px;height:21px;}
+  .why-card:nth-child(1){--wc:var(--kcal);--wc-bg:var(--kcal-bg);}
+  .why-card:nth-child(2){--wc:var(--prot);--wc-bg:var(--prot-bg);}
+  .why-card:nth-child(3){--wc:var(--carb);--wc-bg:var(--carb-bg);}
+  .why-card:nth-child(4){--wc:var(--fat);--wc-bg:var(--fat-bg);}
+  .why-card p{font-size:12.5px;color:var(--muted);margin:0;line-height:1.5;}
+  .why-card p b{color:var(--ink);}
+
+  .faq{background:var(--bg);}
+  .faq-list{max-width:760px;}
+  .faq-list details{border:1px solid var(--border);border-radius:12px;background:var(--card);margin-bottom:10px;overflow:hidden;}
+  .faq-list summary{list-style:none;cursor:pointer;padding:15px 16px;font-family:var(--font-head);font-weight:600;
+    font-size:15px;color:var(--accent-dark);display:flex;justify-content:space-between;align-items:center;gap:14px;}
+  .faq-list summary::-webkit-details-marker{display:none;}
+  .faq-list summary::after{content:'';width:9px;height:9px;flex-shrink:0;
+    border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);
+    transform:rotate(45deg);transition:transform .2s ease;}
+  .faq-list details[open] summary::after{transform:rotate(225deg);}
+  .faq-list details[open] summary{border-bottom:1px solid var(--border);}
+  .faq-list details p{margin:0;padding:14px 16px;font-size:13.5px;color:var(--muted);line-height:1.6;}
+  @media (prefers-reduced-motion:no-preference){
+    .faq-list details[open] p{animation:faq-in .22s ease;}
+    @keyframes faq-in{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
+  }
+
+  /* ---------- FLUJO: número de paso ---------- */
+  .step-n{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;
+    background:var(--accent);color:#fff;font-family:var(--font-body);font-weight:800;font-size:12px;
+    margin-right:7px;vertical-align:2px;}
+
+  /* ---------- NAV DEL ÁREA PRINCIPAL (escritorio) ---------- */
+  .main-nav{display:none;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+  .main-nav button{padding:8px 14px;border-radius:999px;border:1.5px solid var(--border);background:var(--card);
+    color:var(--muted);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font-body);
+    transition:border-color .15s ease;}
+  .main-nav button:hover{border-color:var(--accent);}
+  .main-nav button.active{background:var(--accent-dark);border-color:var(--accent-dark);color:#fff;}
+
+  /* ---------- "VER MÁS" (secciones opcionales colapsables) ---------- */
+  details.more{border:1px dashed var(--border);border-radius:10px;background:#fcfbf9;margin-top:14px;}
+  details.more > summary{cursor:pointer;list-style:none;padding:10px 12px;font-size:12.5px;font-weight:700;color:var(--muted);}
+  details.more > summary::-webkit-details-marker{display:none;}
+  details.more > summary::before{content:'+';font-weight:800;margin-right:7px;color:var(--accent);}
+  details.more[open] > summary::before{content:'\2013';}
+  details.more > summary:hover{color:var(--accent-dark);}
+  details.more[open] > summary{border-bottom:1px dashed var(--border);}
+  details.more .more-body{padding:12px;}
+  details.more.due > summary::after{content:' \00b7 toca hacerlo';color:var(--orange);font-weight:700;}
+  [hidden]{display:none !important;}
+
+  /* ---------- ILUSTRACIÓN DE RECETA ---------- */
+  .rc-thumb{height:76px;display:flex;align-items:center;justify-content:center;border-radius:11px;margin-bottom:10px;
+    background:var(--tb,var(--accent-light));color:var(--tc,var(--accent));}
+  .rc-thumb svg{width:40px;height:40px;transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
+  .recipe-card:hover .rc-thumb svg,.recipe-card:focus-visible .rc-thumb svg{transform:scale(1.12) rotate(-4deg);}
+  .modal-card .rc-thumb{height:104px;margin-bottom:12px;}
+  .modal-card .rc-thumb svg{width:54px;height:54px;}
+  @media (prefers-reduced-motion:reduce){
+    .rc-thumb svg{transition:none;}
+    .recipe-card:hover .rc-thumb svg{transform:none;}
+  }
+
+  /* ---------- MOVIMIENTO DIARIO ---------- */
+  .move-steps{background:var(--accent-light);border-radius:12px;padding:14px 16px;margin-bottom:6px;}
+  .move-steps-label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--accent);}
+  .move-steps-num{display:block;font-family:var(--font-head);font-weight:600;font-size:22px;color:var(--accent-dark);margin:2px 0;}
+  .move-steps-hint{display:block;font-size:12px;color:var(--muted);}
+  .move-routine{list-style:none;padding:0;margin:0 0 8px;}
+  .move-routine li{border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+  .move-routine .mr-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+  .move-routine b{font-size:13.5px;color:var(--ink);}
+  .move-routine .mr-top span{font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap;}
+  .move-routine i{display:block;margin-top:4px;font-size:12px;color:var(--muted);font-style:normal;line-height:1.5;}
+  #move-today-btn.done{background:var(--accent);}
+  .move-count{font-size:12.5px;color:var(--muted);margin-top:10px;}
+  .move-count b{color:var(--accent-dark);}
+  .move-grid{grid-template-columns:repeat(7,1fr);margin-top:8px;}
+
+  /* ---------- PIE ---------- */
+  footer{background:var(--accent-dark);color:rgba(255,255,255,0.75);text-align:center;padding:24px 18px;font-size:12px;}
+  footer strong{color:#fff;}
+  .disclaimer{max-width:640px;margin:8px auto 0;opacity:0.85;}
 </style>
 </head>
 <body>
-
-<div class="hero">
-  <div class="wrap">
-    <div class="eyebrow">Recetario digital personalizado</div>
-    <h1>Alta en proteína.<br>Hecho para TU cuerpo. 90 días.</h1>
-    <p>Calcula tu déficit calórico exacto según tu peso, edad, sexo y actividad, arma tu día con más de 60 recetas altas en proteína y sigue tu avance durante los 90 días.</p>
-    <div class="badges">
-      <div class="badge">🧮 Calculadora personalizada</div>
-      <div class="badge">🍗 +60 recetas (incluye veganas)</div>
-      <div class="badge">🛒 Lista de compras</div>
-      <div class="badge">📅 Tracker de 90 días</div>
-    </div>
+<!-- BARRA SUPERIOR -->
+<header class="appbar">
+  <div class="appbar-in">
+    <div class="brand"><span class="brand-badge">90</span> Recetario Proteico <span class="tagline">· alta en proteína · 90 días</span></div>
   </div>
-</div>
+</header>
 
-<div class="wrap">
+<!-- PESTAÑAS (celular) -->
+<nav class="tabbar" id="tabbar">
+  <button class="tab-btn active" data-tab="calculadora" onclick="setTab('calculadora')">🧮 Mi plan</button>
+  <button class="tab-btn" data-tab="midia" onclick="setTab('midia')">🍽️ Mi día</button>
+  <button class="tab-btn" data-tab="recetario" onclick="setTab('recetario')">📖 Recetas</button>
+  <button class="tab-btn" data-tab="progreso" onclick="setTab('progreso')">📅 Progreso</button>
+  <button class="tab-btn" data-tab="movimiento" onclick="setTab('movimiento')">🏃 Movimiento</button>
+</nav>
 
-  <!-- 2. INTRODUCCIÓN -->
-  <section id="intro" style="padding-top:34px;">
-    <h2>El programa de 90 días</h2>
-    <p class="section-sub">Antes de calcular nada, esto es lo que vas a hacer y lo que vas a lograr.</p>
-    <div class="intro-card">
-      <p><strong>La idea es simple:</strong> durante 90 días vas a comer en un déficit calórico moderado pero con <strong>mucha proteína</strong>. El déficit hace que bajes de peso; la proteína alta hace que ese peso que pierdas sea grasa y no músculo, y además te mantiene más saciado, así que el proceso se siente sostenible y no como "pasar hambre".</p>
-      <p><strong>Cómo lo usas cada día:</strong></p>
-      <ol style="color:var(--muted);font-size:14px;margin:0 0 4px;padding-left:20px;">
-        <li>Calculas <strong>una sola vez</strong> tu objetivo de calorías y proteína con la calculadora de abajo.</li>
-        <li>Cada día armas tu menú: puedes generar uno automático o navegar el recetario y pulsar <em>"Agregar a mi día"</em> en las recetas que vas a comer. El resumen te muestra en tiempo real cómo vas frente a tu objetivo.</li>
-        <li>Generas la <strong>lista de compras</strong> con los ingredientes ya consolidados.</li>
-        <li>Marcas el día como completado en el <strong>tracker de 90 días</strong> y registras tu peso una vez por semana.</li>
-      </ol>
-      <div class="intro-goals">
-        <div class="goal"><span class="ck">✓</span><span>Perder grasa de forma constante (aprox. 0.5–1% de tu peso por semana) sin dietas extremas.</span></div>
-        <div class="goal"><span class="ck">✓</span><span>Conservar masa muscular y fuerza gracias a la ingesta alta de proteína.</span></div>
-        <div class="goal"><span class="ck">✓</span><span>Aprender a construir platos saciantes y equilibrados que puedas repetir después de los 90 días.</span></div>
-        <div class="goal"><span class="ck">✓</span><span>Crear el hábito: 90 marcas en el calendario y una gráfica de tu peso bajando.</span></div>
-      </div>
-    </div>
-  </section>
+<div class="app">
+  <aside class="app-side">
 
-  <!-- 1 (calc). CALCULADORA -->
-  <section id="calculadora" style="padding-top:6px;">
-    <div class="calc-card" id="calc-card">
-      <h2 style="margin-top:0">Calcula tu plan personalizado</h2>
-      <p class="section-sub">Ingresa tus datos. Todo el cálculo se hace en este mismo documento — no se envía a ningún lado.</p>
-
+    <!-- 1 · CALCULADORA -->
+    <section class="panel side-panel" data-panel="calculadora" id="panel-calculadora">
+      <h2><span class="step-n">1</span> Tu plan</h2>
+      <p class="hint">Se calcula una vez y se guarda solo en tu navegador.</p>
       <div class="grid2">
         <div class="field">
-          <label for="peso">Peso actual (kg)</label>
-          <input type="number" id="peso" placeholder="Ej. 78" min="30" max="300">
+          <label for="peso">Peso (kg)</label>
+          <input type="number" id="peso" placeholder="78" min="30" max="300">
         </div>
         <div class="field">
           <label for="altura">Estatura (cm)</label>
-          <input type="number" id="altura" placeholder="Ej. 170" min="120" max="230">
+          <input type="number" id="altura" placeholder="170" min="120" max="230">
         </div>
         <div class="field">
-          <label for="edad">Edad (años)</label>
-          <input type="number" id="edad" placeholder="Ej. 32" min="14" max="90">
+          <label for="edad">Edad</label>
+          <input type="number" id="edad" placeholder="32" min="14" max="90">
         </div>
         <div class="field">
           <label>Sexo</label>
@@ -475,135 +457,156 @@
             <button type="button" id="btn-mujer" onclick="setGender('mujer')">Mujer</button>
           </div>
         </div>
-        <div class="field">
-          <label for="actividad">Nivel de actividad</label>
-          <select id="actividad">
-            <option value="1.2">Sedentario (poco o nada de ejercicio)</option>
-            <option value="1.375" selected>Ligero (ejercicio 1-3 días/semana)</option>
-            <option value="1.55">Moderado (ejercicio 3-5 días/semana)</option>
-            <option value="1.725">Activo (ejercicio intenso 6-7 días/semana)</option>
-            <option value="1.9">Muy activo (trabajo físico + ejercicio)</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="intensidad">Intensidad del déficit</label>
-          <select id="intensidad">
-            <option value="0.20">Moderado (-20%) — más sostenible</option>
-            <option value="0.25" selected>Alto (-25%) — recomendado para 90 días</option>
-            <option value="0.30">Muy alto (-30%) — solo con buena adherencia</option>
-          </select>
-        </div>
       </div>
-
+      <div class="field">
+        <label for="actividad">Nivel de actividad</label>
+        <select id="actividad">
+          <option value="1.2">Sedentario (poco o nada de ejercicio)</option>
+          <option value="1.375" selected>Ligero (1-3 días/semana)</option>
+          <option value="1.55">Moderado (3-5 días/semana)</option>
+          <option value="1.725">Activo (6-7 días/semana)</option>
+          <option value="1.9">Muy activo (trabajo físico + ejercicio)</option>
+        </select>
+      </div>
+      <details class="more" id="adv-more">
+        <summary>Ajuste avanzado</summary>
+        <div class="more-body">
+          <div class="field" style="margin-bottom:0;">
+            <label for="intensidad">Intensidad del déficit</label>
+            <select id="intensidad">
+              <option value="0.20">Moderado (-20%)</option>
+              <option value="0.25" selected>Alto (-25%) — recomendado</option>
+              <option value="0.30">Muy alto (-30%)</option>
+            </select>
+          </div>
+        </div>
+      </details>
       <button class="btn-primary" onclick="calcular()">Calcular mi plan</button>
-
       <div id="resultado">
         <div class="result-grid">
-          <div class="stat"><div class="num" id="r-bmr">--</div><div class="label">TMB (metabolismo basal)</div></div>
-          <div class="stat"><div class="num" id="r-tdee">--</div><div class="label">Gasto diario (TDEE)</div></div>
-          <div class="stat"><div class="num" id="r-target">--</div><div class="label">Calorías objetivo/día</div></div>
-          <div class="stat"><div class="num" id="r-protein">--</div><div class="label">Proteína objetivo (g/día)</div></div>
-          <div class="stat"><div class="num" id="r-carbs">--</div><div class="label">Carbohidratos (g/día)</div></div>
-          <div class="stat"><div class="num" id="r-fat">--</div><div class="label">Grasas (g/día)</div></div>
+          <div class="stat m-kcal"><div class="num count-up" id="r-bmr">--</div><div class="label">TMB basal</div></div>
+          <div class="stat m-kcal"><div class="num count-up" id="r-tdee">--</div><div class="label">Gasto diario</div></div>
+          <div class="stat m-kcal"><div class="num count-up" id="r-target">--</div><div class="label">Kcal objetivo</div></div>
+          <div class="stat m-prot"><div class="num count-up" id="r-protein">--</div><div class="label">Proteína g/día</div></div>
+          <div class="stat m-carb"><div class="num count-up" id="r-carbs">--</div><div class="label">Carbos g/día</div></div>
+          <div class="stat m-fat"><div class="num count-up" id="r-fat">--</div><div class="label">Grasa g/día</div></div>
         </div>
         <div class="note" id="r-note"></div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="como-funciona">
-    <h2>Cómo funciona el plan</h2>
-    <p class="section-sub">Un sistema simple para que las recetas se ajusten a ti, no al revés.</p>
-    <div class="how-it-works">
-      <div class="step"><div class="n">1</div><h4>Calculas tu objetivo</h4><p>La calculadora usa tu peso, altura, edad, sexo y actividad para estimar cuántas calorías y cuánta proteína necesitas para bajar de peso de forma saludable.</p></div>
-      <div class="step"><div class="n">2</div><h4>Armas tu día</h4><p>Genera un menú automático de la base de más de 60 recetas, o navega el recetario y agrega manualmente lo que vas a comer viendo el total en tiempo real.</p></div>
-      <div class="step"><div class="n">3</div><h4>Compras y haces seguimiento</h4><p>Descarga tu lista de compras consolidada, marca cada día en el calendario de 90 días y registra tu peso semanal en la gráfica.</p></div>
-    </div>
-  </section>
-
-  <!-- 5. MI DÍA (selección manual) -->
-  <section id="mi-dia">
-    <h2>Arma tu día</h2>
-    <p class="section-sub">Agrega recetas desde el recetario de abajo con el botón <em>"➕ Agregar a mi día"</em>. Aquí ves el total acumulado comparado con tu objetivo.</p>
-    <div class="miday-panel">
+    <!-- 2 · MI DÍA / MENÚ -->
+    <section class="panel side-panel" data-panel="midia" id="panel-midia">
+      <h2><span class="step-n">2</span> Tu menú del día</h2>
+      <p class="hint">Genera un menú o agrega recetas. Los anillos comparan con tu objetivo.</p>
+      <button class="btn-primary" onclick="generarMenu()">🍽️ Generar menú del día</button>
+      <div id="plan-dia"><p class="section-sub" style="margin-top:10px;">Calcula tu plan (paso 1) para generar un menú.</p></div>
+      <div id="menu-container"></div>
+      <h3>Lo que llevas hoy</h3>
       <div id="mi-dia-bars"></div>
       <div id="mi-dia-list" class="miday-list"></div>
-      <div id="mi-dia-shopping"></div>
-    </div>
-  </section>
+      <details class="more" id="shop-more" hidden>
+        <summary>Ver lista de compras de mi día</summary>
+        <div class="more-body" id="mi-dia-shopping"></div>
+      </details>
+    </section>
 
-  <!-- 3 + menú automático -->
-  <section id="plan-dia">
-    <div class="plan-header">
-      <div>
-        <h2 style="margin-bottom:2px;">Menú del día automático</h2>
-        <p class="section-sub" style="margin-bottom:0;">Calcula tu plan arriba primero para generar un menú ajustado a ti.</p>
-      </div>
-      <button class="btn-secondary" onclick="generarMenu()">🔄 Generar otro menú</button>
-    </div>
-    <div id="menu-container"><p style="color:var(--muted);">Aún no has calculado tu plan. Sube arriba y llena tus datos ⬆️</p></div>
-  </section>
+  </aside>
 
-  <!-- 4. TRACKER 90 DÍAS -->
-  <section id="tracker">
-    <h2>Tu progreso de 90 días</h2>
-    <p class="section-sub">Se guarda automáticamente en este navegador (localStorage). Si borras los datos del navegador, se reinicia.</p>
-    <div class="tracker-panel">
-      <h3 style="margin-top:0;">Calendario de días completados</h3>
+  <main class="app-main">
+    <nav class="main-nav">
+      <button data-tab="recetario" class="active" onclick="setTab('recetario')">📖 Recetas</button>
+      <button data-tab="progreso" onclick="setTab('progreso')">📅 Progreso</button>
+      <button data-tab="movimiento" onclick="setTab('movimiento')">🏃 Movimiento</button>
+    </nav>
+
+    <!-- RECETARIO -->
+    <section class="panel main-panel active" data-panel="recetario" id="panel-recetario">
+      <h2>Recetario</h2>
+      <p class="hint">+60 recetas altas en proteína. Toca una para ver la receta.</p>
+      <div class="filters" id="filtros"></div>
+      <div id="lista-recetas" class="recipe-list"></div>
+      <details class="more" id="batch-more" ontoggle="if(this.open)renderBatch()">
+        <summary>Cocina por lote — prepara 1 vez, come varios días</summary>
+        <div class="more-body" id="batch-panel"></div>
+      </details>
+    </section>
+
+    <!-- PROGRESO -->
+    <section class="panel main-panel" data-panel="progreso" id="panel-progreso">
+      <h2>Progreso 90 días</h2>
+      <p class="hint">Marca cada día que cumpliste tu plan. Se guarda en tu navegador.</p>
       <div class="tracker-stat"><span class="big" id="dias-count">0</span><span>de 90 días completados</span></div>
-      <div class="bar-track" style="margin-top:8px;"><div class="bar-fill" id="dias-bar"></div></div>
+      <div class="bar-track"><div class="bar-fill" id="dias-bar"></div></div>
       <div class="cal-grid" id="cal-grid"></div>
-      <button class="btn-secondary" style="margin-top:14px;" onclick="resetTracker()">Reiniciar tracker</button>
+      <button class="btn-link" onclick="resetTracker()">Reiniciar calendario</button>
 
       <h3>Peso semanal</h3>
       <div class="weight-form">
-        <div class="field">
-          <label for="w-semana">Semana (1–13)</label>
-          <input type="number" id="w-semana" min="1" max="13" placeholder="Ej. 1">
-        </div>
-        <div class="field">
-          <label for="w-peso">Peso (kg)</label>
-          <input type="number" id="w-peso" min="30" max="300" step="0.1" placeholder="Ej. 77.5">
-        </div>
-        <button class="btn-secondary" onclick="agregarPeso()">Guardar peso</button>
+        <div class="field"><label for="w-semana">Semana (1-13)</label><input type="number" id="w-semana" min="1" max="13" placeholder="1"></div>
+        <div class="field"><label for="w-peso">Peso (kg)</label><input type="number" id="w-peso" min="30" max="300" step="0.1" placeholder="77.5"></div>
+        <button class="btn-secondary" onclick="agregarPeso()">Guardar</button>
       </div>
       <div class="chart-box"><div id="weight-chart"></div></div>
       <ul class="weight-list" id="weight-list"></ul>
-    </div>
-  </section>
 
-  <!-- CHECK-IN QUINCENAL / RECÁLCULO ADAPTATIVO -->
-  <section id="checkin">
-    <h2>Check-in cada 2 semanas</h2>
-    <p class="section-sub">Tu cuerpo cambia mientras bajas de peso, así que tu plan también debe cambiar. Cada 14 días registra tu peso actual y recalculamos tus calorías y proteína objetivo con la misma fórmula.</p>
-    <div class="checkin-panel">
-      <div id="checkin-status"></div>
-      <div class="weight-form">
-        <div class="field">
-          <label for="ci-peso">Peso actual (kg)</label>
-          <input type="number" id="ci-peso" min="30" max="300" step="0.1" placeholder="Ej. 76.4">
+      <details class="more" id="checkin-more">
+        <summary>Recalcular mi plan (cada 2 semanas)</summary>
+        <div class="more-body">
+          <p class="hint">Al bajar de peso tu cuerpo gasta menos. Registra tu peso y recalculamos.</p>
+          <div id="checkin-status"></div>
+          <div class="weight-form">
+            <div class="field"><label for="ci-peso">Peso actual (kg)</label><input type="number" id="ci-peso" min="30" max="300" step="0.1" placeholder="76.4"></div>
+            <button class="btn-primary" style="width:auto;margin-top:0;" onclick="registrarCheckin()">Recalcular</button>
+          </div>
+          <div id="checkin-adjust"></div>
+          <div class="chart-box"><div id="checkin-chart"></div></div>
+          <ul class="checkin-list" id="checkin-list"></ul>
         </div>
-        <button class="btn-primary" style="width:auto;margin-top:0;" onclick="registrarCheckin()">Registrar check-in y recalcular</button>
-      </div>
-      <div id="checkin-adjust"></div>
-      <h3>Historial de check-ins</h3>
-      <div class="chart-box"><div id="checkin-chart"></div></div>
-      <ul class="checkin-list" id="checkin-list"></ul>
-    </div>
-  </section>
+      </details>
+    </section>
 
-  <!-- 1. RECETARIO -->
-  <section id="recetario">
-    <h2>Recetario completo</h2>
-    <p class="section-sub">Más de 60 recetas altas en proteína, con opciones <span class="tag veg">Vegetariana</span> y <span class="tag vegan">Vegana</span> etiquetadas. Toca una tarjeta para ver ingredientes y preparación, o pulsa "Agregar a mi día".</p>
-    <button class="batch-toggle" id="batch-toggle" onclick="toggleBatch()">🍲 Modo cocina por lote (batch cooking)</button>
-    <div id="batch-panel"></div>
-    <div class="filters" id="filtros"></div>
-    <div id="lista-recetas"></div>
-  </section>
+    <!-- MOVIMIENTO -->
+    <section class="panel main-panel" data-panel="movimiento" id="panel-movimiento">
+      <h2>Movimiento diario</h2>
+      <p class="hint">Complemento opcional. Acelera tu déficit y protege tu músculo, sin gimnasio.</p>
+
+      <div class="move-steps">
+        <span class="move-steps-label">Pasos al día recomendados</span>
+        <span class="move-steps-num" id="move-steps-num">7.000 – 9.000 pasos</span>
+        <span class="move-steps-hint" id="move-steps-hint">Según tu nivel de actividad.</span>
+      </div>
+
+      <h3>Rutina de fuerza (opcional)</h3>
+      <p class="section-sub">Con tu propio peso · 2–3 días por semana · 1 día de descanso entre sesiones.</p>
+      <ol class="move-routine">
+        <li><div class="mr-top"><b>Sentadilla</b><span>3 × 10–15</span></div><i>Pies al ancho de hombros. Baja como si te sentaras en una silla, pecho arriba y talones en el suelo.</i></li>
+        <li><div class="mr-top"><b>Flexiones</b><span>3 × 6–12</span></div><i>Cuerpo recto de cabeza a talones (o apoya las rodillas). Baja el pecho casi al piso, codos a ~45°.</i></li>
+        <li><div class="mr-top"><b>Zancadas</b><span>3 × 8–10 / pierna</span></div><i>Paso largo al frente, baja la rodilla trasera casi al suelo, torso vertical. Alterna piernas.</i></li>
+        <li><div class="mr-top"><b>Puente de glúteos</b><span>3 × 12–15</span></div><i>Boca arriba, rodillas dobladas. Empuja con los talones y aprieta los glúteos 1 segundo arriba.</i></li>
+        <li><div class="mr-top"><b>Plancha</b><span>3 × 20–40 s</span></div><i>Antebrazos y punta de pies, cuerpo en línea recta, abdomen firme. No hundas ni subas la cadera.</i></li>
+        <li><div class="mr-top"><b>Remo con toalla o mochila</b><span>3 × 10–12</span></div><i>Inclínate con la espalda recta. Lleva los codos hacia atrás juntando los omóplatos.</i></li>
+      </ol>
+
+      <h3>¿Hiciste la rutina?</h3>
+      <button class="btn-primary" id="move-today-btn" onclick="marcarRutinaHoy()">✓ Marcar rutina de hoy</button>
+      <div class="move-count" id="move-count"></div>
+      <div class="cal-grid move-grid" id="move-grid"></div>
+    </section>
+
+  </main>
 </div>
 
-<button class="fab" id="fab" onclick="document.getElementById('mi-dia').scrollIntoView({behavior:'smooth'})">🍽️ Mi día (<span id="fab-count">0</span>)</button>
+<button class="fab" id="fab" onclick="setTab('midia')">🍽️ Mi día (<span id="fab-count">0</span>)</button>
+<button class="help-fab" id="help-btn" onclick="startTour(0)" title="Ver guía de uso" aria-label="Ver guía de uso">?</button>
+
+<!-- MODAL: receta -->
+<div class="modal-bg" id="receta-modal" onclick="if(event.target===this)cerrarReceta()">
+  <div class="modal-card receta">
+    <button class="modal-x" onclick="cerrarReceta()" aria-label="Cerrar">✕</button>
+    <div id="receta-modal-body"></div>
+  </div>
+</div>
 
 <!-- MODAL: tarjeta de progreso para compartir -->
 <div class="modal-bg" id="share-modal" onclick="if(event.target===this)cerrarTarjeta()">
@@ -617,9 +620,63 @@
   </div>
 </div>
 
+<!-- POR QUÉ FUNCIONA -->
+<section class="band why">
+  <div class="band-in">
+    <h2>Por qué funciona</h2>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 10 13 14 9 21 16"/><polyline points="21 10 21 16 15 16"/></svg></div>
+        <p><b>Déficit moderado.</b> Comes un poco menos de lo que gastas: eso baja el peso, sin pasar hambre.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <p><b>Proteína alta.</b> ≈2 g/kg protege tu músculo y te mantiene saciado.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8.5 15l2.5 2.5 4.5-5"/></svg></div>
+        <p><b>90 días.</b> Tiempo real para ver resultados y crear el hábito.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 8"/><path d="M20 4v4h-4"/><path d="M20 12a8 8 0 0 1-13.7 5.6L4 16"/><path d="M4 20v-4h4"/></svg></div>
+        <p><b>Se ajusta a ti.</b> El check-in cada 2 semanas mantiene tu plan al día.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="band faq">
+  <div class="band-in">
+    <h2>Preguntas frecuentes</h2>
+    <div class="faq-list">
+      <details>
+        <summary>¿Tengo que contar calorías para siempre?</summary>
+        <p>No. La idea es que durante estos 90 días aprendas cómo se ve un plato alto en proteína dentro de tu rango de calorías. Después, la mayoría de personas mantiene el peso "a ojo" usando el recetario como referencia.</p>
+      </details>
+      <details>
+        <summary>¿Funciona si no voy al gimnasio?</summary>
+        <p>Sí. El déficit calórico es lo que baja el peso. Entrenar fuerza ayuda a conservar más músculo, pero la ingesta alta de proteína ya hace gran parte de ese trabajo aunque solo camines.</p>
+      </details>
+      <details>
+        <summary>Llevo dos semanas sin bajar de peso, ¿qué hago?</summary>
+        <p>Primero haz el check-in: al perder peso tu cuerpo gasta menos y puede tocar recalcular. Revisa también porciones y bebidas. Un estancamiento de 1–2 semanas es normal; si se alarga, baja un escalón la intensidad del déficit.</p>
+      </details>
+      <details>
+        <summary>¿Las recetas veganas llegan a la proteína?</summary>
+        <p>Las veganas del recetario se apoyan en tofu, tempeh, soya texturizada, legumbres y proteína vegetal en polvo. Aun así, si tu objetivo es alto quizá necesites una porción extra o un batido para cerrar el número del día.</p>
+      </details>
+      <details>
+        <summary>¿Se guardan mis datos? ¿Es privado?</summary>
+        <p>Todo se calcula y se guarda solo en tu navegador (localStorage). No hay servidor ni cuenta: si abres la página en otro dispositivo o borras los datos del navegador, empiezas de cero.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div><strong>Recetario Proteico 90 Días</strong> — hecho para acompañarte en tu proceso.</div>
-  <p class="disclaimer">Este material tiene fines educativos y no reemplaza la consulta con un médico o nutricionista, especialmente si tienes alguna condición de salud. Los cálculos de calorías y proteína son estimaciones generales.</p>
+  <p class="disclaimer">Material educativo; no reemplaza la consulta con un médico o nutricionista. Los cálculos de calorías y proteína son estimaciones generales.</p>
 </footer>
 
 <script>
@@ -867,7 +924,8 @@ const LS = {
   miDia:'rp90_midia',
   plan:'rp90_plan',
   datos:'rp90_datos',      // datos crudos de la calculadora, para poder recalcular
-  checkins:'rp90_checkins' // historial de check-ins quincenales [{fecha, peso, plan}]
+  checkins:'rp90_checkins', // historial de check-ins quincenales [{fecha, peso, plan}]
+  mov:'rp90_mov'           // días (ISO) en que se hizo la rutina de fuerza
 };
 
 function lsGet(key, fallback){
@@ -938,14 +996,32 @@ function computePlan(d){
   };
 }
 
-// Pinta los 6 cuadros de resultado + nota
+// Anima un número de 0 al valor final (conteo ascendente). Respeta "reduce motion".
+function animarNumero(el, valor, sufijo){
+  if(!el) return;
+  if(valor == null || isNaN(valor)){ el.textContent = '—'; return; }
+  const destino = Math.round(valor);
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce){ el.textContent = destino + sufijo; return; }
+  const dur = 750, t0 = performance.now();
+  function frame(t){
+    const p = Math.min((t - t0) / dur, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(destino * eased) + sufijo;
+    if(p < 1) requestAnimationFrame(frame);
+    else el.textContent = destino + sufijo;
+  }
+  requestAnimationFrame(frame);
+}
+
+// Pinta los 6 cuadros de resultado + nota (con animación de conteo)
 function pintarResultado(res, nota){
-  document.getElementById('r-bmr').textContent = (res.bmr ? res.bmr + ' kcal' : '—');
-  document.getElementById('r-tdee').textContent = (res.tdee ? res.tdee + ' kcal' : '—');
-  document.getElementById('r-target').textContent = res.calorias + ' kcal';
-  document.getElementById('r-protein').textContent = res.proteina + ' g';
-  document.getElementById('r-carbs').textContent = res.carbos + ' g';
-  document.getElementById('r-fat').textContent = res.grasa + ' g';
+  animarNumero(document.getElementById('r-bmr'), res.bmr, ' kcal');
+  animarNumero(document.getElementById('r-tdee'), res.tdee, ' kcal');
+  animarNumero(document.getElementById('r-target'), res.calorias, ' kcal');
+  animarNumero(document.getElementById('r-protein'), res.proteina, ' g');
+  animarNumero(document.getElementById('r-carbs'), res.carbos, ' g');
+  animarNumero(document.getElementById('r-fat'), res.grasa, ' g');
   if(nota) document.getElementById('r-note').textContent = nota;
   document.getElementById('resultado').style.display = 'block';
 }
@@ -973,15 +1049,16 @@ function calcular(){
   lsSet(LS.plan, plan);
 
   const nota = res.limitado
-    ? 'Ajustamos tu meta calórica a un mínimo seguro para tu perfil — un déficit demasiado agresivo puede ser contraproducente y difícil de sostener 90 días.'
-    : 'Este es un déficit calórico alto pero calculado para ser sostenible durante 90 días, priorizando una ingesta alta de proteína para cuidar tu masa muscular.';
+    ? 'Ajustamos tu meta a un mínimo seguro: un déficit más agresivo es difícil de sostener 90 días.'
+    : 'Déficit alto pero sostenible, con proteína alta para cuidar tu músculo.';
   pintarResultado(res, nota);
 
   const subtitulo = document.querySelector('#plan-dia .section-sub');
-  if(subtitulo) subtitulo.textContent = 'Generado según tu objetivo de ' + plan.calorias + ' kcal y ' + plan.proteina + ' g de proteína al día.';
+  if(subtitulo) subtitulo.textContent = 'Tu objetivo: ' + plan.calorias + ' kcal y ' + plan.proteina + ' g de proteína al día.';
   generarMenu();
   renderMiDia();
   renderCheckin();
+  renderMovimiento();
   document.getElementById('resultado').scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
@@ -1006,7 +1083,7 @@ function elegirReceta(categoria, kcalObjetivo, usados){
 function generarMenu(){
   const cont = document.getElementById('menu-container');
   if(!plan){
-    cont.innerHTML = '<p style="color:var(--muted);">Aún no has calculado tu plan. Sube arriba y llena tus datos ⬆️</p>';
+    cont.innerHTML = '';
     return;
   }
 
@@ -1027,11 +1104,11 @@ function generarMenu(){
   const totalProt = seleccion.reduce((s,x)=>s+x.r.proteina, 0);
   const totalCosto = sumaCosto(seleccion.map(x=>x.r));
 
-  let html = `<div class="note" style="margin-bottom:18px;">Este menú suma aproximadamente <b>${totalKcal} kcal</b> y <b>${totalProt} g de proteína</b>, frente a tu objetivo de ${plan.calorias} kcal y ${plan.proteina} g.<br>Costo estimado del día: <b>${fmtUSD(totalCosto)}</b> (~${fmtUSD(totalCosto*30)} al mes). Genera otro menú si quieres más variedad.</div>`;
+  let html = `<div class="note" style="margin-bottom:14px;">Este menú suma aprox. <b>${totalKcal} kcal</b> y <b>${totalProt} g de proteína</b> (objetivo: ${plan.calorias} kcal, ${plan.proteina} g).<br>Costo estimado: <b>${fmtUSD(totalCosto)}</b> (~${fmtUSD(totalCosto*30)}/mes). Pulsa de nuevo para otra variante.</div>`;
   html += renderListaCompras(seleccion.map(x=>x.r), 'Lista de compras del menú');
-  seleccion.forEach(({label, r}) => {
-    html += renderRecetaCard(r, label);
-  });
+  html += '<div class="recipe-list menu-grid">';
+  seleccion.forEach(({label, r}) => { html += renderRecetaCard(r, label); });
+  html += '</div>';
   cont.innerHTML = html;
 }
 
@@ -1060,36 +1137,108 @@ function dietaTag(r){
   return '';
 }
 
+// Ícono SVG por categoría (huevo = desayuno, cubiertos = comida, manzana = snack)
+function catIcon(categoria){
+  const P = {
+    desayuno:'<ellipse cx="12" cy="13" rx="8" ry="6.3"/><circle cx="12" cy="12.4" r="3.4" fill="currentColor" stroke="none"/>',
+    comida:'<path d="M6 3v6a2.2 2.2 0 0 0 4.4 0V3"/><path d="M8.2 11v10"/><path d="M17 3c-1.6 0-2.8 2-2.8 5s1.2 4.6 2.8 4.6"/><path d="M17 3v18"/>',
+    snack:'<path d="M12 8.5c2.4-2 6-1.4 6 2.4 0 4-3 8.1-6 8.1s-6-4.1-6-8.1C6 7.1 9.6 6.5 12 8.5Z"/><path d="M12 8.5V5"/><path d="M12 6.2c1-1.9 3.1-2.1 4.2-1.5-.2 1.9-1.9 2.8-3.4 2.6"/>'
+  };
+  const cat = P[categoria] ? categoria : 'comida';
+  return `<svg class="cat-icon cat-${cat}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[cat]}</svg>`;
+}
+
+// Ilustración por TIPO de receta (sin fotos): glifo de línea + fondo suave de la paleta.
+const RECETA_GLYPH = {
+  huevo:'<ellipse cx="12" cy="13" rx="7.5" ry="6"/><circle cx="12" cy="12.5" r="3" fill="currentColor" stroke="none"/>',
+  pollo:'<path d="M15 3a4.5 4.5 0 0 1 3.2 7.7c-1.4 1.4-3.6 1.5-5 .3l-4.4 4.4a2.6 2.6 0 1 1-2.5 2.5 2.6 2.6 0 1 1 2.5-2.5l4.4-4.4c-1.2-1.4-1.1-3.6.3-5A4.5 4.5 0 0 1 15 3Z"/>',
+  pescado:'<path d="M3 12c3-4 8.5-5 12.5-3.7 1.6.5 2.8 1.6 3.5 2.7-.7 1.1-1.9 2.2-3.5 2.7C11.5 17 6 16 3 12Z"/><path d="M15.5 8.3c1-2 3-3.3 5.5-3.3-.6 2.3-.6 5.7 0 8-2.5 0-4.5-1.3-5.5-3.3Z"/><circle cx="8" cy="11" r="1" fill="currentColor" stroke="none"/>',
+  carne:'<path d="M6.5 6.8c4-3 8.5-3 11.3 0 2.3 2.4 1.8 5.9-1.2 7.9-3.9 2.6-8.6 2.6-11.3 0-2.3-2.2-1.9-5.4 1.2-7.9Z"/><circle cx="9.5" cy="11.5" r="2"/>',
+  batido:'<path d="M7 8h10l-1.1 10.3A2 2 0 0 1 13.9 20h-3.8a2 2 0 0 1-2-1.7Z"/><path d="M13.2 8 15 3"/><path d="M7.6 12h8.8"/>',
+  lacteo:'<path d="M6.5 9h11v7.5a3 3 0 0 1-3 3H9.5a3 3 0 0 1-3-3Z"/><path d="M17.5 10.5h1.5a2 2 0 0 1 0 4h-1.5"/><path d="M9.5 6c-.6-1 .3-2-.3-3M14 6c-.6-1 .3-2-.3-3"/>',
+  avena:'<path d="M3.5 11h17a8.5 8.5 0 0 1-17 0Z"/><path d="M8 7.5c-.6-1 .3-2-.3-3M12 7.5c-.6-1 .3-2-.3-3M16 7.5c-.6-1 .3-2-.3-3"/>',
+  tofu:'<path d="m12 3 8 4.4v9L12 21l-8-4.6v-9Z"/><path d="m4 7.6 8 4.4 8-4.4M12 12v9"/>',
+  ensalada:'<path d="M3.5 11h17a8.5 8.5 0 0 1-17 0Z"/><path d="M9 8.5c-1-2 .4-4.2 3-4.2 0 2.2-1.1 3.7-3 4.2ZM14.5 8.5c2-1.6 2-4.2 2-4.2-2 .3-3.3 2.1-2 4.2Z"/>',
+  legumbre:'<ellipse cx="8.5" cy="10" rx="3" ry="2.1" transform="rotate(-20 8.5 10)"/><ellipse cx="15" cy="9" rx="3" ry="2.1" transform="rotate(15 15 9)"/><ellipse cx="11.5" cy="15" rx="3" ry="2.1" transform="rotate(-6 11.5 15)"/>',
+  wrap:'<path d="M4 8c4.5-3 11.5-3 16 0l-1.8 8c-4.2 2.6-8.2 2.6-12.4 0Z"/><path d="M8.5 9.2v6M12 8.6v7M15.5 9.2v6"/>',
+  sopa:'<path d="M4 10.5h16v3.5a6 6 0 0 1-6 6h-4a6 6 0 0 1-6-6Z"/><path d="M3 10.5h18"/><path d="M9 7.5c-.6-1.2.4-2-.3-3.5M14 7.5c-.6-1.2.4-2-.3-3.5"/>',
+  fruta:'<path d="M12 8c-2-2-6-1.4-6 2.6 0 4 3 8 6 8s6-4 6-8C18 6.6 14 6 12 8Z"/><path d="M12 8V5c0-1.4 1.4-2.4 3-2.4"/>',
+  nuez:'<circle cx="8" cy="9" r="2"/><circle cx="15" cy="8" r="2"/><circle cx="12" cy="14" r="2"/><circle cx="17" cy="14.5" r="1.5"/><circle cx="7" cy="15" r="1.5"/>',
+  plato:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.2"/>'
+};
+const RECETA_TIPOS = [
+  {ic:'huevo',    c:'carb',   kw:['huevo','tortilla','omelette','clara','revuelt','shakshuka','poch']},
+  {ic:'pollo',    c:'prot',   kw:['pollo','pavo']},
+  {ic:'pescado',  c:'prot',   kw:['salmon','atun','merluza','pescado','tilapia','camaron','bacalao']},
+  {ic:'carne',    c:'prot',   kw:['res','lomo','ternera','bistec']},
+  {ic:'batido',   c:'kcal',   kw:['batido','smoothie','licuad','proteico simple','proteina con','vegetal con']},
+  {ic:'lacteo',   c:'carb',   kw:['yogur','skyr','requeson','cottage','cuajada']},
+  {ic:'avena',    c:'carb',   kw:['avena','panqueque','pancake','tortita','hotcake','bocadit']},
+  {ic:'tofu',     c:'veg',    kw:['tofu','tempeh','seitan','soya texturizada']},
+  {ic:'ensalada', c:'veg',    kw:['ensalada','buddha','tabbouleh','tabule']},
+  {ic:'legumbre', c:'veg',    kw:['lenteja','garbanzo','frijol','edamame','hummus','falafel','poroto','chili']},
+  {ic:'wrap',     c:'accent', kw:['wrap','taco','tostada','sandwich','hamburgues','pan ','pan con','pan integral']},
+  {ic:'sopa',     c:'accent', kw:['sopa','curry','guiso','guisad','estofado','crema de']},
+  {ic:'fruta',    c:'orange', kw:['manzana','platano','pina','fresa','mora','fruta','frutos rojos']},
+  {ic:'nuez',     c:'orange', kw:['nuez','nueces','semilla','almendra','tostados','galleta','mani','cacahuate']}
+];
+function recetaThumb(r){
+  const n = normaliza(r.nombre + ' ' + (r.ingredientes ? r.ingredientes[0] : ''));
+  let hit = RECETA_TIPOS.find(t => t.kw.some(k => n.includes(k)));
+  if(!hit) hit = {ic:(r.categoria === 'snack' ? 'nuez' : r.categoria === 'desayuno' ? 'huevo' : 'plato'), c:'accent'};
+  const C = {carb:'var(--carb)', prot:'var(--prot)', kcal:'var(--kcal)', veg:'var(--veg)', accent:'var(--accent)', orange:'var(--orange)'};
+  const B = {carb:'var(--carb-bg)', prot:'var(--prot-bg)', kcal:'var(--kcal-bg)', veg:'var(--veg-bg)', accent:'var(--accent-light)', orange:'var(--orange-light)'};
+  return `<div class="rc-thumb" style="--tc:${C[hit.c]};--tb:${B[hit.c]}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${RECETA_GLYPH[hit.ic]}</svg>
+  </div>`;
+}
+
 function renderRecetaCard(r, etiqueta){
   const tagLabel = etiqueta || (r.categoria === 'desayuno' ? 'Desayuno' : r.categoria === 'comida' ? 'Comida' : 'Snack');
   return `
-    <div class="recipe-card" onclick="toggleDetails(${r.id}, this)">
-      <div class="top">
-        <div>
-          <span class="tag">${tagLabel}</span>${dietaTag(r)}
-          <h4>${r.nombre}</h4>
-        </div>
+    <div class="recipe-card" onclick="abrirReceta(${r.id})" tabindex="0" onkeydown="if(event.key==='Enter'){abrirReceta(${r.id});}">
+      ${recetaThumb(r)}
+      <div class="rc-tags"><span class="tag">${tagLabel}</span>${dietaTag(r)}</div>
+      <h4>${r.nombre}</h4>
+      <div class="rc-macros">
+        <span class="mc mc-kcal"><b>${r.kcal}</b> kcal</span>
+        <span class="mc mc-prot"><b>${r.proteina}g</b> prot</span>
+        <span class="mc mc-carb"><b>${r.carbos}g</b> carb</span>
+        <span class="mc mc-fat"><b>${r.grasa}g</b> grasa</span>
       </div>
-      <div class="macros">
-        <span><b>${r.kcal}</b> kcal</span>
-        <span><b>${r.proteina}g</b> proteína</span>
-        <span><b>${r.carbos}g</b> carbos</span>
-        <span><b>${r.grasa}g</b> grasa</span>
-        <span title="Costo aproximado por porción, precios de Ecuador">💵 <b>${fmtUSD(r.costo)}</b></span>
-      </div>
-      <button class="add-btn" onclick="event.stopPropagation(); agregarAMiDia(${r.id});">➕ Agregar a mi día</button>
-      <div class="details" id="details-${r.id}">
-        <h5>Ingredientes</h5>
-        <ul>${r.ingredientes.map(i=>`<li>${i}</li>`).join('')}</ul>
-        <h5>Preparación</h5>
-        <ol>${r.pasos.map(p=>`<li>${p}</li>`).join('')}</ol>
+      <div class="rc-foot">
+        <span class="rc-cost" title="Costo aprox. por porción (Ecuador)">💵 ${fmtUSD(r.costo)}</span>
+        <button class="add-btn" onclick="event.stopPropagation(); agregarAMiDia(${r.id});">➕ Mi día</button>
       </div>
     </div>`;
 }
 
-function toggleDetails(id, cardEl){
-  // Si la receta aparece varias veces en la página (menú + recetario), togglear todas sus instancias
-  document.querySelectorAll(`#details-${id}`).forEach(el => el.classList.toggle('open'));
+// Abre la receta completa en un modal (mantiene la cuadrícula de tarjetas pareja)
+function abrirReceta(id){
+  const r = getReceta(id);
+  if(!r) return;
+  const cat = r.categoria === 'desayuno' ? 'Desayuno' : r.categoria === 'comida' ? 'Comida' : 'Snack';
+  document.getElementById('receta-modal-body').innerHTML = `
+    ${recetaThumb(r)}
+    <div class="rc-tags"><span class="tag">${cat}</span>${dietaTag(r)}</div>
+    <h3 style="margin:8px 0 0;">${r.nombre}</h3>
+    <div class="macros">
+      <span class="mc mc-kcal"><b>${r.kcal}</b> kcal</span>
+      <span class="mc mc-prot"><b>${r.proteina}g</b> proteína</span>
+      <span class="mc mc-carb"><b>${r.carbos}g</b> carbos</span>
+      <span class="mc mc-fat"><b>${r.grasa}g</b> grasa</span>
+      <span>💵 <b>${fmtUSD(r.costo)}</b></span>
+    </div>
+    <h5>Ingredientes</h5>
+    <ul>${r.ingredientes.map(i=>`<li>${i}</li>`).join('')}</ul>
+    <h5>Preparación</h5>
+    <ol>${r.pasos.map(p=>`<li>${p}</li>`).join('')}</ol>
+    <button class="btn-primary" style="margin-top:8px;" onclick="agregarAMiDia(${r.id}); cerrarReceta();">➕ Agregar a mi día</button>`;
+  document.getElementById('receta-modal').classList.add('open');
+}
+
+function cerrarReceta(){
+  document.getElementById('receta-modal').classList.remove('open');
 }
 
 // ---------- Recetario + filtros ----------
@@ -1112,14 +1261,14 @@ function renderRecetario(filtro){
 function initFiltros(){
   const cont = document.getElementById('filtros');
   const opciones = [
-    {key:'todas', label:'Todas'},
-    {key:'desayuno', label:'Desayunos'},
-    {key:'comida', label:'Almuerzo / Cena'},
-    {key:'snack', label:'Snacks'},
-    {key:'vegetariana', label:'🥚 Vegetarianas'},
-    {key:'vegana', label:'🌱 Veganas'},
+    {key:'todas', label:'Todas', icon:''},
+    {key:'desayuno', label:'Desayunos', icon:catIcon('desayuno')},
+    {key:'comida', label:'Almuerzo / Cena', icon:catIcon('comida')},
+    {key:'snack', label:'Snacks', icon:catIcon('snack')},
+    {key:'vegetariana', label:'🥚 Vegetarianas', icon:''},
+    {key:'vegana', label:'🌱 Veganas', icon:''},
   ];
-  cont.innerHTML = opciones.map(o => `<button class="filter-btn ${o.key==='todas'?'active':''}" data-key="${o.key}">${o.label}</button>`).join('');
+  cont.innerHTML = opciones.map(o => `<button class="filter-btn ${o.key==='todas'?'active':''}" data-key="${o.key}">${o.icon}${o.label}</button>`).join('');
   cont.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       cont.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -1166,17 +1315,6 @@ const BATCH_BASES = [
    tip:'Asa dos bandejas de verduras variadas; se reparten en bowls, wraps, pastas y omelettes.'},
 ];
 
-function toggleBatch(){
-  const panel = document.getElementById('batch-panel');
-  const btn = document.getElementById('batch-toggle');
-  const abierto = panel.classList.toggle('open');
-  btn.classList.toggle('active', abierto);
-  if(abierto){
-    renderBatch();
-    panel.scrollIntoView({behavior:'smooth', block:'nearest'});
-  }
-}
-
 function renderBatch(){
   const panel = document.getElementById('batch-panel');
   const grupos = BATCH_BASES.map(base => {
@@ -1213,8 +1351,8 @@ function agregarAMiDia(id){
   miDia.push(id);
   lsSet(LS.miDia, miDia);
   renderMiDia();
-  // feedback visual
-  const panel = document.getElementById('mi-dia');
+  const r = getReceta(id);
+  toast(r ? `Agregado: ${r.nombre.length > 30 ? r.nombre.slice(0, 30) + '…' : r.nombre}` : 'Agregado a mi día');
 }
 
 function quitarDeMiDia(index){
@@ -1229,15 +1367,24 @@ function limpiarMiDia(){
   renderMiDia();
 }
 
-function barra(nombre, total, objetivo, unidad){
-  const pct = objetivo ? (total / objetivo) * 100 : 0;
-  const ancho = Math.min(pct, 100);
-  const over = pct > 105;
-  const objTxt = objetivo ? ` / ${Math.round(objetivo)} ${unidad}` : '';
-  const pctTxt = objetivo ? ` (${Math.round(pct)}%)` : '';
-  return `<div class="bar-row">
-    <div class="bar-top"><span>${nombre}</span><span><b>${Math.round(total)} ${unidad}</b>${objTxt}${pctTxt}</span></div>
-    <div class="bar-track"><div class="bar-fill ${over?'over':''}" style="width:${ancho}%"></div></div>
+// Anillo de progreso (SVG) para un macro de "mi día". `cvar` = variable de color del macro.
+function anillo(nombre, total, objetivo, unidad, cvar){
+  const R = 30, CIRC = 2 * Math.PI * R;
+  const pct = objetivo ? total / objetivo : 0;
+  const off = CIRC * (1 - Math.max(0, Math.min(pct, 1)));
+  const over = objetivo && total > objetivo * 1.05;
+  const centro = objetivo ? Math.round(pct * 100) + '%' : Math.round(total);
+  const sub = objetivo
+    ? `${Math.round(total)} / ${Math.round(objetivo)} ${unidad}`
+    : `${Math.round(total)} ${unidad}`;
+  const estilo = cvar ? ` style="--ring-c:var(${cvar});--ring-bgc:var(${cvar}-bg)"` : '';
+  return `<div class="ring ${over ? 'over' : ''}"${estilo}>
+    <svg viewBox="0 0 72 72" aria-hidden="true">
+      <circle class="ring-bg" cx="36" cy="36" r="${R}"></circle>
+      <circle class="ring-fg" cx="36" cy="36" r="${R}" style="stroke-dasharray:${CIRC.toFixed(1)};stroke-dashoffset:${off.toFixed(1)}"></circle>
+    </svg>
+    <div class="ring-mid">${centro}</div>
+    <div class="ring-cap">${nombre}<span>${sub}</span></div>
   </div>`;
 }
 
@@ -1255,19 +1402,21 @@ function renderMiDia(){
   const obj = plan || null;
   let barsHtml = '';
   if(!obj){
-    barsHtml += `<div class="note" style="margin-top:0;margin-bottom:14px;">Calcula tu plan en la calculadora para ver tu progreso frente a un objetivo. Mientras tanto, aquí van los totales de lo que seleccionaste.</div>`;
+    barsHtml += `<div class="note" style="margin:0 0 12px;">Aún sin objetivo. Calcula tu plan para ver los porcentajes; por ahora ves los totales.</div>`;
   }
-  barsHtml += barra('Calorías', tot.kcal, obj && obj.calorias, 'kcal');
-  barsHtml += barra('Proteína', tot.prot, obj && obj.proteina, 'g');
-  barsHtml += barra('Carbohidratos', tot.carbos, obj && obj.carbos, 'g');
-  barsHtml += barra('Grasa', tot.grasa, obj && obj.grasa, 'g');
+  barsHtml += '<div class="rings">';
+  barsHtml += anillo('Calorías', tot.kcal, obj && obj.calorias, 'kcal', '--kcal');
+  barsHtml += anillo('Proteína', tot.prot, obj && obj.proteina, 'g', '--prot');
+  barsHtml += anillo('Carbos', tot.carbos, obj && obj.carbos, 'g', '--carb');
+  barsHtml += anillo('Grasa', tot.grasa, obj && obj.grasa, 'g', '--fat');
+  barsHtml += '</div>';
   if(recetas.length){
-    barsHtml += `<div class="bar-row" style="margin-bottom:0;"><div class="bar-top"><span>Costo estimado del día</span><span><b>${fmtUSD(totCosto)}</b> · ~${fmtUSD(totCosto*30)}/mes</span></div></div>`;
+    barsHtml += `<div class="day-cost">Costo estimado del día: <b>${fmtUSD(totCosto)}</b> · ~${fmtUSD(totCosto*30)}/mes</div>`;
   }
   barsEl.innerHTML = barsHtml;
 
   if(recetas.length === 0){
-    listEl.innerHTML = `<p style="color:var(--muted);margin-top:14px;">Aún no has agregado recetas a tu día. Ve al recetario y pulsa <em>"➕ Agregar a mi día"</em>.</p>`;
+    listEl.innerHTML = `<p style="color:var(--muted);margin-top:14px;">Aún no has agregado recetas a tu día. Ve al recetario y pulsa <em>"➕ Mi día"</em> en una tarjeta.</p>`;
     shopEl.innerHTML = '';
   } else {
     let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
@@ -1284,6 +1433,9 @@ function renderMiDia(){
     listEl.innerHTML = html;
     shopEl.innerHTML = renderListaCompras(recetas, 'Lista de compras de mi día');
   }
+
+  const shopMore = document.getElementById('shop-more');
+  if(shopMore) shopMore.hidden = recetas.length === 0;
 
   // FAB
   const fab = document.getElementById('fab');
@@ -1569,8 +1721,10 @@ function registrarCheckin(){
     return;
   }
   if(!datos){
-    alert('Primero calcula tu plan en la calculadora de arriba: necesitamos tu estatura, edad, sexo y actividad para recalcular.');
-    document.getElementById('calculadora').scrollIntoView({behavior:'smooth'});
+    alert('Primero calcula tu plan en la calculadora: necesitamos tu estatura, edad, sexo y actividad para recalcular.');
+    setTab('calculadora');
+    const cc = document.getElementById('panel-calculadora');
+    if(cc) cc.scrollIntoView({behavior:'smooth', block:'nearest'});
     return;
   }
 
@@ -1624,7 +1778,9 @@ function registrarCheckin(){
   }
 
   renderCheckin();
-  document.getElementById('checkin').scrollIntoView({behavior:'smooth', block:'nearest'});
+  setTab('progreso');
+  const cp = document.getElementById('panel-progreso');
+  if(cp) cp.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
 function eliminarCheckin(idx){
@@ -1653,6 +1809,14 @@ function renderCheckin(){
         ? `<div class="checkin-due">⏰ Han pasado ${d} días desde tu último check-in (${ultima}). Toca hacer uno: registra tu peso actual y ajustamos tu plan.</div>`
         : `<div class="checkin-ok">✅ Último check-in: ${ultima}. Tu próximo check-in es en ${faltan} día${faltan===1?'':'s'}.</div>`;
     }
+  }
+
+  // Marca visual en el desplegable "Ver más" cuando toca hacer check-in
+  const moreEl = document.getElementById('checkin-more');
+  if(moreEl){
+    const due = !!(datos && checkins.length &&
+      diasEntre(checkins[checkins.length-1].fecha, hoyISO()) >= DIAS_ENTRE_CHECKINS);
+    moreEl.classList.toggle('due', due);
   }
 
   // --- Gráfica de progreso de peso a lo largo de los check-ins ---
@@ -1711,15 +1875,220 @@ function renderCheckin(){
 }
 
 // ============================================================
+// MOVIMIENTO DIARIO (complemento opcional)
+// ============================================================
+function pasosRecomendados(actividadVal){
+  const M = {
+    '1.2':  ['6.000 – 8.000',  'sedentario'],
+    '1.375':['7.000 – 9.000',  'ligero'],
+    '1.55': ['8.000 – 10.000', 'moderado'],
+    '1.725':['9.000 – 11.000', 'activo'],
+    '1.9':  ['10.000 – 12.000','muy activo']
+  };
+  return M[actividadVal] || M['1.375'];
+}
+
+function renderMovimiento(){
+  const sel = document.getElementById('actividad');
+  const val = (datos && datos.actividad != null) ? String(datos.actividad) : (sel ? sel.value : '1.375');
+  const [rango, nombre] = pasosRecomendados(val);
+  const numEl = document.getElementById('move-steps-num');
+  const hintEl = document.getElementById('move-steps-hint');
+  if(numEl) numEl.textContent = rango + ' pasos';
+  if(hintEl) hintEl.textContent = `Para tu nivel "${nombre}". Cámbialo en la calculadora si tu actividad cambia.`;
+
+  const hechos = lsGet(LS.mov, []);
+  const hoy = hoyISO();
+  const btn = document.getElementById('move-today-btn');
+  if(btn){
+    const hoyHecho = hechos.includes(hoy);
+    btn.textContent = hoyHecho ? '✓ Rutina de hoy hecha (quitar)' : '✓ Marcar rutina de hoy';
+    btn.classList.toggle('done', hoyHecho);
+  }
+  const cntEl = document.getElementById('move-count');
+  if(cntEl){
+    const semana = hechos.filter(dd => { const n = diasEntre(dd, hoy); return n >= 0 && n < 7; }).length;
+    cntEl.innerHTML = `<b>${hechos.length}</b> sesión${hechos.length === 1 ? '' : 'es'} en total · <b>${semana}</b> en los últimos 7 días · meta 2–3 por semana`;
+  }
+  const grid = document.getElementById('move-grid');
+  if(grid){
+    let html = '';
+    for(let i = 13; i >= 0; i--){
+      const dt = new Date(); dt.setDate(dt.getDate() - i);
+      const iso = dt.toISOString().slice(0, 10);
+      html += `<div class="cal-day ${hechos.includes(iso) ? 'done' : ''}" onclick="toggleRutina('${iso}')" title="${iso}">${dt.getDate()}</div>`;
+    }
+    grid.innerHTML = html;
+  }
+}
+
+function toggleRutina(iso){
+  const arr = lsGet(LS.mov, []);
+  const i = arr.indexOf(iso);
+  if(i >= 0) arr.splice(i, 1); else arr.push(iso);
+  arr.sort();
+  lsSet(LS.mov, arr);
+  renderMovimiento();
+}
+function marcarRutinaHoy(){ toggleRutina(hoyISO()); }
+
+// ============================================================
+// NAVEGACIÓN POR PESTAÑAS (celular) + AVISOS
+// ============================================================
+function isMobile(){ return window.matchMedia('(max-width: 980px)').matches; }
+
+function setTab(name){
+  const el = document.querySelector('.panel[data-panel="' + name + '"]');
+  const isMain = !!(el && el.classList.contains('main-panel'));
+  // Resalta la pestaña (celular) siempre
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  if(isMobile()){
+    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.dataset.panel === name));
+    window.scrollTo({top:0, behavior:'smooth'});
+  } else if(isMain){
+    // Escritorio: cambia la vista de la columna principal
+    document.querySelectorAll('.main-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === name));
+    document.querySelectorAll('.main-nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  } else if(el){
+    // Escritorio + panel lateral (calculadora / mi día): siempre visible, sólo desplaza
+    el.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+}
+
+let toastT;
+function toast(msg){
+  let el = document.getElementById('toast');
+  if(!el){ el = document.createElement('div'); el.id = 'toast'; el.className = 'toast'; document.body.appendChild(el); }
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => el.classList.remove('show'), 1700);
+}
+
+// ============================================================
+// GUÍA INTERACTIVA (tour de bienvenida — se muestra 1 vez)
+// ============================================================
+const TOUR_KEY = 'rp90_tour_done';
+const TOUR_STEPS = [
+  {tab:'calculadora', sel:'#panel-calculadora',
+   title:'1 · Tu plan',
+   text:'Llena tus datos y pulsa <b>Calcular mi plan</b>. Se hace una sola vez.'},
+  {tab:'midia', sel:'#panel-midia',
+   title:'2 · Tu menú del día',
+   text:'Pulsa <b>Generar menú del día</b> o agrega recetas. Los anillos te muestran cómo vas.'},
+  {tab:'recetario', sel:'#filtros',
+   title:'Recetas',
+   text:'Filtra y toca cualquier tarjeta para ver la receta. <b>➕ Mi día</b> la suma a tu día.'},
+  {tab:'progreso', sel:'#panel-progreso',
+   title:'Tu avance',
+   text:'Marca los días que cumpliste. El botón <b>?</b> abajo repite esta guía.'}
+];
+let tourIdx = 0;
+let tourTarget = null;
+
+function buildTourEls(){
+  if(document.getElementById('tour-tip')) return;
+  const guard = document.createElement('div');
+  guard.id = 'tour-guard';
+  guard.className = 'tour-guard';
+  const tip = document.createElement('div');
+  tip.id = 'tour-tip';
+  tip.className = 'tour-tip';
+  tip.innerHTML = `
+    <div class="tour-progress" id="tour-progress"></div>
+    <h4 id="tour-title"></h4>
+    <p id="tour-text"></p>
+    <div class="tour-actions">
+      <button class="btn-link" onclick="endTour()">Saltar tour</button>
+      <button class="btn-primary" id="tour-next" style="width:auto;margin:0;" onclick="nextTourStep()">Siguiente</button>
+    </div>`;
+  document.body.appendChild(guard);
+  document.body.appendChild(tip);
+}
+
+function startTour(i){
+  buildTourEls();
+  tourIdx = i || 0;
+  document.body.classList.add('tour-active');
+  document.getElementById('tour-guard').style.display = 'block';
+  document.getElementById('tour-tip').style.display = 'block';
+  showTourStep();
+}
+
+function showTourStep(){
+  const step = TOUR_STEPS[tourIdx];
+  document.querySelectorAll('.tour-spot').forEach(el => el.classList.remove('tour-spot'));
+  document.querySelectorAll('.tour-lift').forEach(el => el.classList.remove('tour-lift'));
+  setTab(step.tab);
+  setTimeout(() => {
+    const target = document.querySelector(step.sel);
+    tourTarget = target;
+    const cont = target && target.closest('.app-side, .app-main');
+    if(cont) cont.classList.add('tour-lift');
+    document.getElementById('tour-progress').textContent = `Paso ${tourIdx + 1} de ${TOUR_STEPS.length}`;
+    document.getElementById('tour-title').innerHTML = step.title;
+    document.getElementById('tour-text').innerHTML = step.text;
+    document.getElementById('tour-next').textContent = tourIdx === TOUR_STEPS.length - 1 ? 'Entendido' : 'Siguiente';
+    if(target){
+      target.classList.add('tour-spot');
+      target.scrollIntoView({behavior:'smooth', block:'center'});
+      setTimeout(() => positionTourTip(target), 340);
+    } else {
+      positionTourTip(null);
+    }
+  }, 80);
+}
+
+function positionTourTip(target){
+  const tip = document.getElementById('tour-tip');
+  if(!tip) return;
+  if(!target){
+    tip.style.left = '50%';
+    tip.style.top = '50%';
+    tip.style.transform = 'translate(-50%, -50%)';
+    return;
+  }
+  tip.style.transform = 'none';
+  const r = target.getBoundingClientRect();
+  const tw = tip.offsetWidth, th = tip.offsetHeight;
+  let top = r.bottom + 12;
+  if(top + th > window.innerHeight - 8) top = Math.max(8, r.top - th - 12);
+  let left = r.left + r.width / 2 - tw / 2;
+  left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+  tip.style.left = left + 'px';
+  tip.style.top = top + 'px';
+}
+
+function nextTourStep(){
+  if(tourIdx >= TOUR_STEPS.length - 1){ endTour(); return; }
+  tourIdx++;
+  showTourStep();
+}
+
+function endTour(){
+  document.querySelectorAll('.tour-spot').forEach(el => el.classList.remove('tour-spot'));
+  document.querySelectorAll('.tour-lift').forEach(el => el.classList.remove('tour-lift'));
+  document.body.classList.remove('tour-active');
+  const g = document.getElementById('tour-guard');
+  const t = document.getElementById('tour-tip');
+  if(g) g.style.display = 'none';
+  if(t) t.style.display = 'none';
+  tourTarget = null;
+  try{ localStorage.setItem(TOUR_KEY, '1'); }catch(e){}
+}
+
+// ============================================================
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
+  setTab(isMobile() ? 'calculadora' : 'recetario');
   initFiltros();
   renderRecetario('todas');
   renderMiDia();
   renderCalendario();
   renderPesos();
   renderCheckin();
+  renderMovimiento();
 
   // Si ya había un plan guardado, restaurar resultados y menú
   if(plan){
@@ -1733,13 +2102,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     pintarResultado(
       {bmr:null, tdee:null, calorias:plan.calorias, proteina:plan.proteina, carbos:plan.carbos, grasa:plan.grasa},
-      'Plan guardado en este navegador. Se recalcula solo en cada check-in, o vuelve a calcular si tus datos cambiaron.'
+      'Plan guardado. Se recalcula en cada check-in, o vuelve a calcular si tus datos cambian.'
     );
     const subtitulo = document.querySelector('#plan-dia .section-sub');
-    if(subtitulo) subtitulo.textContent = 'Tu objetivo guardado: ' + plan.calorias + ' kcal y ' + plan.proteina + ' g de proteína al día.';
+    if(subtitulo) subtitulo.textContent = 'Tu objetivo: ' + plan.calorias + ' kcal y ' + plan.proteina + ' g de proteína al día.';
     generarMenu();
     renderMiDia();
+    renderMovimiento();
   }
+
+  // Reposiciona el globo de la guía si cambia el tamaño de la ventana
+  window.addEventListener('resize', () => {
+    if(document.body.classList.contains('tour-active')) positionTourTip(tourTarget);
+  });
+
+  // Guía interactiva la primera vez que se entra
+  try{
+    if(!localStorage.getItem(TOUR_KEY)) setTimeout(() => startTour(0), 800);
+  }catch(e){}
 });
 </script>
 </body>
