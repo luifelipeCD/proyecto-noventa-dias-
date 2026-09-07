@@ -437,6 +437,7 @@
     background:var(--accent-light);color:var(--accent-dark);}
   .ia-msg.ia-error{background:var(--orange-light);color:#8a4a26;}
   .ia-msg.ia-ok{background:var(--veg-bg);color:var(--accent-dark);}
+  .ia-msg.ia-limit{background:var(--carb-bg);color:#7a4e12;font-weight:600;}
   .ia-msg code{background:rgba(0,0,0,0.06);border-radius:4px;padding:1px 5px;font-size:11.5px;}
   .ia-loading::after{content:'';display:inline-block;width:9px;height:9px;margin-left:7px;vertical-align:-1px;
     border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:ia-spin .7s linear infinite;}
@@ -1367,6 +1368,11 @@ async function generarRecetaIA(){
       body: JSON.stringify({ ingredientes: favIng })
     });
     const data = await resp.json().catch(() => ({}));
+    // Límite diario alcanzado: aviso tranquilo, no error
+    if(resp.status === 429 || data.limited){
+      estado.innerHTML = `<div class="ia-msg ia-limit">⏳ ${data.error || 'Ya generaste el máximo de recetas con IA por hoy. Vuelve mañana.'}</div>`;
+      return;
+    }
     if(!resp.ok || !data.ok || !data.receta){
       estado.innerHTML = `<div class="ia-msg ia-error">${data.error || 'No se pudo generar la receta. Intenta de nuevo en un momento.'}</div>`;
       return;
@@ -1376,7 +1382,9 @@ async function generarRecetaIA(){
     r.costo = 1.5;
     r.ia = true;
     recetasIA.unshift(r);
-    estado.innerHTML = `<div class="ia-msg ia-ok">✨ Receta creada. Ábrela para ver la preparación o añádela a tu día.</div>`;
+    const quedan = (typeof data.restantes === 'number')
+      ? ` Te quedan <b>${data.restantes}</b> hoy.` : '';
+    estado.innerHTML = `<div class="ia-msg ia-ok">✨ Receta creada.${quedan} Ábrela para ver la preparación o añádela a tu día.</div>`;
     cont.innerHTML = renderRecetaCard(r);
   }catch(e){
     estado.innerHTML = `<div class="ia-msg ia-error">No se pudo contactar el servicio de IA. Revisa tu conexión e inténtalo de nuevo.</div>`;

@@ -13,6 +13,11 @@
  * Respuesta error (4xx/5xx):
  *   { "ok": false, "error": "mensaje claro para mostrar al usuario" }
  *
+ * Límite de uso (anti-abuso / control de gasto):
+ *   Máx. 5 generaciones OK por IP (CF-Connecting-IP) en una ventana de 24 h.
+ *   Al superarlo -> HTTP 429  { "ok": false, "limited": true, "error": "...vuelve mañana" }.
+ *   El contador vive en el KV namespace con binding "RATE_LIMIT".
+ *
  * La API key de Anthropic se lee de env.ANTHROPIC_API_KEY (secret de Wrangler).
  * NUNCA está escrita en este archivo.
  */
@@ -21,6 +26,10 @@ const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
 const MODEL = 'claude-haiku-4-5';
 const MAX_INGREDIENTES = 20;
 const MAX_LEN_INGREDIENTE = 60;
+
+// Límite de generaciones OK por IP y ventana (en ms).
+const LIMITE_DIARIO = 5;
+const VENTANA_MS = 24 * 60 * 60 * 1000;
 
 // Orígenes permitidos por defecto (GitHub Pages del proyecto + desarrollo local).
 const DEFAULT_ALLOWED_ORIGINS = [
@@ -83,6 +92,44 @@ function extraerJSON(text) {
 function entero(v, fallback) {
   const n = Math.round(Number(v));
   return Number.isFinite(n) && n >= 0 && n < 100000 ? n : fallback;
+}
+
+// ---------- Límite de uso por IP (KV) ----------
+// Devuelve { count, resetAt } normalizado, o null si no hay KV (entonces no se limita).
+async function leerLimite(env, ip) {
+  if (!env.RATE_LIMIT) return null;
+  const ahora = Date.now();
+  let raw;
+  try {
+    raw = await env.RATE_LIMIT.get('rl:' + ip);
+  } catch (e) {
+    console.error('KV get error', e && e.message);
+    return null; // fail-open: si el KV falla, no bloqueamos al usuario
+  }
+  if (raw) {
+    let obj = null;
+    try { obj = JSON.parse(raw); } catch (e) {}
+    if (obj && typeof obj.count === 'number' && typeof obj.resetAt === 'number' && ahora < obj.resetAt) {
+      return { count: obj.count, resetAt: obj.resetAt };
+    }
+  }
+  // Sin registro (o expirado / corrupto): empieza una ventana nueva.
+  return { count: 0, resetAt: ahora + VENTANA_MS };
+}
+
+async function guardarLimite(env, ip, estado) {
+  if (!env.RATE_LIMIT) return;
+  // TTL mínimo de KV = 60 s; añadimos margen para no dejar la clave "colgada".
+  const ttl = Math.max(60, Math.ceil((estado.resetAt - Date.now()) / 1000) + 60);
+  try {
+    await env.RATE_LIMIT.put(
+      'rl:' + ip,
+      JSON.stringify({ count: estado.count, resetAt: estado.resetAt }),
+      { expirationTtl: ttl }
+    );
+  } catch (e) {
+    console.error('KV put error', e && e.message);
+  }
 }
 
 // Valida y normaliza la receta al mismo formato que usa el sitio.
@@ -220,10 +267,34 @@ export default {
       return fail('Escribe al menos un ingrediente.', 400, request, env);
     }
 
+    // --- Límite de uso por IP (antes de gastar en la API de IA) ---
+    const ip = request.headers.get('CF-Connecting-IP') || 'desconocido';
+    const limite = await leerLimite(env, ip);
+    if (limite && limite.count >= LIMITE_DIARIO) {
+      return json(
+        {
+          ok: false,
+          limited: true,
+          error: `Ya generaste el máximo de recetas con IA por hoy (${LIMITE_DIARIO}). Vuelve mañana 🙂`,
+        },
+        429,
+        request,
+        env
+      );
+    }
+
     const result = await generarReceta(ingredientes, env);
     if (result.error) {
       return fail(result.error, 502, request, env);
     }
-    return json({ ok: true, receta: result.receta }, 200, request, env);
+
+    // Solo contamos las generaciones que salieron bien.
+    let restantes = null;
+    if (limite) {
+      limite.count += 1;
+      await guardarLimite(env, ip, limite);
+      restantes = Math.max(0, LIMITE_DIARIO - limite.count);
+    }
+    return json({ ok: true, receta: result.receta, restantes }, 200, request, env);
   },
 };
