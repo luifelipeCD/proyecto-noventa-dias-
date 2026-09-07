@@ -126,9 +126,48 @@ y vuelve a hacer `npm run worker:deploy`.
 
 ---
 
+## Límite de uso (anti-abuso y control de gasto)
+
+Cada dirección IP puede generar **máximo 5 recetas con IA cada 24 horas**.
+
+- El contador se guarda en el **KV namespace `RATE_LIMIT`** (binding en `worker/wrangler.toml`),
+  con clave `rl:<IP>` (la IP viene del header `CF-Connecting-IP`).
+- Solo cuentan las generaciones que **salieron bien** (un fallo de la IA no gasta cupo).
+- Cada respuesta correcta trae `"restantes": N` (cuántas quedan hoy); el frontend lo muestra.
+- Al superar el límite → **HTTP 429** con
+  `{ "ok": false, "limited": true, "error": "Ya generaste el máximo de recetas con IA por hoy (5). Vuelve mañana 🙂" }`.
+  El frontend lo enseña como un aviso tranquilo (ámbar), no como error.
+- La ventana es fija: arranca en la primera generación y el registro caduca solo a las ~24 h.
+- Si el KV no está o falla, el Worker **no bloquea** (fail-open) y lo registra en `wrangler tail`.
+
+Para cambiar el límite, edita `LIMITE_DIARIO` en `worker/index.js` y redespliega.
+
+### Resetear el contador (p. ej. tras pruebas)
+
+Lo más simple: **espera 24 h**, caduca solo.
+
+Para borrarlo ya, necesitas la IP (mírala en `wrangler tail`, campo `cf-connecting-ip`, o con `curl https://api.ipify.org`):
+
+```bash
+# borra el contador de una IP  (¡ojo: --remote, sin él toca el KV local!)
+npx wrangler kv key delete "rl:LA_IP" --namespace-id b0ab7c59a9f7443b80ea5066c6e1a623 --remote
+
+# ver todas las IPs con contador / valores
+npx wrangler kv key list --namespace-id b0ab7c59a9f7443b80ea5066c6e1a623 --remote
+npx wrangler kv key get  "rl:LA_IP" --namespace-id b0ab7c59a9f7443b80ea5066c6e1a623 --remote
+```
+
+O desde el panel: **Cloudflare → Storage & Databases → KV → `RATE_LIMIT`** → borra las claves `rl:*`.
+
+> Ya reseteé el contador que se creó durante las pruebas de esta implementación
+> (5 generaciones OK + 1 bloqueada, todas desde mi IP). El namespace quedó vacío.
+
+---
+
 ## Qué hace el Worker (resumen)
 
 - Solo acepta `POST` con `{ "ingredientes": string[] }` (máx. 20, recorta cada uno a 60 caracteres).
+- **Límite de 5 generaciones OK por IP cada 24 h** (KV `RATE_LIMIT`); la 6ª devuelve 429 sin llamar a la IA.
 - Llama a `claude-haiku-4-5` pidiendo **una** receta alta en proteína en el
   formato exacto del sitio (`nombre`, `categoria`, `dieta`, `kcal`, `proteina`,
   `carbos`, `grasa`, `ingredientes[]`, `pasos[]`), respondiendo **solo JSON**.

@@ -5,6 +5,13 @@ name = "recetario-ia"
 main = "index.js"
 compatibility_date = "2025-09-01"
 
+# --- LÍMITE DE USO ---
+# Contador de generaciones por IP (máx. 5 cada 24 h). El id es el del
+# namespace de KV "RATE_LIMIT" ya creado en Cloudflare.
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "b0ab7c59a9f7443b80ea5066c6e1a623"
+
 # --- API KEY ---
 # La clave de Anthropic NO se pone aquí. Se guarda cifrada como "secret":
 #   npm run worker:secret
