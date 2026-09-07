@@ -130,13 +130,16 @@ async function generarReceta(ingredientes, env) {
     ingredientes.join(', ') +
     '. Dame una receta alta en proteína con esto.';
 
+  // .trim() evita el fallo típico de guardar el secret con un salto de línea al final.
+  const apiKey = String(env.ANTHROPIC_API_KEY || '').trim();
+
   let resp;
   try {
     resp = await fetch(ANTHROPIC_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': env.ANTHROPIC_API_KEY,
+        'x-api-key': apiKey,
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
@@ -151,13 +154,21 @@ async function generarReceta(ingredientes, env) {
   }
 
   if (!resp.ok) {
-    // No exponemos el cuerpo del error de Anthropic (puede incluir detalles internos).
-    return {
-      error:
-        resp.status === 429
-          ? 'El servicio de IA está saturado ahora mismo. Espera unos segundos y vuelve a intentar.'
-          : 'El servicio de IA devolvió un error. Intenta de nuevo más tarde.',
-    };
+    // Registramos el detalle del lado del servidor (visible con `wrangler tail`), nunca al cliente.
+    let detalle = '';
+    try { detalle = (await resp.text()).slice(0, 500); } catch (e) {}
+    console.error('Anthropic error', resp.status, detalle);
+    // No exponemos el cuerpo del error de Anthropic (puede incluir detalles internos ni la clave).
+    let error;
+    if (resp.status === 429) {
+      error = 'El servicio de IA está saturado ahora mismo. Espera unos segundos y vuelve a intentar.';
+    } else if (resp.status === 401 || resp.status === 403) {
+      // Casi siempre: el secret ANTHROPIC_API_KEY es incorrecto o está revocado.
+      error = 'El generador de recetas con IA no está bien configurado. Avisa al administrador del sitio.';
+    } else {
+      error = 'El servicio de IA devolvió un error. Intenta de nuevo más tarde.';
+    }
+    return { error };
   }
 
   let data;

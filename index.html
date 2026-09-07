@@ -998,8 +998,8 @@ let filtroActivo = 'todas';
 let miDia = lsGet(LS.miDia, []);  // array de ids de receta (permite repetidos)
 
 // --- Generador de recetas con IA (backend: Cloudflare Worker, ver README-worker.md) ---
-// Tras hacer deploy del Worker, pega aquí su URL (https://recetario-ia.<tu-subdominio>.workers.dev).
-const IA_WORKER_URL = 'https://TU-WORKER.workers.dev';
+// URL del Worker desplegado. Si algún día cambia el nombre/subdominio, actualízala aquí.
+const IA_WORKER_URL = 'https://recetario-ia.recetario90.workers.dev';
 const IA_SUGERENCIAS = ['pollo','huevo','atún','tofu','yogur griego','avena','lentejas','garbanzos','arroz integral','brócoli','espinaca','camote','queso cottage','proteína en polvo'];
 let favIng = lsGet(LS.favIng, []); // ingredientes que el usuario marcó como favoritos
 let recetasIA = [];                // recetas generadas por IA en esta sesión (no se persisten)
