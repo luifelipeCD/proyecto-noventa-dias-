@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recetario Proteico 90 Días</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232f6b4f'/><text x='50' y='71' font-size='54' text-anchor='middle' fill='white' font-family='Arial,Helvetica,sans-serif' font-weight='bold'>90</text></svg>">
+<style>
+  :root{
+    --bg:#faf7f2;
+    --card:#ffffff;
+    --ink:#20241f;
+    --muted:#6b7268;
+    --accent:#2f6b4f;
+    --accent-dark:#1f4a36;
+    --accent-light:#e6f2ea;
+    --orange:#e0703a;
+    --orange-light:#fdece3;
+    --border:#e7e2d8;
+    --veg:#3f8f4f;
+    --veg-light:#e4f4e2;
+    --vegan:#2f7d68;
+    --vegan-light:#dff2ec;
+    --shadow: 0 8px 24px rgba(31,74,54,0.08);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    line-height:1.5;
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px;}
+
+  /* HERO */
+  .hero{
+    background: linear-gradient(135deg, var(--accent-dark), var(--accent) 70%);
+    color:#fff;
+    padding:60px 20px 60px;
+    text-align:center;
+  }
+  .hero .eyebrow{
+    text-transform:uppercase;
+    letter-spacing:2px;
+    font-size:13px;
+    opacity:0.85;
+    margin-bottom:14px;
+  }
+  .hero h1{
+    font-size:38px;
+    margin:0 0 16px;
+    font-weight:800;
+    line-height:1.15;
+  }
+  .hero p{
+    font-size:17px;
+    max-width:600px;
+    margin:0 auto;
+    opacity:0.92;
+  }
+  .hero .badges{
+    margin-top:28px;
+    display:flex;
+    gap:12px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+  .badge{
+    background:rgba(255,255,255,0.14);
+    border:1px solid rgba(255,255,255,0.3);
+    padding:8px 16px;
+    border-radius:999px;
+    font-size:13px;
+  }
+
+  section{padding:44px 0;}
+  h2{font-size:26px;margin:0 0 8px;color:var(--accent-dark);}
+  h3{font-size:19px;margin:22px 0 10px;color:var(--accent-dark);}
+  .section-sub{color:var(--muted);margin:0 0 24px;font-size:15px;max-width:640px;}
+
+  /* INTRO */
+  .intro-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    box-shadow:var(--shadow);
+    padding:28px;
+    margin-top:14px;
+  }
+  .intro-card p{font-size:15px;color:var(--ink);}
+  .intro-goals{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px;}
+  @media (max-width:640px){.intro-goals{grid-template-columns:1fr;}}
+  .goal{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--muted);}
+  .goal .ck{color:var(--accent);font-weight:800;flex-shrink:0;}
+
+  /* CALCULATOR CARD */
+  .calc-card{
+    background:var(--card);
+    border-radius:20px;
+    box-shadow:var(--shadow);
+    padding:32px;
+    position:relative;
+    border:1px solid var(--border);
+  }
+  @media (max-width:640px){.calc-card{padding:22px;}}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media (max-width:640px){.grid2{grid-template-columns:1fr;}}
+  label{display:block;font-size:13px;font-weight:600;color:var(--accent-dark);margin-bottom:6px;}
+  input[type=number], select{
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    border:1.5px solid var(--border);
+    font-size:15px;
+    background:#fcfbf9;
+    color:var(--ink);
+  }
+  input[type=number]:focus, select:focus{outline:2px solid var(--accent);outline-offset:1px;}
+  .field{margin-bottom:16px;}
+  .gender-toggle{display:flex;gap:10px;}
+  .gender-toggle button{
+    flex:1;
+    padding:12px;
+    border-radius:10px;
+    border:1.5px solid var(--border);
+    background:#fcfbf9;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:600;
+    color:var(--muted);
+  }
+  .gender-toggle button.active{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+  }
+  .btn-primary{
+    margin-top:8px;
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    background:var(--orange);
+    color:#fff;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    transition:transform .1s ease, background .15s ease;
+  }
+  .btn-primary:hover{background:#c85f2e;}
+  .btn-secondary{
+    padding:10px 18px;
+    border-radius:10px;
+    border:1.5px solid var(--accent);
+    background:#fff;
+    color:var(--accent-dark);
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .btn-secondary:hover{background:var(--accent-light);}
+
+  /* RESULTS */
+  #resultado{display:none;margin-top:28px;}
+  .result-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+    margin:20px 0 8px;
+  }
+  @media (max-width:640px){.result-grid{grid-template-columns:1fr 1fr;}}
+  .stat{
+    background:var(--accent-light);
+    border-radius:14px;
+    padding:18px;
+    text-align:center;
+  }
+  .stat .num{font-size:24px;font-weight:800;color:var(--accent-dark);}
+  .stat .label{font-size:12.5px;color:var(--muted);margin-top:4px;}
+  .note{
+    font-size:13px;
+    color:var(--muted);
+    background:var(--orange-light);
+    border-radius:10px;
+    padding:12px 14px;
+    margin-top:14px;
+  }
+
+  /* MEAL PLAN */
+  .plan-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px;}
+  .recipe-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:20px;
+    margin-bottom:14px;
+    box-shadow:var(--shadow);
+    cursor:pointer;
+  }
+  .recipe-card .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+  .recipe-card h4{margin:0 0 4px;font-size:17px;color:var(--ink);}
+  .tag{
+    display:inline-block;
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.4px;
+    color:var(--accent-dark);
+    background:var(--accent-light);
+    padding:3px 9px;
+    border-radius:999px;
+    margin-bottom:6px;
+    margin-right:5px;
+  }
+  .tag.veg{color:#fff;background:var(--veg);}
+  .tag.vegan{color:#fff;background:var(--vegan);}
+  .macros{display:flex;gap:14px;font-size:13px;color:var(--muted);margin-top:8px;flex-wrap:wrap;}
+  .macros b{color:var(--ink);}
+  .add-btn{
+    margin-top:12px;
+    padding:9px 14px;
+    border-radius:10px;
+    border:1.5px solid var(--accent);
+    background:var(--accent-light);
+    color:var(--accent-dark);
+    font-weight:700;
+    font-size:13px;
+    cursor:pointer;
+  }
+  .add-btn:hover{background:var(--accent);color:#fff;}
+  .details{
+    display:none;
+    margin-top:14px;
+    padding-top:14px;
+    border-top:1px dashed var(--border);
+    font-size:14px;
+    color:var(--muted);
+  }
+  .details.open{display:block;}
+  .details h5{margin:0 0 6px;color:var(--accent-dark);font-size:13px;text-transform:uppercase;letter-spacing:.3px;}
+  .details ul{margin:0 0 12px;padding-left:18px;}
+  .details ol{margin:0;padding-left:18px;}
+
+  /* SHOPPING LIST */
+  .shopping{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-left:4px solid var(--orange);
+    border-radius:14px;
+    padding:18px 20px;
+    margin-bottom:18px;
+    box-shadow:var(--shadow);
+  }
+  .shopping h4{margin:0 0 10px;font-size:15px;color:var(--accent-dark);}
+  .shopping ul{margin:0;padding-left:18px;columns:2;font-size:13.5px;color:var(--muted);}
+  @media (max-width:640px){.shopping ul{columns:1;}}
+
+  /* MI DÍA — selección manual */
+  .miday-panel{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+    padding:24px;
+  }
+  .bar-row{margin-bottom:14px;}
+  .bar-row .bar-top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;color:var(--muted);}
+  .bar-row .bar-top b{color:var(--ink);}
+  .bar-track{height:14px;border-radius:999px;background:var(--accent-light);overflow:hidden;}
+  .bar-fill{height:100%;border-radius:999px;background:var(--accent);transition:width .35s ease;width:0;}
+  .bar-fill.over{background:var(--orange);}
+  .miday-list{margin-top:18px;}
+  .miday-item{
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    padding:10px 12px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;font-size:14px;
+  }
+  .miday-item .mi-macros{font-size:12px;color:var(--muted);}
+  .rm-btn{
+    border:none;background:var(--orange-light);color:var(--orange);
+    font-weight:800;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;flex-shrink:0;
+  }
+  .rm-btn:hover{background:var(--orange);color:#fff;}
+
+  /* RECIPE BROWSER FILTERS */
+  .filters{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+  .filter-btn{
+    padding:8px 16px;
+    border-radius:999px;
+    border:1.5px solid var(--border);
+    background:#fff;
+    color:var(--muted);
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .filter-btn.active{background:var(--accent-dark);border-color:var(--accent-dark);color:#fff;}
+
+  /* TRACKER 90 DÍAS */
+  .tracker-panel{
+    background:var(--card);border:1px solid var(--border);border-radius:18px;
+    box-shadow:var(--shadow);padding:24px;
+  }
+  .cal-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:12px;}
+  @media (max-width:640px){.cal-grid{grid-template-columns:repeat(6,1fr);}}
+  .cal-day{
+    aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+    border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:700;
+    color:var(--muted);background:#fcfbf9;cursor:pointer;user-select:none;
+  }
+  .cal-day.done{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .tracker-stat{display:flex;align-items:baseline;gap:8px;margin-top:8px;}
+  .tracker-stat .big{font-size:30px;font-weight:800;color:var(--accent-dark);}
+  .weight-form{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-top:8px;}
+  .weight-form .field{margin-bottom:0;flex:1;min-width:120px;}
+  .weight-form button{flex-shrink:0;}
+  .chart-box{margin-top:16px;border:1px solid var(--border);border-radius:12px;padding:12px;background:#fcfbf9;overflow-x:auto;}
+  .weight-list{list-style:none;padding:0;margin:12px 0 0;font-size:13px;color:var(--muted);}
+  .weight-list li{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed var(--border);}
+
+  footer{
+    background:var(--accent-dark);
+    color:rgba(255,255,255,0.75);
+    text-align:center;
+    padding:32px 20px;
+    font-size:13px;
+  }
+  footer strong{color:#fff;}
+  .disclaimer{max-width:640px;margin:10px auto 0;opacity:0.8;}
+
+  .how-it-works{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  @media (max-width:640px){.how-it-works{grid-template-columns:1fr;}}
+  .step{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;}
+  .step .n{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;margin-bottom:12px;}
+  .step h4{margin:0 0 6px;font-size:16px;}
+  .step p{margin:0;font-size:14px;color:var(--muted);}
+
+  /* Botón flotante "mi día" */
+  .fab{
+    position:fixed;right:16px;bottom:16px;z-index:50;
+    background:var(--orange);color:#fff;border:none;border-radius:999px;
+    padding:14px 20px;font-size:14px;font-weight:800;cursor:pointer;
+    box-shadow:0 10px 24px rgba(224,112,58,0.4);display:none;
+  }
+  .fab.show{display:block;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Recetario digital personalizado</div>
+    <h1>Alta en proteína.<br>Hecho para TU cuerpo. 90 días.</h1>
+    <p>Calcula tu déficit calórico exacto según tu peso, edad, sexo y actividad, arma tu día con más de 60 recetas altas en proteína y sigue tu avance durante los 90 días.</p>
+    <div class="badges">
+      <div class="badge">🧮 Calculadora personalizada</div>
+      <div class="badge">🍗 +60 recetas (incluye veganas)</div>
+      <div class="badge">🛒 Lista de compras</div>
+      <div class="badge">📅 Tracker de 90 días</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- 2. INTRODUCCIÓN -->
+  <section id="intro" style="padding-top:34px;">
+    <h2>El programa de 90 días</h2>
+    <p class="section-sub">Antes de calcular nada, esto es lo que vas a hacer y lo que vas a lograr.</p>
+    <div class="intro-card">
+      <p><strong>La idea es simple:</strong> durante 90 días vas a comer en un déficit calórico moderado pero con <strong>mucha proteína</strong>. El déficit hace que bajes de peso; la proteína alta hace que ese peso que pierdas sea grasa y no músculo, y además te mantiene más saciado, así que el proceso se siente sostenible y no como "pasar hambre".</p>
+      <p><strong>Cómo lo usas cada día:</strong></p>
+      <ol style="color:var(--muted);font-size:14px;margin:0 0 4px;padding-left:20px;">
+        <li>Calculas <strong>una sola vez</strong> tu objetivo de calorías y proteína con la calculadora de abajo.</li>
+        <li>Cada día armas tu menú: puedes generar uno automático o navegar el recetario y pulsar <em>"Agregar a mi día"</em> en las recetas que vas a comer. El resumen te muestra en tiempo real cómo vas frente a tu objetivo.</li>
+        <li>Generas la <strong>lista de compras</strong> con los ingredientes ya consolidados.</li>
+        <li>Marcas el día como completado en el <strong>tracker de 90 días</strong> y registras tu peso una vez por semana.</li>
+      </ol>
+      <div class="intro-goals">
+        <div class="goal"><span class="ck">✓</span><span>Perder grasa de forma constante (aprox. 0.5–1% de tu peso por semana) sin dietas extremas.</span></div>
+        <div class="goal"><span class="ck">✓</span><span>Conservar masa muscular y fuerza gracias a la ingesta alta de proteína.</span></div>
+        <div class="goal"><span class="ck">✓</span><span>Aprender a construir platos saciantes y equilibrados que puedas repetir después de los 90 días.</span></div>
+        <div class="goal"><span class="ck">✓</span><span>Crear el hábito: 90 marcas en el calendario y una gráfica de tu peso bajando.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1 (calc). CALCULADORA -->
+  <section id="calculadora" style="padding-top:6px;">
+    <div class="calc-card" id="calc-card">
+      <h2 style="margin-top:0">Calcula tu plan personalizado</h2>
+      <p class="section-sub">Ingresa tus datos. Todo el cálculo se hace en este mismo documento — no se envía a ningún lado.</p>
+
+      <div class="grid2">
+        <div class="field">
+          <label for="peso">Peso actual (kg)</label>
+          <input type="number" id="peso" placeholder="Ej. 78" min="30" max="300">
+        </div>
+        <div class="field">
+          <label for="altura">Estatura (cm)</label>
+          <input type="number" id="altura" placeholder="Ej. 170" min="120" max="230">
+        </div>
+        <div class="field">
+          <label for="edad">Edad (años)</label>
+          <input type="number" id="edad" placeholder="Ej. 32" min="14" max="90">
+        </div>
+        <div class="field">
+          <label>Sexo</label>
+          <div class="gender-toggle">
+            <button type="button" id="btn-hombre" onclick="setGender('hombre')">Hombre</button>
+            <button type="button" id="btn-mujer" onclick="setGender('mujer')">Mujer</button>
+          </div>
+        </div>
+        <div class="field">
+          <label for="actividad">Nivel de actividad</label>
+          <select id="actividad">
+            <option value="1.2">Sedentario (poco o nada de ejercicio)</option>
+            <option value="1.375" selected>Ligero (ejercicio 1-3 días/semana)</option>
+            <option value="1.55">Moderado (ejercicio 3-5 días/semana)</option>
+            <option value="1.725">Activo (ejercicio intenso 6-7 días/semana)</option>
+            <option value="1.9">Muy activo (trabajo físico + ejercicio)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="intensidad">Intensidad del déficit</label>
+          <select id="intensidad">
+            <option value="0.20">Moderado (-20%) — más sostenible</option>
+            <option value="0.25" selected>Alto (-25%) — recomendado para 90 días</option>
+            <option value="0.30">Muy alto (-30%) — solo con buena adherencia</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="calcular()">Calcular mi plan</button>
+
+      <div id="resultado">
+        <div class="result-grid">
+          <div class="stat"><div class="num" id="r-bmr">--</div><div class="label">TMB (metabolismo basal)</div></div>
+          <div class="stat"><div class="num" id="r-tdee">--</div><div class="label">Gasto diario (TDEE)</div></div>
+          <div class="stat"><div class="num" id="r-target">--</div><div class="label">Calorías objetivo/día</div></div>
+          <div class="stat"><div class="num" id="r-protein">--</div><div class="label">Proteína objetivo (g/día)</div></div>
+          <div class="stat"><div class="num" id="r-carbs">--</div><div class="label">Carbohidratos (g/día)</div></div>
+          <div class="stat"><div class="num" id="r-fat">--</div><div class="label">Grasas (g/día)</div></div>
+        </div>
+        <div class="note" id="r-note"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="como-funciona">
+    <h2>Cómo funciona el plan</h2>
+    <p class="section-sub">Un sistema simple para que las recetas se ajusten a ti, no al revés.</p>
+    <div class="how-it-works">
+      <div class="step"><div class="n">1</div><h4>Calculas tu objetivo</h4><p>La calculadora usa tu peso, altura, edad, sexo y actividad para estimar cuántas calorías y cuánta proteína necesitas para bajar de peso de forma saludable.</p></div>
+      <div class="step"><div class="n">2</div><h4>Armas tu día</h4><p>Genera un menú automático de la base de más de 60 recetas, o navega el recetario y agrega manualmente lo que vas a comer viendo el total en tiempo real.</p></div>
+      <div class="step"><div class="n">3</div><h4>Compras y haces seguimiento</h4><p>Descarga tu lista de compras consolidada, marca cada día en el calendario de 90 días y registra tu peso semanal en la gráfica.</p></div>
+    </div>
+  </section>
+
+  <!-- 5. MI DÍA (selección manual) -->
+  <section id="mi-dia">
+    <h2>Arma tu día</h2>
+    <p class="section-sub">Agrega recetas desde el recetario de abajo con el botón <em>"➕ Agregar a mi día"</em>. Aquí ves el total acumulado comparado con tu objetivo.</p>
+    <div class="miday-panel">
+      <div id="mi-dia-bars"></div>
+      <div id="mi-dia-list" class="miday-list"></div>
+      <div id="mi-dia-shopping"></div>
+    </div>
+  </section>
+
+  <!-- 3 + menú automático -->
+  <section id="plan-dia">
+    <div class="plan-header">
+      <div>
+        <h2 style="margin-bottom:2px;">Menú del día automático</h2>
+        <p class="section-sub" style="margin-bottom:0;">Calcula tu plan arriba primero para generar un menú ajustado a ti.</p>
+      </div>
+      <button class="btn-secondary" onclick="generarMenu()">🔄 Generar otro menú</button>
+    </div>
+    <div id="menu-container"><p style="color:var(--muted);">Aún no has calculado tu plan. Sube arriba y llena tus datos ⬆️</p></div>
+  </section>
+
+  <!-- 4. TRACKER 90 DÍAS -->
+  <section id="tracker">
+    <h2>Tu progreso de 90 días</h2>
+    <p class="section-sub">Se guarda automáticamente en este navegador (localStorage). Si borras los datos del navegador, se reinicia.</p>
+    <div class="tracker-panel">
+      <h3 style="margin-top:0;">Calendario de días completados</h3>
+      <div class="tracker-stat"><span class="big" id="dias-count">0</span><span>de 90 días completados</span></div>
+      <div class="bar-track" style="margin-top:8px;"><div class="bar-fill" id="dias-bar"></div></div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <button class="btn-secondary" style="margin-top:14px;" onclick="resetTracker()">Reiniciar tracker</button>
+
+      <h3>Peso semanal</h3>
+      <div class="weight-form">
+        <div class="field">
+          <label for="w-semana">Semana (1–13)</label>
+          <input type="number" id="w-semana" min="1" max="13" placeholder="Ej. 1">
+        </div>
+        <div class="field">
+          <label for="w-peso">Peso (kg)</label>
+          <input type="number" id="w-peso" min="30" max="300" step="0.1" placeholder="Ej. 77.5">
+        </div>
+        <button class="btn-secondary" onclick="agregarPeso()">Guardar peso</button>
+      </div>
+      <div class="chart-box"><div id="weight-chart"></div></div>
+      <ul class="weight-list" id="weight-list"></ul>
+    </div>
+  </section>
+
+  <!-- 1. RECETARIO -->
+  <section id="recetario">
+    <h2>Recetario completo</h2>
+    <p class="section-sub">Más de 60 recetas altas en proteína, con opciones <span class="tag veg">Vegetariana</span> y <span class="tag vegan">Vegana</span> etiquetadas. Toca una tarjeta para ver ingredientes y preparación, o pulsa "Agregar a mi día".</p>
+    <div class="filters" id="filtros"></div>
+    <div id="lista-recetas"></div>
+  </section>
+</div>
+
+<button class="fab" id="fab" onclick="document.getElementById('mi-dia').scrollIntoView({behavior:'smooth'})">🍽️ Mi día (<span id="fab-count">0</span>)</button>
+
+<footer>
+  <div><strong>Recetario Proteico 90 Días</strong> — hecho para acompañarte en tu proceso.</div>
+  <p class="disclaimer">Este material tiene fines educativos y no reemplaza la consulta con un médico o nutricionista, especialmente si tienes alguna condición de salud. Los cálculos de calorías y proteína son estimaciones generales.</p>
+</footer>
+
+<script>
+// ============================================================
+// Base de recetas altas en proteína — Recetario 90 Días
+// Cada receta: id, nombre, categoria (desayuno | comida | snack),
+//   dieta ('omnivora' | 'vegetariana' | 'vegana'),
+//   kcal, proteina(g), carbos(g), grasa(g), ingredientes[], pasos[]
+// ============================================================
+
+const RECETAS = [
+  // ---------- DESAYUNOS ----------
+  {id:1, nombre:"Tortilla de claras con espinaca y queso bajo en grasa", categoria:"desayuno", dieta:"vegetariana", kcal:220, proteina:28, carbos:6, grasa:8,
+    ingredientes:["4 claras de huevo + 1 huevo entero","1 taza de espinaca fresca","20 g de queso bajo en grasa rallado","Sal, pimienta y ajo en polvo al gusto","Spray de aceite"],
+    pasos:["Bate los huevos y las claras con sal y pimienta.","Saltea la espinaca en un sartén antiadherente con el spray de aceite hasta que se marchite.","Agrega la mezcla de huevo, cocina a fuego medio-bajo y añade el queso antes de doblar la tortilla."]},
+  {id:2, nombre:"Yogur griego con proteína, moras y chía", categoria:"desayuno", dieta:"vegetariana", kcal:250, proteina:24, carbos:20, grasa:7,
+    ingredientes:["200 g de yogur griego natural bajo en grasa","1/2 taza de moras (fresas, arándanos o mix)","1 cucharada de semillas de chía","1 scoop de proteína en polvo (opcional)","Canela al gusto"],
+    pasos:["Mezcla el yogur con el scoop de proteína hasta integrar.","Agrega las semillas de chía y revuelve.","Corona con las moras y canela al gusto."]},
+  {id:3, nombre:"Avena proteica con canela y manzana", categoria:"desayuno", dieta:"vegetariana", kcal:300, proteina:22, carbos:40, grasa:6,
+    ingredientes:["1/2 taza de avena en hojuelas","1 scoop de proteína en polvo sabor vainilla","1/2 manzana picada","Canela al gusto","200 ml de agua o leche descremada"],
+    pasos:["Cocina la avena con el agua o leche a fuego medio por 5 minutos.","Retira del fuego y deja entibiar un poco antes de mezclar el scoop de proteína (para que no se cocine el polvo).","Agrega la manzana picada y canela."]},
+  {id:4, nombre:"Batido de proteína con plátano y mantequilla de maní light", categoria:"desayuno", dieta:"vegetariana", kcal:280, proteina:30, carbos:25, grasa:8,
+    ingredientes:["1 scoop de proteína en polvo","1/2 plátano","1 cucharadita de mantequilla de maní light","250 ml de leche descremada o bebida vegetal sin azúcar","Hielo al gusto"],
+    pasos:["Coloca todos los ingredientes en la licuadora.","Licúa hasta obtener una textura homogénea.","Sirve frío."]},
+  {id:5, nombre:"Tostada integral con huevo pochado y aguacate", categoria:"desayuno", dieta:"vegetariana", kcal:260, proteina:18, carbos:22, grasa:12,
+    ingredientes:["1 rebanada de pan integral","1 huevo","1/4 de aguacate","Sal, limón y chile en hojuelas"],
+    pasos:["Pocha el huevo en agua hirviendo con un chorrito de vinagre por 3 minutos.","Tuesta el pan y machaca el aguacate encima con sal y limón.","Corona con el huevo pochado y chile en hojuelas."]},
+  {id:6, nombre:"Bowl de requesón con piña y semillas de chía", categoria:"desayuno", dieta:"vegetariana", kcal:210, proteina:26, carbos:18, grasa:5,
+    ingredientes:["200 g de requesón (cottage cheese) bajo en grasa","1/2 taza de piña picada","1 cucharadita de semillas de chía","Un toque de vainilla"],
+    pasos:["Mezcla el requesón con la vainilla.","Agrega la piña picada encima.","Espolvorea las semillas de chía."]},
+  {id:7, nombre:"Panqueques proteicos de avena y claras", categoria:"desayuno", dieta:"vegetariana", kcal:270, proteina:25, carbos:28, grasa:6,
+    ingredientes:["1/2 taza de avena molida","3 claras de huevo","1 scoop de proteína en polvo","1/2 cucharadita de polvo de hornear","Canela al gusto"],
+    pasos:["Licúa todos los ingredientes hasta obtener una mezcla homogénea.","Cocina pequeñas porciones en sartén antiadherente a fuego medio-bajo, 2 minutos por lado.","Sirve con fruta picada si gustas."]},
+  {id:8, nombre:"Huevos revueltos con champiñones y pavo", categoria:"desayuno", dieta:"omnivora", kcal:240, proteina:27, carbos:5, grasa:12,
+    ingredientes:["2 huevos enteros + 2 claras","50 g de pechuga de pavo en cubos","1/2 taza de champiñones fileteados","Sal, pimienta y perejil"],
+    pasos:["Saltea los champiñones y el pavo en sartén antiadherente hasta dorar.","Agrega los huevos batidos y revuelve a fuego medio-bajo.","Sazona y sirve con perejil fresco."]},
+  {id:33, nombre:"Tofu revuelto con cúrcuma y espinaca", categoria:"desayuno", dieta:"vegana", kcal:230, proteina:22, carbos:8, grasa:12,
+    ingredientes:["200 g de tofu firme desmenuzado","1 taza de espinaca","1/2 cucharadita de cúrcuma","Levadura nutricional, sal negra (kala namak) y pimienta","Spray de aceite"],
+    pasos:["Desmenuza el tofu con las manos y sazónalo con cúrcuma, sal y pimienta.","Saltéalo en sartén antiadherente 4-5 minutos.","Agrega la espinaca y la levadura nutricional, cocina 2 minutos más."]},
+  {id:34, nombre:"Pudín de chía con leche de soya y frutos rojos", categoria:"desayuno", dieta:"vegana", kcal:250, proteina:16, carbos:26, grasa:10,
+    ingredientes:["3 cucharadas de semillas de chía","250 ml de leche de soya sin azúcar","1/2 scoop de proteína vegetal de vainilla","1/2 taza de frutos rojos","Canela"],
+    pasos:["Mezcla la chía con la leche de soya y la proteína, revuelve bien.","Refrigera al menos 4 horas o toda la noche.","Sirve con los frutos rojos y canela encima."]},
+  {id:35, nombre:"Pan integral con hummus, tomate y semillas de girasol", categoria:"desayuno", dieta:"vegana", kcal:280, proteina:14, carbos:34, grasa:11,
+    ingredientes:["2 rebanadas de pan integral","4 cucharadas de hummus","1 tomate en rodajas","1 cucharada de semillas de girasol","Sal y pimienta"],
+    pasos:["Tuesta el pan.","Unta el hummus generosamente.","Coloca el tomate, las semillas y sazona."]},
+  {id:36, nombre:"Smoothie verde con proteína vegetal, espinaca y piña", categoria:"desayuno", dieta:"vegana", kcal:260, proteina:26, carbos:30, grasa:5,
+    ingredientes:["1 scoop de proteína vegetal","1 taza de espinaca","1/2 taza de piña congelada","250 ml de bebida vegetal sin azúcar","Hielo"],
+    pasos:["Coloca todo en la licuadora.","Licúa hasta que quede cremoso.","Sirve de inmediato."]},
+  {id:37, nombre:"Bowl de yogur de soya con granola sin azúcar y plátano", categoria:"desayuno", dieta:"vegana", kcal:290, proteina:18, carbos:38, grasa:8,
+    ingredientes:["200 g de yogur de soya natural","1/3 taza de granola sin azúcar","1/2 plátano en rodajas","1 cucharadita de semillas de lino molidas"],
+    pasos:["Sirve el yogur de soya en un bowl.","Agrega la granola y el plátano.","Espolvorea las semillas de lino."]},
+  {id:38, nombre:"Omelette de harina de garbanzo con pimientos", categoria:"desayuno", dieta:"vegana", kcal:250, proteina:16, carbos:28, grasa:9,
+    ingredientes:["1/2 taza de harina de garbanzo","1/2 taza de agua","1/4 taza de pimiento picado","Cebollín, cúrcuma, sal y pimienta","Spray de aceite"],
+    pasos:["Bate la harina de garbanzo con el agua y las especias hasta que no queden grumos.","Vierte en sartén antiadherente caliente y reparte el pimiento encima.","Cocina 3-4 minutos por lado hasta que cuaje."]},
+  {id:39, nombre:"Requesón batido con cacao y fresas", categoria:"desayuno", dieta:"vegetariana", kcal:220, proteina:25, carbos:16, grasa:5,
+    ingredientes:["200 g de requesón bajo en grasa","1 cucharadita de cacao en polvo sin azúcar","1/2 taza de fresas","Edulcorante al gusto"],
+    pasos:["Bate el requesón con el cacao y el edulcorante hasta que quede cremoso.","Corta las fresas.","Sirve el requesón con las fresas encima."]},
+  {id:40, nombre:"Huevos al horno con frijoles y salsa (shakshuka de frijol)", categoria:"desayuno", dieta:"vegetariana", kcal:300, proteina:22, carbos:26, grasa:12,
+    ingredientes:["2 huevos","1/2 taza de frijoles cocidos","1/2 taza de salsa de tomate natural","Cebolla, ajo, comino y pimentón","Cilantro"],
+    pasos:["Sofríe cebolla y ajo, agrega la salsa, los frijoles y las especias.","Haz dos huecos y casca los huevos dentro.","Tapa y cocina 6-8 minutos hasta que la clara cuaje. Sirve con cilantro."]},
+
+  // ---------- COMIDAS (almuerzo/cena) ----------
+  {id:9, nombre:"Pechuga de pollo a la plancha con brócoli y camote", categoria:"comida", dieta:"omnivora", kcal:420, proteina:42, carbos:35, grasa:10,
+    ingredientes:["150 g de pechuga de pollo","1 taza de brócoli al vapor","1 camote mediano horneado","Ajo, limón, sal y pimienta"],
+    pasos:["Sazona el pollo con ajo, sal y pimienta, cocina a la plancha 5-6 min por lado.","Hornea el camote en cubos a 200°C por 25 minutos.","Sirve con el brócoli al vapor y un toque de limón."]},
+  {id:10, nombre:"Salmón al horno con espárragos y quinoa", categoria:"comida", dieta:"omnivora", kcal:460, proteina:38, carbos:30, grasa:18,
+    ingredientes:["150 g de filete de salmón","1 taza de espárragos","1/2 taza de quinoa cocida","Limón, eneldo, sal y pimienta"],
+    pasos:["Hornea el salmón con limón y eneldo a 200°C por 15 minutos.","Saltea o hornea los espárragos con sal y un toque de aceite.","Sirve todo sobre la quinoa cocida."]},
+  {id:11, nombre:"Ensalada de atún con garbanzos y limón", categoria:"comida", dieta:"omnivora", kcal:380, proteina:34, carbos:28, grasa:12,
+    ingredientes:["1 lata de atún en agua","1/2 taza de garbanzos cocidos","Lechuga, tomate y pepino","Limón, aceite de oliva (poco) y sal"],
+    pasos:["Escurre el atún y mézclalo con los garbanzos.","Agrega las verduras picadas.","Aliña con limón, un chorrito de aceite de oliva y sal."]},
+  {id:12, nombre:"Lomo de res magro con ensalada de tomate y cebolla", categoria:"comida", dieta:"omnivora", kcal:440, proteina:40, carbos:15, grasa:20,
+    ingredientes:["150 g de lomo de res magro","Tomate y cebolla morada en rodajas","Orégano, limón, sal y pimienta"],
+    pasos:["Sazona el lomo y cocina a la plancha al término deseado.","Prepara la ensalada de tomate y cebolla con orégano, limón y sal.","Sirve juntos, dejando reposar la carne 3 minutos antes de cortar."]},
+  {id:13, nombre:"Pechuga de pavo rellena de espinaca y champiñones", categoria:"comida", dieta:"omnivora", kcal:400, proteina:39, carbos:12, grasa:16,
+    ingredientes:["150 g de pechuga de pavo","1/2 taza de espinaca salteada","1/4 taza de champiñones picados","Ajo y especias al gusto"],
+    pasos:["Abre la pechuga en mariposa y rellena con la espinaca y champiñones salteados.","Cierra con palillos y cocina en sartén tapado a fuego medio, 6-7 min por lado.","Retira los palillos antes de servir."]},
+  {id:14, nombre:"Camarones salteados con vegetales y arroz integral", categoria:"comida", dieta:"omnivora", kcal:410, proteina:32, carbos:45, grasa:8,
+    ingredientes:["180 g de camarones pelados","1 taza de vegetales mixtos (pimiento, cebolla, zanahoria)","1/2 taza de arroz integral cocido","Salsa de soya baja en sodio, ajo y jengibre"],
+    pasos:["Saltea el ajo y jengibre, agrega los camarones hasta que estén rosados.","Añade los vegetales y saltea 3-4 minutos más.","Sirve sobre el arroz integral con un chorrito de salsa de soya."]},
+  {id:15, nombre:"Tofu marinado a la plancha con vegetales asados y arroz integral", categoria:"comida", dieta:"vegana", kcal:380, proteina:24, carbos:42, grasa:12,
+    ingredientes:["200 g de tofu firme","Vegetales al gusto (calabacín, pimiento, cebolla)","1/2 taza de arroz integral cocido","Salsa de soya, ajo y un toque de aceite de sésamo"],
+    pasos:["Marina el tofu en cubos con salsa de soya y ajo por 10 minutos.","Cocina el tofu y los vegetales en sartén o al horno hasta dorar.","Sirve sobre el arroz integral."]},
+  {id:16, nombre:"Chili de pavo molido con frijoles negros", categoria:"comida", dieta:"omnivora", kcal:430, proteina:36, carbos:38, grasa:12,
+    ingredientes:["150 g de pavo molido","1/2 taza de frijoles negros cocidos","Tomate triturado, cebolla, ajo","Comino, pimentón y chile al gusto"],
+    pasos:["Dora el pavo molido con cebolla y ajo.","Agrega el tomate triturado, los frijoles y las especias.","Cocina a fuego medio 15-20 minutos hasta espesar."]},
+  {id:17, nombre:"Merluza al horno con puré de coliflor", categoria:"comida", dieta:"omnivora", kcal:350, proteina:33, carbos:18, grasa:10,
+    ingredientes:["180 g de filete de merluza (o pescado blanco similar)","1 taza de coliflor","Ajo, limón, sal y pimienta","Un toque de leche descremada"],
+    pasos:["Hornea el pescado con limón, ajo, sal y pimienta a 200°C por 15 min.","Cocina la coliflor al vapor y hazla puré con un toque de leche descremada, sal y pimienta.","Sirve el pescado sobre el puré."]},
+  {id:18, nombre:"Wrap integral de pollo con yogur en lugar de mayonesa", categoria:"comida", dieta:"omnivora", kcal:390, proteina:35, carbos:32, grasa:10,
+    ingredientes:["1 tortilla integral grande","120 g de pechuga de pollo cocida y desmenuzada","Lechuga, tomate, pepino","2 cucharadas de yogur griego natural + mostaza"],
+    pasos:["Mezcla el yogur griego con la mostaza para hacer el aderezo.","Rellena la tortilla con el pollo, vegetales y el aderezo.","Enrolla y corta a la mitad."]},
+  {id:19, nombre:"Lentejas guisadas con pechuga de pollo desmenuzada", categoria:"comida", dieta:"omnivora", kcal:420, proteina:34, carbos:40, grasa:10,
+    ingredientes:["1/2 taza de lentejas cocidas","100 g de pechuga de pollo desmenuzada","Cebolla, ajo, tomate, zanahoria","Comino y pimentón al gusto"],
+    pasos:["Sofríe la cebolla, ajo y zanahoria.","Agrega el tomate, las lentejas y un poco de agua o caldo, cocina 10 minutos.","Incorpora el pollo desmenuzado y cocina 5 minutos más."]},
+  {id:20, nombre:"Bowl de quinoa con garbanzos, pepino y feta bajo en grasa", categoria:"comida", dieta:"vegetariana", kcal:400, proteina:22, carbos:45, grasa:12,
+    ingredientes:["1/2 taza de quinoa cocida","1/2 taza de garbanzos cocidos","Pepino y tomate picados","30 g de queso feta bajo en grasa","Limón y orégano"],
+    pasos:["Mezcla la quinoa con los garbanzos y vegetales picados.","Agrega el queso feta desmenuzado.","Aliña con limón, orégano y una pizca de sal."]},
+  {id:21, nombre:"Pescado blanco al vapor con vegetales al limón", categoria:"comida", dieta:"omnivora", kcal:320, proteina:30, carbos:20, grasa:8,
+    ingredientes:["180 g de pescado blanco (tilapia o similar)","Vegetales mixtos al vapor","Limón, eneldo, sal y pimienta"],
+    pasos:["Cocina el pescado al vapor con rodajas de limón encima, 10-12 minutos.","Cocina los vegetales al vapor por separado.","Sirve juntos con un toque de eneldo fresco."]},
+  {id:22, nombre:"Albóndigas de pavo en salsa de tomate con zoodles", categoria:"comida", dieta:"omnivora", kcal:380, proteina:33, carbos:18, grasa:14,
+    ingredientes:["150 g de pavo molido","1 huevo (para varias porciones)","Ajo, perejil, sal y pimienta","Salsa de tomate natural","1 calabacín en espiral (zoodles)"],
+    pasos:["Mezcla el pavo molido con ajo, perejil, sal y un poco de huevo, forma las albóndigas.","Cocina las albóndigas en la salsa de tomate a fuego medio 15 minutos.","Saltea los zoodles 2 minutos y sirve con las albóndigas encima."]},
+  {id:23, nombre:"Ensalada César light con pollo (aderezo de yogur)", categoria:"comida", dieta:"omnivora", kcal:360, proteina:36, carbos:15, grasa:14,
+    ingredientes:["150 g de pechuga de pollo a la plancha","Lechuga romana","2 cucharadas de yogur griego natural","Ajo, limón, mostaza, queso parmesano (poco), sal y pimienta"],
+    pasos:["Prepara el aderezo mezclando yogur, ajo, limón, mostaza y sal.","Corta el pollo a la plancha en tiras.","Mezcla la lechuga con el aderezo y corona con el pollo y un poco de parmesano."]},
+  {id:24, nombre:"Curry de pollo bajo en grasa con arroz integral", categoria:"comida", dieta:"omnivora", kcal:430, proteina:35, carbos:40, grasa:10,
+    ingredientes:["150 g de pechuga de pollo en cubos","Leche de coco light","Curry en polvo, cúrcuma, ajo y cebolla","1/2 taza de arroz integral cocido"],
+    pasos:["Sofríe la cebolla y el ajo, agrega el pollo hasta sellar.","Añade las especias y la leche de coco light, cocina 12-15 minutos.","Sirve sobre el arroz integral."]},
+  {id:41, nombre:"Curry de garbanzos y espinaca con arroz integral", categoria:"comida", dieta:"vegana", kcal:430, proteina:20, carbos:58, grasa:12,
+    ingredientes:["1 taza de garbanzos cocidos","2 tazas de espinaca","1/2 taza de tomate triturado","Leche de coco light, curry, ajo y cebolla","1/2 taza de arroz integral cocido"],
+    pasos:["Sofríe cebolla y ajo, añade el curry.","Agrega tomate, garbanzos y leche de coco, cocina 10 minutos.","Incorpora la espinaca hasta que se marchite y sirve con el arroz."]},
+  {id:42, nombre:"Bowl de lentejas rojas con verduras asadas", categoria:"comida", dieta:"vegana", kcal:400, proteina:22, carbos:52, grasa:9,
+    ingredientes:["3/4 taza de lentejas rojas cocidas","Calabacín, pimiento y cebolla en cubos","Comino, pimentón, ajo","Limón y perejil"],
+    pasos:["Asa las verduras a 200°C por 20 minutos con especias.","Calienta las lentejas con un poco de agua y comino.","Sirve las lentejas con las verduras encima, limón y perejil."]},
+  {id:43, nombre:"Chili sin carne de frijol y soya texturizada", categoria:"comida", dieta:"vegana", kcal:410, proteina:26, carbos:50, grasa:8,
+    ingredientes:["1/2 taza de soya texturizada hidratada","1/2 taza de frijoles rojos cocidos","Tomate triturado, cebolla, ajo, pimiento","Comino, pimentón, chile y orégano"],
+    pasos:["Sofríe cebolla, ajo y pimiento.","Agrega la soya texturizada, los frijoles, el tomate y las especias.","Cocina a fuego medio 20 minutos hasta espesar."]},
+  {id:44, nombre:"Tacos de tempeh con repollo morado y salsa", categoria:"comida", dieta:"vegana", kcal:390, proteina:25, carbos:40, grasa:14,
+    ingredientes:["150 g de tempeh en tiras","2 tortillas de maíz","1 taza de repollo morado rallado","Salsa de tomate picante, limón y cilantro","Salsa de soya y comino para marinar"],
+    pasos:["Marina el tempeh con salsa de soya y comino 10 minutos, luego dóralo en sartén.","Calienta las tortillas.","Arma los tacos con el tempeh, el repollo, la salsa, limón y cilantro."]},
+  {id:45, nombre:"Ensalada de quinoa, edamame y aguacate", categoria:"comida", dieta:"vegana", kcal:420, proteina:20, carbos:44, grasa:18,
+    ingredientes:["3/4 taza de quinoa cocida","1/2 taza de edamame pelado","1/4 de aguacate en cubos","Pepino, tomate cherry, cebollín","Limón, salsa de soya y sésamo"],
+    pasos:["Mezcla la quinoa fría con el edamame y las verduras.","Agrega el aguacate con cuidado.","Aliña con limón, salsa de soya y sésamo."]},
+  {id:46, nombre:"Pasta integral con lentejas a la boloñesa", categoria:"comida", dieta:"vegana", kcal:450, proteina:24, carbos:70, grasa:8,
+    ingredientes:["70 g de pasta integral (en seco)","1/2 taza de lentejas cocidas","Tomate triturado, cebolla, ajo, zanahoria","Orégano, albahaca y pimienta"],
+    pasos:["Cocina la pasta al dente.","Sofríe cebolla, ajo y zanahoria, agrega tomate y lentejas, cocina 12 minutos.","Mezcla la salsa con la pasta y sirve con hierbas."]},
+  {id:47, nombre:"Buddha bowl de tofu al horno, brócoli y camote", categoria:"comida", dieta:"vegana", kcal:430, proteina:26, carbos:44, grasa:16,
+    ingredientes:["200 g de tofu firme en cubos","1 taza de brócoli","1 camote pequeño en cubos","Salsa de soya, ajo, pimentón","Tahini y limón para el aderezo"],
+    pasos:["Hornea el tofu y el camote a 200°C por 25 minutos, y el brócoli los últimos 12.","Mezcla tahini con limón y agua para el aderezo.","Sirve todo en un bowl con el aderezo por encima."]},
+  {id:48, nombre:"Hamburguesa de frijol negro con ensalada", categoria:"comida", dieta:"vegana", kcal:400, proteina:20, carbos:52, grasa:12,
+    ingredientes:["1 taza de frijoles negros","3 cucharadas de avena molida","Cebolla, ajo, comino y pimentón","1 pan integral","Ensalada verde de acompañamiento"],
+    pasos:["Machaca los frijoles con la avena y las especias, forma una hamburguesa.","Dórala en sartén 4 minutos por lado.","Sirve en el pan integral con la ensalada."]},
+  {id:49, nombre:"Salteado de tofu y vegetales con fideos soba", categoria:"comida", dieta:"vegana", kcal:420, proteina:24, carbos:56, grasa:10,
+    ingredientes:["150 g de tofu firme","60 g de fideos soba (en seco)","Brócoli, zanahoria y pimiento","Salsa de soya, jengibre, ajo y sésamo"],
+    pasos:["Cocina los fideos soba y reserva.","Saltea el tofu hasta dorar, agrega los vegetales, ajo y jengibre.","Incorpora los fideos y la salsa de soya, saltea 2 minutos y termina con sésamo."]},
+  {id:50, nombre:"Sopa espesa de lentejas con verduras", categoria:"comida", dieta:"vegana", kcal:340, proteina:20, carbos:48, grasa:5,
+    ingredientes:["3/4 taza de lentejas","Zanahoria, apio, cebolla y ajo","1 tomate","Comino, laurel, sal y pimienta","Caldo de verduras"],
+    pasos:["Sofríe la cebolla, el ajo, la zanahoria y el apio.","Agrega las lentejas, el tomate, el laurel y el caldo.","Cocina 30-35 minutos hasta que las lentejas estén tiernas."]},
+  {id:51, nombre:"Berenjena rellena de quinoa y garbanzos", categoria:"comida", dieta:"vegana", kcal:380, proteina:18, carbos:46, grasa:12,
+    ingredientes:["1 berenjena mediana","1/2 taza de quinoa cocida","1/2 taza de garbanzos","Tomate, cebolla, ajo, comino","Perejil y limón"],
+    pasos:["Hornea la berenjena partida a la mitad 20 minutos y retira parte de la pulpa.","Saltea la pulpa con cebolla, ajo, tomate, garbanzos y quinoa.","Rellena la berenjena y hornea 12 minutos más."]},
+  {id:52, nombre:"Wrap de falafel al horno con salsa de yogur de soya", categoria:"comida", dieta:"vegana", kcal:430, proteina:19, carbos:52, grasa:16,
+    ingredientes:["1 taza de garbanzos","Ajo, cebolla, perejil, comino y harina de garbanzo","1 tortilla integral","Lechuga, tomate y pepino","Yogur de soya con limón y pepino rallado"],
+    pasos:["Procesa los garbanzos con ajo, cebolla, perejil y especias, forma bolitas y hornéalas 20 minutos a 200°C.","Prepara la salsa mezclando yogur de soya, limón y pepino.","Arma el wrap con los falafel, las verduras y la salsa."]},
+  {id:53, nombre:"Pollo al curry rojo con verduras", categoria:"comida", dieta:"omnivora", kcal:420, proteina:37, carbos:24, grasa:18,
+    ingredientes:["150 g de pechuga de pollo en cubos","Pasta de curry rojo","Leche de coco light","Pimiento, calabacín y cebolla","Cilantro y limón"],
+    pasos:["Sella el pollo en la sartén.","Agrega la pasta de curry, la leche de coco y las verduras.","Cocina 12 minutos y sirve con cilantro y limón."]},
+  {id:54, nombre:"Pescado blanco a la plancha con ensalada tibia de garbanzo", categoria:"comida", dieta:"omnivora", kcal:390, proteina:38, carbos:30, grasa:12,
+    ingredientes:["180 g de pescado blanco","3/4 taza de garbanzos cocidos","Espinaca, tomate cherry y cebolla","Limón, comino y aceite de oliva (poco)"],
+    pasos:["Cocina el pescado a la plancha 3-4 minutos por lado.","Saltea los garbanzos con cebolla, tomate y comino, agrega la espinaca al final.","Sirve el pescado sobre la ensalada tibia con limón."]},
+  {id:55, nombre:"Atún sellado con ajonjolí y vegetales salteados", categoria:"comida", dieta:"omnivora", kcal:400, proteina:42, carbos:18, grasa:16,
+    ingredientes:["150 g de lomo de atún fresco","Ajonjolí","Bok choy o acelga, zanahoria y cebollín","Salsa de soya, jengibre y ajo"],
+    pasos:["Cubre el atún con ajonjolí y séllalo 1 minuto por lado (interior rosado).","Saltea los vegetales con jengibre, ajo y salsa de soya.","Corta el atún en láminas y sirve sobre los vegetales."]},
+  {id:56, nombre:"Pechuga de pollo BBQ al horno con elote y ensalada", categoria:"comida", dieta:"omnivora", kcal:440, proteina:44, carbos:34, grasa:12,
+    ingredientes:["160 g de pechuga de pollo","2 cucharadas de salsa BBQ sin azúcar añadida","1 elote (mazorca)","Ensalada de repollo y zanahoria con limón"],
+    pasos:["Unta el pollo con la salsa BBQ y hornéalo a 200°C por 22 minutos.","Cocina el elote al vapor o hervido.","Sirve con la ensalada de repollo aliñada con limón."]},
+
+  // ---------- SNACKS ----------
+  {id:25, nombre:"Palitos de zanahoria y pepino con hummus", categoria:"snack", dieta:"vegana", kcal:140, proteina:6, carbos:16, grasa:6,
+    ingredientes:["1 zanahoria en bastones","1/2 pepino en bastones","3 cucharadas de hummus"],
+    pasos:["Corta las verduras en bastones.","Sirve con el hummus para acompañar."]},
+  {id:26, nombre:"Yogur griego natural con nueces", categoria:"snack", dieta:"vegetariana", kcal:160, proteina:15, carbos:8, grasa:8,
+    ingredientes:["150 g de yogur griego natural","6 mitades de nuez picadas"],
+    pasos:["Sirve el yogur en un bowl.","Agrega las nueces picadas encima."]},
+  {id:27, nombre:"Claras de huevo duras", categoria:"snack", dieta:"vegetariana", kcal:70, proteina:14, carbos:1, grasa:0,
+    ingredientes:["4 claras de huevo duro (2 huevos)","Sal y pimienta al gusto"],
+    pasos:["Hierve los huevos 9-10 minutos.","Pela, separa las claras y sazona al gusto."]},
+  {id:28, nombre:"Batido proteico simple", categoria:"snack", dieta:"vegetariana", kcal:130, proteina:24, carbos:5, grasa:1,
+    ingredientes:["1 scoop de proteína en polvo","250 ml de agua fría","Hielo al gusto"],
+    pasos:["Licúa o agita bien el scoop con el agua y hielo.","Sirve inmediatamente."]},
+  {id:29, nombre:"Requesón con canela y un toque de miel", categoria:"snack", dieta:"vegetariana", kcal:150, proteina:18, carbos:12, grasa:3,
+    ingredientes:["150 g de requesón bajo en grasa","Canela al gusto","1 cucharadita de miel"],
+    pasos:["Mezcla el requesón con la canela.","Agrega la miel por encima."]},
+  {id:30, nombre:"Edamame al vapor con sal", categoria:"snack", dieta:"vegana", kcal:120, proteina:11, carbos:10, grasa:5,
+    ingredientes:["1 taza de edamame con vaina","Sal marina al gusto"],
+    pasos:["Cocina el edamame al vapor o hervido 5 minutos.","Escurre y espolvorea sal marina."]},
+  {id:31, nombre:"Rodajas de manzana con mantequilla de maní light", categoria:"snack", dieta:"vegana", kcal:170, proteina:5, carbos:20, grasa:8,
+    ingredientes:["1 manzana en rodajas","1 cucharada de mantequilla de maní light"],
+    pasos:["Corta la manzana en rodajas.","Sirve con la mantequilla de maní para acompañar."]},
+  {id:32, nombre:"Atún en agua con galletas de arroz", categoria:"snack", dieta:"omnivora", kcal:150, proteina:20, carbos:12, grasa:2,
+    ingredientes:["1 lata pequeña de atún en agua","2 galletas de arroz","Limón y pimienta"],
+    pasos:["Escurre bien el atún y sazona con limón y pimienta.","Sirve sobre las galletas de arroz."]},
+  {id:57, nombre:"Garbanzos tostados crujientes con especias", categoria:"snack", dieta:"vegana", kcal:180, proteina:9, carbos:24, grasa:6,
+    ingredientes:["1 taza de garbanzos cocidos y secos","1 cucharadita de aceite de oliva","Pimentón, comino, ajo en polvo y sal"],
+    pasos:["Seca bien los garbanzos y mézclalos con el aceite y las especias.","Hornéalos a 200°C por 25-30 minutos, agitando a la mitad.","Deja enfriar para que queden crujientes."]},
+  {id:58, nombre:"Hummus de edamame con crudités", categoria:"snack", dieta:"vegana", kcal:170, proteina:11, carbos:14, grasa:8,
+    ingredientes:["1 taza de edamame pelado","1 cucharada de tahini","Ajo, limón y comino","Bastones de zanahoria y apio"],
+    pasos:["Procesa el edamame con tahini, ajo, limón, comino y un poco de agua.","Sirve el puré en un bowl.","Acompaña con los bastones de verdura."]},
+  {id:59, nombre:"Batido de proteína vegetal con plátano", categoria:"snack", dieta:"vegana", kcal:160, proteina:22, carbos:16, grasa:3,
+    ingredientes:["1 scoop de proteína vegetal","1/2 plátano","250 ml de bebida vegetal sin azúcar","Canela y hielo"],
+    pasos:["Coloca todo en la licuadora.","Licúa hasta que quede homogéneo.","Sirve frío."]},
+  {id:60, nombre:"Galleta de arroz con crema de cacahuate y plátano", categoria:"snack", dieta:"vegana", kcal:180, proteina:7, carbos:22, grasa:8,
+    ingredientes:["2 galletas de arroz","1 cucharada de crema de cacahuate natural","1/2 plátano en rodajas","Canela"],
+    pasos:["Unta la crema de cacahuate sobre las galletas.","Coloca las rodajas de plátano.","Espolvorea canela."]},
+  {id:61, nombre:"Bocaditos de avena, dátil y proteína vegetal", categoria:"snack", dieta:"vegana", kcal:170, proteina:10, carbos:22, grasa:6,
+    ingredientes:["1/2 taza de avena","2 dátiles sin hueso","1 scoop de proteína vegetal","1 cucharada de crema de cacahuate","Un poco de agua o bebida vegetal"],
+    pasos:["Procesa todos los ingredientes hasta formar una masa moldeable.","Forma bolitas con las manos.","Refrigera 30 minutos antes de comer."]},
+  {id:62, nombre:"Queso cottage con piña y semillas de calabaza", categoria:"snack", dieta:"vegetariana", kcal:160, proteina:16, carbos:14, grasa:5,
+    ingredientes:["150 g de queso cottage bajo en grasa","1/2 taza de piña picada","1 cucharada de semillas de calabaza"],
+    pasos:["Sirve el cottage en un bowl.","Agrega la piña y las semillas de calabaza."]},
+  {id:63, nombre:"Huevo duro con aguacate y semillas", categoria:"snack", dieta:"vegetariana", kcal:170, proteina:13, carbos:4, grasa:12,
+    ingredientes:["2 huevos duros","1/4 de aguacate","Semillas de sésamo, sal y chile en hojuelas"],
+    pasos:["Parte los huevos duros a la mitad.","Machaca el aguacate y colócalo encima.","Espolvorea sésamo, sal y chile."]},
+  {id:64, nombre:"Yogur islandés (skyr) con frutos rojos", categoria:"snack", dieta:"vegetariana", kcal:140, proteina:19, carbos:12, grasa:1,
+    ingredientes:["170 g de skyr natural","1/2 taza de frutos rojos","Edulcorante o canela al gusto"],
+    pasos:["Sirve el skyr en un bowl.","Agrega los frutos rojos y la canela."]},
+];
+
+</script>
+<script>
+// ============================================================
+// Lógica: calculadora + menú automático + recetario + mi día
+//         + lista de compras + tracker 90 días.
+// Todo corre en el navegador del usuario, sin enviar datos a ningún servidor.
+// ============================================================
+
+const LS = {
+  dias:'rp90_dias',
+  pesos:'rp90_pesos',
+  miDia:'rp90_midia',
+  plan:'rp90_plan'
+};
+
+function lsGet(key, fallback){
+  try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+  catch(e){ return fallback; }
+}
+function lsSet(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+}
+
+let genero = null;
+let plan = lsGet(LS.plan, null); // {calorias, proteina, carbos, grasa}
+let filtroActivo = 'todas';
+let miDia = lsGet(LS.miDia, []);  // array de ids de receta (permite repetidos)
+
+function getReceta(id){ return RECETAS.find(r => r.id === id); }
+
+function setGender(g){
+  genero = g;
+  document.getElementById('btn-hombre').classList.toggle('active', g==='hombre');
+  document.getElementById('btn-mujer').classList.toggle('active', g==='mujer');
+}
+
+function calcular(){
+  const peso = parseFloat(document.getElementById('peso').value);
+  const altura = parseFloat(document.getElementById('altura').value);
+  const edad = parseFloat(document.getElementById('edad').value);
+  const actividad = parseFloat(document.getElementById('actividad').value);
+  const intensidad = parseFloat(document.getElementById('intensidad').value);
+
+  if(!peso || !altura || !edad || !genero){
+    alert('Por favor completa peso, estatura, edad y selecciona tu sexo antes de calcular.');
+    return;
+  }
+
+  // Mifflin-St Jeor
+  let bmr;
+  if(genero === 'hombre'){
+    bmr = 10*peso + 6.25*altura - 5*edad + 5;
+  } else {
+    bmr = 10*peso + 6.25*altura - 5*edad - 161;
+  }
+
+  const tdee = bmr * actividad;
+  let target = tdee * (1 - intensidad);
+
+  // Piso de seguridad: no bajar de un mínimo saludable ni de ~85% de la TMB
+  const pisoGenero = genero === 'hombre' ? 1500 : 1200;
+  const pisoBMR = bmr * 0.85;
+  const piso = Math.max(pisoGenero, pisoBMR);
+  let limitado = false;
+  if(target < piso){
+    target = piso;
+    limitado = true;
+  }
+
+  // Proteína: 2.0 g/kg de peso corporal (rango alto recomendado para preservar músculo en déficit)
+  const proteinaG = Math.round(peso * 2.0);
+  const proteinaKcal = proteinaG * 4;
+
+  // Grasa: ~25% de las calorías objetivo
+  const grasaKcal = target * 0.25;
+  const grasaG = Math.round(grasaKcal / 9);
+
+  // Carbohidratos: el resto
+  const carbosKcal = Math.max(target - proteinaKcal - grasaKcal, 0);
+  const carbosG = Math.round(carbosKcal / 4);
+
+  plan = {
+    calorias: Math.round(target),
+    proteina: proteinaG,
+    carbos: carbosG,
+    grasa: grasaG
+  };
+  lsSet(LS.plan, plan);
+
+  document.getElementById('r-bmr').textContent = Math.round(bmr) + ' kcal';
+  document.getElementById('r-tdee').textContent = Math.round(tdee) + ' kcal';
+  document.getElementById('r-target').textContent = plan.calorias + ' kcal';
+  document.getElementById('r-protein').textContent = plan.proteina + ' g';
+  document.getElementById('r-carbs').textContent = plan.carbos + ' g';
+  document.getElementById('r-fat').textContent = plan.grasa + ' g';
+
+  const nota = limitado
+    ? 'Ajustamos tu meta calórica a un mínimo seguro para tu perfil — un déficit demasiado agresivo puede ser contraproducente y difícil de sostener 90 días.'
+    : 'Este es un déficit calórico alto pero calculado para ser sostenible durante 90 días, priorizando una ingesta alta de proteína para cuidar tu masa muscular.';
+  document.getElementById('r-note').textContent = nota;
+
+  document.getElementById('resultado').style.display = 'block';
+  const subtitulo = document.querySelector('#plan-dia .section-sub');
+  if(subtitulo) subtitulo.textContent = 'Generado según tu objetivo de ' + plan.calorias + ' kcal y ' + plan.proteina + ' g de proteína al día.';
+  generarMenu();
+  renderMiDia();
+  document.getElementById('resultado').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// Distribución de calorías por comida
+const DISTRIBUCION = {
+  desayuno: 0.25,
+  comida: 0.45, // se reparte entre 2 comidas principales (almuerzo + cena)
+  snack: 0.10
+};
+
+function elegirReceta(categoria, kcalObjetivo, usados){
+  const candidatas = RECETAS.filter(r => r.categoria === categoria && !usados.has(r.id));
+  const pool = candidatas.length ? candidatas : RECETAS.filter(r => r.categoria === categoria);
+  // ordenar por cercanía calórica y tomar entre las 3 más cercanas al azar (variedad)
+  const ordenadas = [...pool].sort((a,b) => Math.abs(a.kcal-kcalObjetivo) - Math.abs(b.kcal-kcalObjetivo));
+  const top = ordenadas.slice(0, Math.min(3, ordenadas.length));
+  const elegida = top[Math.floor(Math.random()*top.length)];
+  usados.add(elegida.id);
+  return elegida;
+}
+
+function generarMenu(){
+  const cont = document.getElementById('menu-container');
+  if(!plan){
+    cont.innerHTML = '<p style="color:var(--muted);">Aún no has calculado tu plan. Sube arriba y llena tus datos ⬆️</p>';
+    return;
+  }
+
+  const usados = new Set();
+  const desayuno = elegirReceta('desayuno', plan.calorias * DISTRIBUCION.desayuno, usados);
+  const comida1 = elegirReceta('comida', plan.calorias * 0.35, usados);
+  const comida2 = elegirReceta('comida', plan.calorias * 0.30, usados);
+  const snack = elegirReceta('snack', plan.calorias * DISTRIBUCION.snack, usados);
+
+  const seleccion = [
+    {label:'Desayuno', r:desayuno},
+    {label:'Almuerzo', r:comida1},
+    {label:'Cena', r:comida2},
+    {label:'Snack', r:snack},
+  ];
+
+  const totalKcal = seleccion.reduce((s,x)=>s+x.r.kcal, 0);
+  const totalProt = seleccion.reduce((s,x)=>s+x.r.proteina, 0);
+
+  let html = `<div class="note" style="margin-bottom:18px;">Este menú suma aproximadamente <b>${totalKcal} kcal</b> y <b>${totalProt} g de proteína</b>, frente a tu objetivo de ${plan.calorias} kcal y ${plan.proteina} g. Genera otro menú si quieres más variedad.</div>`;
+  html += renderListaCompras(seleccion.map(x=>x.r), 'Lista de compras del menú');
+  seleccion.forEach(({label, r}) => {
+    html += renderRecetaCard(r, label);
+  });
+  cont.innerHTML = html;
+}
+
+// ---------- Lista de compras consolidada ----------
+function renderListaCompras(recetas, titulo){
+  // Consolida ingredientes idénticos y cuenta repeticiones
+  const mapa = new Map();
+  recetas.forEach(r => {
+    r.ingredientes.forEach(ing => {
+      const clave = ing.trim();
+      mapa.set(clave, (mapa.get(clave) || 0) + 1);
+    });
+  });
+  const items = [...mapa.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
+  const li = items.map(([ing, n]) => `<li>${ing}${n>1 ? ` <b>(×${n})</b>` : ''}</li>`).join('');
+  return `<div class="shopping">
+    <h4>🛒 ${titulo || 'Lista de compras'}</h4>
+    <ul>${li}</ul>
+  </div>`;
+}
+
+// ---------- Render de tarjeta de receta ----------
+function dietaTag(r){
+  if(r.dieta === 'vegana') return `<span class="tag vegan">🌱 Vegana</span>`;
+  if(r.dieta === 'vegetariana') return `<span class="tag veg">🥚 Vegetariana</span>`;
+  return '';
+}
+
+function renderRecetaCard(r, etiqueta){
+  const tagLabel = etiqueta || (r.categoria === 'desayuno' ? 'Desayuno' : r.categoria === 'comida' ? 'Comida' : 'Snack');
+  return `
+    <div class="recipe-card" onclick="toggleDetails(${r.id}, this)">
+      <div class="top">
+        <div>
+          <span class="tag">${tagLabel}</span>${dietaTag(r)}
+          <h4>${r.nombre}</h4>
+        </div>
+      </div>
+      <div class="macros">
+        <span><b>${r.kcal}</b> kcal</span>
+        <span><b>${r.proteina}g</b> proteína</span>
+        <span><b>${r.carbos}g</b> carbos</span>
+        <span><b>${r.grasa}g</b> grasa</span>
+      </div>
+      <button class="add-btn" onclick="event.stopPropagation(); agregarAMiDia(${r.id});">➕ Agregar a mi día</button>
+      <div class="details" id="details-${r.id}">
+        <h5>Ingredientes</h5>
+        <ul>${r.ingredientes.map(i=>`<li>${i}</li>`).join('')}</ul>
+        <h5>Preparación</h5>
+        <ol>${r.pasos.map(p=>`<li>${p}</li>`).join('')}</ol>
+      </div>
+    </div>`;
+}
+
+function toggleDetails(id, cardEl){
+  // Si la receta aparece varias veces en la página (menú + recetario), togglear todas sus instancias
+  document.querySelectorAll(`#details-${id}`).forEach(el => el.classList.toggle('open'));
+}
+
+// ---------- Recetario + filtros ----------
+function renderRecetario(filtro){
+  filtroActivo = filtro || filtroActivo;
+  const cont = document.getElementById('lista-recetas');
+  let recetas;
+  if(filtroActivo === 'todas'){
+    recetas = RECETAS;
+  } else if(['desayuno','comida','snack'].includes(filtroActivo)){
+    recetas = RECETAS.filter(r => r.categoria === filtroActivo);
+  } else if(filtroActivo === 'vegana'){
+    recetas = RECETAS.filter(r => r.dieta === 'vegana');
+  } else { // vegetariana (incluye veganas)
+    recetas = RECETAS.filter(r => r.dieta === 'vegetariana' || r.dieta === 'vegana');
+  }
+  cont.innerHTML = recetas.map(r => renderRecetaCard(r)).join('');
+}
+
+function initFiltros(){
+  const cont = document.getElementById('filtros');
+  const opciones = [
+    {key:'todas', label:'Todas'},
+    {key:'desayuno', label:'Desayunos'},
+    {key:'comida', label:'Almuerzo / Cena'},
+    {key:'snack', label:'Snacks'},
+    {key:'vegetariana', label:'🥚 Vegetarianas'},
+    {key:'vegana', label:'🌱 Veganas'},
+  ];
+  cont.innerHTML = opciones.map(o => `<button class="filter-btn ${o.key==='todas'?'active':''}" data-key="${o.key}">${o.label}</button>`).join('');
+  cont.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      cont.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderRecetario(btn.dataset.key);
+    });
+  });
+}
+
+// ============================================================
+// 5. MI DÍA — selección manual con resumen en tiempo real
+// ============================================================
+function agregarAMiDia(id){
+  miDia.push(id);
+  lsSet(LS.miDia, miDia);
+  renderMiDia();
+  // feedback visual
+  const panel = document.getElementById('mi-dia');
+}
+
+function quitarDeMiDia(index){
+  miDia.splice(index, 1);
+  lsSet(LS.miDia, miDia);
+  renderMiDia();
+}
+
+function limpiarMiDia(){
+  miDia = [];
+  lsSet(LS.miDia, miDia);
+  renderMiDia();
+}
+
+function barra(nombre, total, objetivo, unidad){
+  const pct = objetivo ? (total / objetivo) * 100 : 0;
+  const ancho = Math.min(pct, 100);
+  const over = pct > 105;
+  const objTxt = objetivo ? ` / ${Math.round(objetivo)} ${unidad}` : '';
+  const pctTxt = objetivo ? ` (${Math.round(pct)}%)` : '';
+  return `<div class="bar-row">
+    <div class="bar-top"><span>${nombre}</span><span><b>${Math.round(total)} ${unidad}</b>${objTxt}${pctTxt}</span></div>
+    <div class="bar-track"><div class="bar-fill ${over?'over':''}" style="width:${ancho}%"></div></div>
+  </div>`;
+}
+
+function renderMiDia(){
+  const barsEl = document.getElementById('mi-dia-bars');
+  const listEl = document.getElementById('mi-dia-list');
+  const shopEl = document.getElementById('mi-dia-shopping');
+
+  const recetas = miDia.map(getReceta).filter(Boolean);
+  const tot = recetas.reduce((s,r)=>({
+    kcal:s.kcal+r.kcal, prot:s.prot+r.proteina, carbos:s.carbos+r.carbos, grasa:s.grasa+r.grasa
+  }), {kcal:0,prot:0,carbos:0,grasa:0});
+
+  const obj = plan || null;
+  let barsHtml = '';
+  if(!obj){
+    barsHtml += `<div class="note" style="margin-top:0;margin-bottom:14px;">Calcula tu plan en la calculadora para ver tu progreso frente a un objetivo. Mientras tanto, aquí van los totales de lo que seleccionaste.</div>`;
+  }
+  barsHtml += barra('Calorías', tot.kcal, obj && obj.calorias, 'kcal');
+  barsHtml += barra('Proteína', tot.prot, obj && obj.proteina, 'g');
+  barsHtml += barra('Carbohidratos', tot.carbos, obj && obj.carbos, 'g');
+  barsHtml += barra('Grasa', tot.grasa, obj && obj.grasa, 'g');
+  barsEl.innerHTML = barsHtml;
+
+  if(recetas.length === 0){
+    listEl.innerHTML = `<p style="color:var(--muted);margin-top:14px;">Aún no has agregado recetas a tu día. Ve al recetario y pulsa <em>"➕ Agregar a mi día"</em>.</p>`;
+    shopEl.innerHTML = '';
+  } else {
+    let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+      <h3 style="margin:0;">${recetas.length} receta${recetas.length>1?'s':''} en tu día</h3>
+      <button class="rm-btn" onclick="limpiarMiDia()">Vaciar todo</button></div>`;
+    html += miDia.map((id, i) => {
+      const r = getReceta(id);
+      if(!r) return '';
+      return `<div class="miday-item">
+        <div><div>${r.nombre}</div><div class="mi-macros">${r.kcal} kcal · ${r.proteina}g prot · ${r.carbos}g carb · ${r.grasa}g grasa</div></div>
+        <button class="rm-btn" onclick="quitarDeMiDia(${i})">Quitar ✕</button>
+      </div>`;
+    }).join('');
+    listEl.innerHTML = html;
+    shopEl.innerHTML = renderListaCompras(recetas, 'Lista de compras de mi día');
+  }
+
+  // FAB
+  const fab = document.getElementById('fab');
+  document.getElementById('fab-count').textContent = miDia.length;
+  fab.classList.toggle('show', miDia.length > 0);
+}
+
+// ============================================================
+// 4. TRACKER 90 DÍAS
+// ============================================================
+let diasDone = new Set(lsGet(LS.dias, []));
+let pesos = lsGet(LS.pesos, []); // [{semana, peso}]
+
+function renderCalendario(){
+  const grid = document.getElementById('cal-grid');
+  let html = '';
+  for(let d=1; d<=90; d++){
+    html += `<div class="cal-day ${diasDone.has(d)?'done':''}" onclick="toggleDia(${d})">${d}</div>`;
+  }
+  grid.innerHTML = html;
+  const n = diasDone.size;
+  document.getElementById('dias-count').textContent = n;
+  document.getElementById('dias-bar').style.width = (n/90*100) + '%';
+}
+
+function toggleDia(d){
+  if(diasDone.has(d)) diasDone.delete(d); else diasDone.add(d);
+  lsSet(LS.dias, [...diasDone]);
+  renderCalendario();
+}
+
+function resetTracker(){
+  if(!confirm('¿Seguro que quieres borrar todos los días completados? El registro de peso se mantiene.')) return;
+  diasDone = new Set();
+  lsSet(LS.dias, []);
+  renderCalendario();
+}
+
+function agregarPeso(){
+  const semana = parseInt(document.getElementById('w-semana').value, 10);
+  const peso = parseFloat(document.getElementById('w-peso').value);
+  if(!semana || semana < 1 || semana > 13 || !peso){
+    alert('Ingresa una semana entre 1 y 13 y un peso válido.');
+    return;
+  }
+  const existente = pesos.find(p => p.semana === semana);
+  if(existente) existente.peso = peso;
+  else pesos.push({semana, peso});
+  pesos.sort((a,b)=>a.semana-b.semana);
+  lsSet(LS.pesos, pesos);
+  document.getElementById('w-semana').value = '';
+  document.getElementById('w-peso').value = '';
+  renderPesos();
+}
+
+function eliminarPeso(semana){
+  pesos = pesos.filter(p => p.semana !== semana);
+  lsSet(LS.pesos, pesos);
+  renderPesos();
+}
+
+function renderPesos(){
+  const chart = document.getElementById('weight-chart');
+  const lista = document.getElementById('weight-list');
+
+  if(pesos.length === 0){
+    chart.innerHTML = `<p style="color:var(--muted);margin:0;font-size:13px;">Aún no has registrado tu peso. Agrega tu peso de la semana 1 para empezar la gráfica.</p>`;
+    lista.innerHTML = '';
+    return;
+  }
+
+  const W = 320, H = 160, pad = 34;
+  const semMin = 1, semMax = 13;
+  const pesoVals = pesos.map(p=>p.peso);
+  let pMin = Math.min(...pesoVals), pMax = Math.max(...pesoVals);
+  if(pMin === pMax){ pMin -= 1; pMax += 1; }
+  const x = s => pad + (s - semMin) / (semMax - semMin) * (W - pad - 8);
+  const y = v => H - pad - (v - pMin) / (pMax - pMin) * (H - pad - 12);
+
+  const pts = pesos.map(p => `${x(p.semana).toFixed(1)},${y(p.peso).toFixed(1)}`).join(' ');
+  const circles = pesos.map(p => `<circle cx="${x(p.semana).toFixed(1)}" cy="${y(p.peso).toFixed(1)}" r="3.5" fill="#2f6b4f"/>`).join('');
+  // etiquetas eje Y (min y max)
+  const yLabels = `
+    <text x="4" y="${(y(pMax)+4).toFixed(1)}" font-size="10" fill="#6b7268">${pMax.toFixed(1)}</text>
+    <text x="4" y="${(y(pMin)+4).toFixed(1)}" font-size="10" fill="#6b7268">${pMin.toFixed(1)}</text>`;
+  const xLabels = pesos.map(p => `<text x="${x(p.semana).toFixed(1)}" y="${H-12}" font-size="10" fill="#6b7268" text-anchor="middle">S${p.semana}</text>`).join('');
+
+  chart.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:420px;display:block;">
+    <line x1="${pad}" y1="${H-pad}" x2="${W-4}" y2="${H-pad}" stroke="#e7e2d8"/>
+    <line x1="${pad}" y1="12" x2="${pad}" y2="${H-pad}" stroke="#e7e2d8"/>
+    ${yLabels}
+    <polyline points="${pts}" fill="none" stroke="#2f6b4f" stroke-width="2.5" stroke-linejoin="round"/>
+    ${circles}
+    ${xLabels}
+  </svg>`;
+
+  const primero = pesos[0].peso, ultimo = pesos[pesos.length-1].peso;
+  const dif = (ultimo - primero).toFixed(1);
+  const difTxt = dif > 0 ? `+${dif}` : dif;
+  lista.innerHTML = `<li style="border:none;font-weight:700;color:var(--ink);"><span>Cambio total</span><span>${difTxt} kg</span></li>` +
+    pesos.map(p => `<li><span>Semana ${p.semana}</span><span>${p.peso} kg <button class="rm-btn" style="margin-left:8px;padding:2px 7px;" onclick="eliminarPeso(${p.semana})">✕</button></span></li>`).join('');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  initFiltros();
+  renderRecetario('todas');
+  renderMiDia();
+  renderCalendario();
+  renderPesos();
+
+  // Si ya había un plan guardado, restaurar resultados y menú
+  if(plan){
+    document.getElementById('r-target').textContent = plan.calorias + ' kcal';
+    document.getElementById('r-protein').textContent = plan.proteina + ' g';
+    document.getElementById('r-carbs').textContent = plan.carbos + ' g';
+    document.getElementById('r-fat').textContent = plan.grasa + ' g';
+    document.getElementById('r-bmr').textContent = '—';
+    document.getElementById('r-tdee').textContent = '—';
+    document.getElementById('r-note').textContent = 'Plan guardado en este navegador. Vuelve a calcular si tus datos cambiaron.';
+    document.getElementById('resultado').style.display = 'block';
+    const subtitulo = document.querySelector('#plan-dia .section-sub');
+    if(subtitulo) subtitulo.textContent = 'Tu objetivo guardado: ' + plan.calorias + ' kcal y ' + plan.proteina + ' g de proteína al día.';
+  }
+});
+</script>
+</body>
+</html>
