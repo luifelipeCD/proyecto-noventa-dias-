@@ -485,16 +485,60 @@
   .move-steps-label{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--accent);}
   .move-steps-num{display:block;font-family:var(--font-head);font-weight:600;font-size:24px;color:var(--accent-dark);margin:2px 0;}
   .move-steps-hint{display:block;font-size:12px;color:var(--muted);}
-  .move-routine{list-style:none;padding:0;margin:0 0 8px;}
-  .move-routine li{border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:8px;}
-  .move-routine .mr-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
-  .move-routine b{font-size:13.5px;color:var(--ink);}
-  .move-routine .mr-top span{font-size:12px;font-weight:700;color:var(--accent);white-space:nowrap;}
-  .move-routine i{display:block;margin-top:4px;font-size:12px;color:var(--muted);font-style:normal;line-height:1.5;}
   #move-today-btn.done{background:var(--accent-dark);color:#fff;box-shadow:0 3px 0 #24460a;}
   .move-count{font-size:12.5px;color:var(--muted);margin-top:10px;}
   .move-count b{color:var(--accent-dark);}
   .move-grid{grid-template-columns:repeat(7,1fr);margin-top:8px;}
+
+  /* Conversor de pasos a calorías */
+  .steps-conv{display:flex;flex-direction:column;gap:8px;margin-bottom:6px;}
+  .steps-conv input{max-width:220px;}
+  .steps-out{font-size:12.5px;color:var(--muted);min-height:1.2em;line-height:1.5;}
+  .steps-out b{font-family:var(--font-head);font-weight:600;font-size:19px;color:var(--accent-dark);}
+
+  /* Selector de día de la rutina */
+  .day-tabs{display:flex;gap:5px;margin:0 0 12px;flex-wrap:wrap;}
+  .day-tab{flex:1 1 auto;min-width:36px;padding:9px 4px;border-radius:10px;border:1.5px solid var(--border);
+    background:#fff;color:var(--muted);font-weight:800;font-size:12px;cursor:pointer;text-align:center;
+    transition:background .15s ease,border-color .15s ease,color .15s ease;}
+  .day-tab:hover{border-color:var(--accent);}
+  .day-tab.active{background:var(--lime);border-color:var(--lime);color:var(--lime-ink);}
+  .day-tab.rest{opacity:.65;}
+  .day-tab.rest.active{background:var(--dark);border-color:var(--dark);color:var(--lime);opacity:1;}
+
+  .rutina-head{font-family:var(--font-head);font-weight:600;text-transform:uppercase;letter-spacing:.02em;
+    font-size:15px;color:var(--accent-dark);margin:0 0 10px;}
+  .rutina-head small{display:block;font-family:var(--font-body);font-weight:400;text-transform:none;letter-spacing:0;
+    font-size:12px;color:var(--muted);margin-top:2px;}
+
+  /* Tarjeta de ejercicio (expandible) */
+  .ex-card{border:1px solid var(--border);border-radius:12px;background:var(--card);margin-bottom:8px;overflow:hidden;}
+  .ex-card > summary{list-style:none;cursor:pointer;padding:11px 13px;display:flex;align-items:center;
+    justify-content:space-between;gap:10px;}
+  .ex-card > summary::-webkit-details-marker{display:none;}
+  .ex-card > summary::after{content:'';width:8px;height:8px;flex-shrink:0;border-right:2px solid var(--muted);
+    border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .2s ease;}
+  .ex-card[open] > summary::after{transform:rotate(225deg);}
+  .ex-card[open] > summary{border-bottom:1px solid var(--border);}
+  .ex-sum-name{font-weight:700;font-size:13.5px;color:var(--ink);line-height:1.3;}
+  .ex-sum-series{font-size:11.5px;font-weight:800;color:var(--accent);white-space:nowrap;}
+  .ex-body{padding:12px 13px;}
+  .ex-fig{width:100%;max-width:220px;height:auto;display:block;margin:0 auto 12px;color:var(--accent-dark);
+    background:var(--accent-light);border-radius:10px;padding:10px;}
+  .ex-meta{font-size:12.5px;color:var(--muted);line-height:1.7;}
+  .ex-meta b{color:var(--ink);}
+  .ex-kcal{margin-top:8px;background:var(--accent-light);border:1px solid #dcecc2;border-radius:9px;padding:8px 10px;}
+  .ex-kcal .n{font-family:var(--font-head);font-weight:600;font-size:15px;color:var(--accent-dark);}
+  .ex-kcal .aprox{display:block;font-size:11px;color:var(--muted);margin-top:2px;}
+  .day-total{margin-top:12px;background:var(--dark);color:var(--dark-ink);border-radius:12px;padding:12px 14px;
+    display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .day-total .n{font-family:var(--font-head);font-weight:600;font-size:22px;color:var(--lime);}
+  .rest-day{background:var(--dark);color:var(--dark-ink);border-radius:14px;padding:22px 16px;text-align:center;}
+  .rest-day .big{font-family:var(--font-head);font-weight:600;text-transform:uppercase;letter-spacing:.02em;
+    font-size:18px;color:var(--lime);display:block;margin-bottom:5px;}
+  .rest-day p{margin:0;font-size:12.5px;color:var(--dark-muted);line-height:1.55;}
+  .move-need-weight{font-size:12px;color:var(--muted);background:#fbfcf9;border:1px dashed var(--border);
+    border-radius:9px;padding:8px 10px;margin-bottom:8px;}
 
   /* ---------- GENERADOR DE RECETAS CON IA ---------- */
   .ia-box{border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:16px;
@@ -725,8 +769,8 @@
 
     <!-- MOVIMIENTO -->
     <section class="panel main-panel" data-panel="movimiento" id="panel-movimiento">
-      <h2>Movimiento diario</h2>
-      <p class="hint">Complemento opcional. Suma gasto y da estímulo a tu músculo, te ayude a bajar grasa o a ganar masa, sin gimnasio.</p>
+      <h2>Movimiento</h2>
+      <p class="hint">Rutina de gimnasio por grupo muscular y un conversor rápido de pasos a calorías. Usa el peso que guardaste en la calculadora.</p>
 
       <div class="move-steps">
         <span class="move-steps-label">Pasos al día recomendados</span>
@@ -734,16 +778,18 @@
         <span class="move-steps-hint" id="move-steps-hint">Según tu nivel de actividad.</span>
       </div>
 
-      <h3>Rutina de fuerza (opcional)</h3>
-      <p class="section-sub">Con tu propio peso · 2–3 días por semana · 1 día de descanso entre sesiones.</p>
-      <ol class="move-routine">
-        <li><div class="mr-top"><b>Sentadilla</b><span>3 × 10–15</span></div><i>Pies al ancho de hombros. Baja como si te sentaras en una silla, pecho arriba y talones en el suelo.</i></li>
-        <li><div class="mr-top"><b>Flexiones</b><span>3 × 6–12</span></div><i>Cuerpo recto de cabeza a talones (o apoya las rodillas). Baja el pecho casi al piso, codos a ~45°.</i></li>
-        <li><div class="mr-top"><b>Zancadas</b><span>3 × 8–10 / pierna</span></div><i>Paso largo al frente, baja la rodilla trasera casi al suelo, torso vertical. Alterna piernas.</i></li>
-        <li><div class="mr-top"><b>Puente de glúteos</b><span>3 × 12–15</span></div><i>Boca arriba, rodillas dobladas. Empuja con los talones y aprieta los glúteos 1 segundo arriba.</i></li>
-        <li><div class="mr-top"><b>Plancha</b><span>3 × 20–40 s</span></div><i>Antebrazos y punta de pies, cuerpo en línea recta, abdomen firme. No hundas ni subas la cadera.</i></li>
-        <li><div class="mr-top"><b>Remo con toalla o mochila</b><span>3 × 10–12</span></div><i>Inclínate con la espalda recta. Lleva los codos hacia atrás juntando los omóplatos.</i></li>
-      </ol>
+      <h3>Conversor de pasos a calorías</h3>
+      <p class="section-sub">Escribe cuántos pasos caminaste hoy. El resultado es una aproximación: varía según ritmo, terreno y tu altura.</p>
+      <div class="steps-conv">
+        <label for="pasos-input">Pasos caminados hoy</label>
+        <input type="number" id="pasos-input" min="0" max="100000" step="100" placeholder="8000" inputmode="numeric" oninput="calcPasosCal()">
+        <div class="steps-out" id="pasos-out"></div>
+      </div>
+
+      <h3>Rutina de gimnasio</h3>
+      <p class="section-sub">Bro split: un grupo muscular grande por día. Sábado y domingo, descanso o cardio suave. Toca un ejercicio para ver la técnica y las calorías estimadas.</p>
+      <div class="day-tabs" id="move-day-tabs"></div>
+      <div id="move-rutina"></div>
 
       <h3>¿Hiciste la rutina?</h3>
       <button class="btn-primary" id="move-today-btn" onclick="marcarRutinaHoy()">✓ Marcar rutina de hoy</button>
@@ -1616,6 +1662,7 @@ const LS = {
   datos:'rp90_datos',      // datos crudos de la calculadora, para poder recalcular
   checkins:'rp90_checkins', // historial de check-ins quincenales [{fecha, peso, plan}]
   mov:'rp90_mov',          // días (ISO) en que se hizo la rutina de fuerza
+  pasosCal:'rp90_pasos_cal', // último valor del conversor de pasos a calorías
   favIng:'rp90_fav_ing'    // ingredientes favoritos para el generador con IA
 };
 
@@ -2726,8 +2773,11 @@ function renderCheckin(){
 }
 
 // ============================================================
-// MOVIMIENTO DIARIO (complemento opcional)
+// MOVIMIENTO — rutina de gimnasio semanal (bro split) + conversor de pasos
+// Usa el peso guardado en la calculadora (datos.peso). No pide datos de nuevo.
 // ============================================================
+
+// Pasos al día recomendados según el nivel de actividad de la calculadora
 function pasosRecomendados(actividadVal){
   const M = {
     '1.2':  ['6.000 – 8.000',  'sedentario'],
@@ -2739,7 +2789,161 @@ function pasosRecomendados(actividadVal){
   return M[actividadVal] || M['1.375'];
 }
 
+// Aproximación de calorías: kcal ≈ MET × peso_kg × (minutos / 60)
+const MET_PESADO = 6;        // compuestos pesados: sentadilla, peso muerto, press de banca
+const MET_MODERADO = 5;      // resto de ejercicios de fuerza
+const MIN_ESFUERZO = 4.5;    // minutos reales de esfuerzo por ejercicio (series + descansos cortos)
+const PASOS_FACTOR = 0.0005; // kcal ≈ pasos × peso_kg × 0.0005
+
+function pesoUsuario(){
+  const p = (datos && datos.peso != null) ? parseFloat(datos.peso) : NaN;
+  return (isFinite(p) && p > 0) ? p : null;
+}
+function kcalEjercicio(pesado){
+  const peso = pesoUsuario();
+  if(peso == null) return null;
+  return Math.round((pesado ? MET_PESADO : MET_MODERADO) * peso * MIN_ESFUERZO / 60);
+}
+
+// --- Ilustraciones: diagrama de línea de la postura (mismo estilo SVG de las recetas; sin fotos) ---
+function movSvg(inner){
+  return '<svg viewBox="0 0 96 64" class="ex-fig" fill="none" stroke="currentColor" stroke-width="2.4" '
+    + 'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+    + '<line x1="6" y1="58" x2="90" y2="58" stroke-width="1.4" opacity="0.35"/>' + inner + '</svg>';
+}
+function movBarra(cx, y, w){
+  return `<line x1="${cx-w}" y1="${y}" x2="${cx+w}" y2="${y}"/>`
+    + `<line x1="${cx-w+3}" y1="${y-5}" x2="${cx-w+3}" y2="${y+5}"/>`
+    + `<line x1="${cx+w-3}" y1="${y-5}" x2="${cx+w-3}" y2="${y+5}"/>`;
+}
+function movManc(x, y){
+  return `<line x1="${x-5}" y1="${y}" x2="${x+5}" y2="${y}"/>`
+    + `<line x1="${x-4}" y1="${y-3.5}" x2="${x-4}" y2="${y+3.5}"/>`
+    + `<line x1="${x+4}" y1="${y-3.5}" x2="${x+4}" y2="${y+3.5}"/>`;
+}
+const FIG = {
+  bench:      movSvg('<line x1="22" y1="44" x2="70" y2="44"/><line x1="28" y1="44" x2="28" y2="57"/><line x1="64" y1="44" x2="64" y2="57"/>'
+                + '<circle cx="24" cy="38" r="4.5"/><line x1="28" y1="41" x2="56" y2="42"/><line x1="56" y1="42" x2="62" y2="50"/><line x1="62" y1="50" x2="70" y2="57"/>'
+                + '<line x1="40" y1="41" x2="43" y2="20"/>' + movBarra(43, 15, 16)),
+  incline:    movSvg('<line x1="22" y1="52" x2="52" y2="30"/><line x1="22" y1="52" x2="52" y2="52"/>'
+                + '<circle cx="48" cy="26" r="4.5"/><line x1="46" y1="30" x2="38" y2="48"/><line x1="38" y1="48" x2="30" y2="57"/>'
+                + '<line x1="44" y1="31" x2="52" y2="16"/>' + movManc(54, 13) + '<line x1="44" y1="33" x2="34" y2="24"/>' + movManc(31, 22)),
+  fly:        movSvg('<circle cx="48" cy="14" r="4.5"/><line x1="48" y1="19" x2="48" y2="40"/><line x1="48" y1="40" x2="40" y2="57"/><line x1="48" y1="40" x2="56" y2="57"/>'
+                + '<path d="M48 24 C 36 24 28 30 24 36"/>' + movManc(23, 38)
+                + '<path d="M48 24 C 60 24 68 30 72 36"/>' + movManc(73, 38)),
+  dips:       movSvg('<line x1="26" y1="20" x2="26" y2="50"/><line x1="70" y1="20" x2="70" y2="50"/><line x1="26" y1="22" x2="38" y2="22"/><line x1="58" y1="22" x2="70" y2="22"/>'
+                + '<circle cx="48" cy="20" r="4.5"/><line x1="48" y1="25" x2="48" y2="42"/><line x1="48" y1="42" x2="44" y2="55"/><line x1="48" y1="42" x2="52" y2="55"/>'
+                + '<line x1="48" y1="28" x2="38" y2="30"/><line x1="38" y1="30" x2="34" y2="22"/><line x1="48" y1="28" x2="58" y2="30"/><line x1="58" y1="30" x2="62" y2="22"/>'),
+  pushup:     movSvg('<circle cx="22" cy="30" r="4.5"/><line x1="26" y1="32" x2="66" y2="44"/><line x1="66" y1="44" x2="82" y2="52"/>'
+                + '<line x1="34" y1="35" x2="30" y2="52"/><line x1="30" y1="52" x2="24" y2="56"/>'
+                + '<line x1="52" y1="40" x2="50" y2="52"/><line x1="50" y1="52" x2="44" y2="56"/>'),
+  pullup:     movSvg('<line x1="16" y1="10" x2="80" y2="10"/>'
+                + '<line x1="40" y1="10" x2="42" y2="24"/><line x1="56" y1="10" x2="54" y2="24"/>'
+                + '<circle cx="48" cy="26" r="4.5"/><line x1="48" y1="31" x2="48" y2="46"/><line x1="48" y1="46" x2="43" y2="55"/><line x1="48" y1="46" x2="53" y2="55"/>'),
+  bbrow:      movSvg('<circle cx="26" cy="22" r="4.5"/><line x1="29" y1="25" x2="60" y2="34"/><line x1="60" y1="34" x2="66" y2="55"/><line x1="60" y1="34" x2="56" y2="55"/>'
+                + '<line x1="42" y1="29" x2="46" y2="40"/>' + movBarra(46, 44, 15)),
+  cablerow:   movSvg('<line x1="18" y1="18" x2="18" y2="52"/><line x1="18" y1="20" x2="34" y2="42"/>'
+                + '<circle cx="62" cy="34" r="4.5"/><line x1="60" y1="39" x2="60" y2="46"/><line x1="60" y1="46" x2="80" y2="50"/><line x1="60" y1="46" x2="56" y2="50"/>'
+                + '<line x1="58" y1="36" x2="40" y2="40"/><line x1="40" y1="40" x2="34" y2="42"/>'),
+  deadlift:   movSvg('<circle cx="34" cy="18" r="4.5"/><line x1="36" y1="22" x2="52" y2="34"/><line x1="52" y1="34" x2="50" y2="52"/><line x1="50" y1="52" x2="46" y2="57"/>'
+                + '<line x1="44" y1="29" x2="42" y2="44"/>' + movBarra(42, 48, 17)),
+  machrow:    movSvg('<line x1="20" y1="22" x2="20" y2="52"/><line x1="20" y1="24" x2="30" y2="24"/><line x1="20" y1="40" x2="30" y2="40"/>'
+                + '<circle cx="56" cy="30" r="4.5"/><line x1="56" y1="35" x2="56" y2="44"/><line x1="56" y1="44" x2="74" y2="48"/><line x1="56" y1="44" x2="60" y2="52"/>'
+                + '<line x1="52" y1="33" x2="34" y2="30"/><line x1="60" y1="33" x2="42" y2="40"/>'),
+  squat:      movSvg('<circle cx="48" cy="16" r="4.5"/><line x1="48" y1="20" x2="48" y2="36"/>'
+                + '<line x1="48" y1="36" x2="38" y2="42"/><line x1="38" y1="42" x2="40" y2="57"/>'
+                + '<line x1="48" y1="36" x2="58" y2="42"/><line x1="58" y1="42" x2="56" y2="57"/>'
+                + '<line x1="40" y1="24" x2="40" y2="12"/><line x1="56" y1="24" x2="56" y2="12"/>' + movBarra(48, 22, 20)),
+  legpress:   movSvg('<line x1="16" y1="44" x2="42" y2="44"/><line x1="16" y1="30" x2="16" y2="52"/>'
+                + '<circle cx="24" cy="40" r="4.5"/><line x1="28" y1="42" x2="42" y2="42"/>'
+                + '<line x1="42" y1="42" x2="58" y2="28"/><line x1="58" y1="28" x2="70" y2="30"/>'
+                + '<line x1="70" y1="18" x2="70" y2="44"/><line x1="70" y1="18" x2="84" y2="18"/>'),
+  lunge:      movSvg('<circle cx="46" cy="16" r="4.5"/><line x1="46" y1="20" x2="46" y2="36"/>'
+                + '<line x1="46" y1="36" x2="64" y2="42"/><line x1="64" y1="42" x2="64" y2="57"/>'
+                + '<line x1="46" y1="36" x2="34" y2="46"/><line x1="34" y1="46" x2="26" y2="57"/>'),
+  legcurl:    movSvg('<line x1="18" y1="42" x2="60" y2="42"/><circle cx="24" cy="36" r="4.5"/><line x1="28" y1="39" x2="58" y2="41"/>'
+                + '<line x1="58" y1="41" x2="70" y2="41"/><line x1="70" y1="41" x2="74" y2="26"/><circle cx="75" cy="22" r="3.5"/>'),
+  legext:     movSvg('<line x1="18" y1="24" x2="18" y2="50"/><line x1="18" y1="26" x2="34" y2="26"/><line x1="18" y1="42" x2="34" y2="42"/>'
+                + '<circle cx="38" cy="22" r="4.5"/><line x1="38" y1="26" x2="38" y2="42"/>'
+                + '<line x1="38" y1="42" x2="62" y2="34"/><circle cx="66" cy="33" r="3.5"/>'),
+  calf:       movSvg('<circle cx="48" cy="16" r="4.5"/><line x1="48" y1="20" x2="48" y2="40"/><line x1="48" y1="40" x2="44" y2="52"/><line x1="48" y1="40" x2="52" y2="52"/>'
+                + '<path d="M40 56 h16"/><line x1="42" y1="52" x2="46" y2="52"/><line x1="50" y1="52" x2="54" y2="52"/>'
+                + '<line x1="40" y1="26" x2="40" y2="14"/><line x1="56" y1="26" x2="56" y2="14"/>'),
+  ohp:        movSvg('<circle cx="48" cy="30" r="4.5"/><line x1="48" y1="35" x2="48" y2="52"/><line x1="48" y1="52" x2="43" y2="57"/><line x1="48" y1="52" x2="53" y2="57"/>'
+                + '<line x1="48" y1="38" x2="40" y2="24"/><line x1="48" y1="38" x2="56" y2="24"/>' + movBarra(48, 16, 18)),
+  latraise:   movSvg('<circle cx="48" cy="16" r="4.5"/><line x1="48" y1="20" x2="48" y2="42"/><line x1="48" y1="42" x2="43" y2="57"/><line x1="48" y1="42" x2="53" y2="57"/>'
+                + '<line x1="48" y1="24" x2="26" y2="24"/>' + movManc(23, 24) + '<line x1="48" y1="24" x2="70" y2="24"/>' + movManc(73, 24)),
+  frontraise: movSvg('<circle cx="34" cy="16" r="4.5"/><line x1="34" y1="20" x2="34" y2="42"/><line x1="34" y1="42" x2="30" y2="57"/><line x1="34" y1="42" x2="38" y2="57"/>'
+                + '<line x1="34" y1="24" x2="58" y2="24"/>' + movManc(61, 24) + '<line x1="34" y1="26" x2="52" y2="34"/>' + movManc(55, 36)),
+  reardelt:   movSvg('<circle cx="30" cy="22" r="4.5"/><line x1="33" y1="25" x2="58" y2="34"/><line x1="58" y1="34" x2="60" y2="55"/><line x1="58" y1="34" x2="52" y2="55"/>'
+                + '<line x1="44" y1="30" x2="30" y2="20"/>' + movManc(27, 18) + '<line x1="44" y1="30" x2="58" y2="20"/>' + movManc(61, 18)),
+  arnold:     movSvg('<circle cx="48" cy="26" r="4.5"/><line x1="48" y1="31" x2="48" y2="50"/><line x1="48" y1="50" x2="43" y2="57"/><line x1="48" y1="50" x2="53" y2="57"/>'
+                + '<path d="M48 34 C 38 34 34 26 36 18"/>' + movManc(35, 15) + '<path d="M48 34 C 58 34 62 26 60 18"/>' + movManc(61, 15)),
+  bbcurl:     movSvg('<circle cx="48" cy="14" r="4.5"/><line x1="48" y1="19" x2="48" y2="40"/><line x1="48" y1="40" x2="43" y2="57"/><line x1="48" y1="40" x2="53" y2="57"/>'
+                + '<line x1="48" y1="24" x2="40" y2="36"/><line x1="48" y1="24" x2="56" y2="36"/>' + movBarra(48, 39, 15)),
+  hammer:     movSvg('<circle cx="48" cy="14" r="4.5"/><line x1="48" y1="19" x2="48" y2="42"/><line x1="48" y1="42" x2="43" y2="57"/><line x1="48" y1="42" x2="53" y2="57"/>'
+                + '<line x1="48" y1="24" x2="40" y2="34"/><line x1="40" y1="34" x2="38" y2="22"/><line x1="34" y1="19" x2="42" y2="25"/>'
+                + '<line x1="48" y1="24" x2="56" y2="34"/><line x1="56" y1="34" x2="58" y2="22"/><line x1="54" y1="19" x2="62" y2="25"/>'),
+  skull:      movSvg('<line x1="22" y1="44" x2="70" y2="44"/><line x1="28" y1="44" x2="28" y2="57"/><line x1="64" y1="44" x2="64" y2="57"/>'
+                + '<circle cx="26" cy="38" r="4.5"/><line x1="30" y1="41" x2="56" y2="42"/><line x1="56" y1="42" x2="62" y2="52"/>'
+                + '<line x1="40" y1="41" x2="34" y2="28"/><line x1="34" y1="28" x2="26" y2="34"/>' + movBarra(24, 33, 8)),
+  pushdown:   movSvg('<line x1="16" y1="8" x2="80" y2="8"/><line x1="48" y1="8" x2="48" y2="22"/>'
+                + '<circle cx="48" cy="16" r="4.5"/><line x1="48" y1="21" x2="48" y2="42"/><line x1="48" y1="42" x2="43" y2="57"/><line x1="48" y1="42" x2="53" y2="57"/>'
+                + '<line x1="48" y1="26" x2="42" y2="34"/><line x1="42" y1="34" x2="44" y2="24"/>'
+                + '<line x1="48" y1="26" x2="54" y2="34"/><line x1="54" y1="34" x2="52" y2="24"/>' + movBarra(48, 22, 9)),
+  conccurl:   movSvg('<line x1="18" y1="46" x2="44" y2="46"/><line x1="18" y1="34" x2="18" y2="52"/>'
+                + '<circle cx="30" cy="28" r="4.5"/><line x1="30" y1="32" x2="34" y2="46"/><line x1="34" y1="46" x2="48" y2="52"/>'
+                + '<line x1="33" y1="38" x2="46" y2="40"/><line x1="46" y1="40" x2="44" y2="52"/>' + movManc(43, 55)),
+};
+
+// getDay(): 0 = domingo … 6 = sábado
+const RUTINA_SEMANAL = {
+  1: { grupo: 'Pecho', ejercicios: [
+    { nombre: 'Press de banca plano', musculo: 'Pectoral mayor', series: '4 × 8–10', pesado: true, fig: FIG.bench },
+    { nombre: 'Press inclinado con mancuerna', musculo: 'Pectoral superior', series: '4 × 10–12', fig: FIG.incline },
+    { nombre: 'Aperturas con mancuerna o cable', musculo: 'Pectoral (apertura)', series: '3 × 12–15', fig: FIG.fly },
+    { nombre: 'Fondos en paralelas (o press declinado)', musculo: 'Pectoral inferior y tríceps', series: '3 × 8–12', fig: FIG.dips },
+    { nombre: 'Flexiones', musculo: 'Pectoral y core', series: '3 × 12–20', fig: FIG.pushup },
+  ]},
+  2: { grupo: 'Espalda', ejercicios: [
+    { nombre: 'Dominadas o jalón al pecho', musculo: 'Dorsal ancho', series: '4 × 8–12', fig: FIG.pullup },
+    { nombre: 'Remo con barra', musculo: 'Dorsal y romboides', series: '4 × 8–10', fig: FIG.bbrow },
+    { nombre: 'Remo sentado en polea', musculo: 'Dorsal medio', series: '3 × 10–12', fig: FIG.cablerow },
+    { nombre: 'Peso muerto', musculo: 'Espalda baja, glúteo y femoral', series: '4 × 5–8', pesado: true, fig: FIG.deadlift },
+    { nombre: 'Remo en máquina', musculo: 'Dorsal y trapecio', series: '3 × 10–12', fig: FIG.machrow },
+  ]},
+  3: { grupo: 'Pierna', ejercicios: [
+    { nombre: 'Sentadilla', musculo: 'Cuádriceps y glúteo', series: '4 × 8–10', pesado: true, fig: FIG.squat },
+    { nombre: 'Prensa de piernas', musculo: 'Cuádriceps y glúteo', series: '4 × 10–12', fig: FIG.legpress },
+    { nombre: 'Zancadas', musculo: 'Cuádriceps y glúteo', series: '3 × 10–12 / pierna', fig: FIG.lunge },
+    { nombre: 'Curl femoral', musculo: 'Isquiotibiales', series: '3 × 12–15', fig: FIG.legcurl },
+    { nombre: 'Extensión de cuádriceps', musculo: 'Cuádriceps', series: '3 × 12–15', fig: FIG.legext },
+    { nombre: 'Elevación de talones (gemelos)', musculo: 'Gastrocnemio y sóleo', series: '4 × 15–20', fig: FIG.calf },
+  ]},
+  4: { grupo: 'Hombro', ejercicios: [
+    { nombre: 'Press militar', musculo: 'Deltoides (todo)', series: '4 × 8–10', fig: FIG.ohp },
+    { nombre: 'Elevaciones laterales', musculo: 'Deltoides lateral', series: '4 × 12–15', fig: FIG.latraise },
+    { nombre: 'Elevaciones frontales', musculo: 'Deltoides anterior', series: '3 × 12–15', fig: FIG.frontraise },
+    { nombre: 'Pájaros (elevación posterior)', musculo: 'Deltoides posterior', series: '3 × 15–20', fig: FIG.reardelt },
+    { nombre: 'Press Arnold', musculo: 'Deltoides (todo)', series: '3 × 10–12', fig: FIG.arnold },
+  ]},
+  5: { grupo: 'Brazo', ejercicios: [
+    { nombre: 'Curl de bíceps con barra', musculo: 'Bíceps braquial', series: '4 × 10–12', fig: FIG.bbcurl },
+    { nombre: 'Curl martillo', musculo: 'Bíceps y braquiorradial', series: '3 × 10–12', fig: FIG.hammer },
+    { nombre: 'Press francés', musculo: 'Tríceps (cabeza larga)', series: '3 × 10–12', fig: FIG.skull },
+    { nombre: 'Extensión de tríceps en polea', musculo: 'Tríceps', series: '3 × 12–15', fig: FIG.pushdown },
+    { nombre: 'Curl concentrado', musculo: 'Bíceps (pico)', series: '3 × 12–15', fig: FIG.conccurl },
+  ]},
+  6: { grupo: 'Descanso', descanso: true },
+  0: { grupo: 'Descanso', descanso: true },
+};
+const DIAS_NOMBRE = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const DIAS_CORTO  = ['D','L','M','X','J','V','S'];
+const ORDEN_DIAS  = [1,2,3,4,5,6,0];
+let diaMovActivo = null; // null = aún no inicializado; luego 0–6
+
 function renderMovimiento(){
+  // 1) Pasos recomendados según nivel de actividad de la calculadora
   const sel = document.getElementById('actividad');
   const val = (datos && datos.actividad != null) ? String(datos.actividad) : (sel ? sel.value : '1.375');
   const [rango, nombre] = pasosRecomendados(val);
@@ -2748,6 +2952,18 @@ function renderMovimiento(){
   if(numEl) numEl.textContent = rango + ' pasos';
   if(hintEl) hintEl.textContent = `Para tu nivel "${nombre}". Cámbialo en la calculadora si tu actividad cambia.`;
 
+  // 2) Conversor de pasos: restaura el último valor guardado y recalcula
+  const inpP = document.getElementById('pasos-input');
+  if(inpP){
+    const saved = lsGet(LS.pasosCal, '');
+    if(inpP.value === '' && saved !== '' && saved != null) inpP.value = String(saved);
+  }
+  calcPasosCal();
+
+  // 3) Rutina de gimnasio del día
+  renderRutinaMov();
+
+  // 4) Registro "¿hiciste la rutina?" (sin cambios)
   const hechos = lsGet(LS.mov, []);
   const hoy = hoyISO();
   const btn = document.getElementById('move-today-btn');
@@ -2759,7 +2975,7 @@ function renderMovimiento(){
   const cntEl = document.getElementById('move-count');
   if(cntEl){
     const semana = hechos.filter(dd => { const n = diasEntre(dd, hoy); return n >= 0 && n < 7; }).length;
-    cntEl.innerHTML = `<b>${hechos.length}</b> sesión${hechos.length === 1 ? '' : 'es'} en total · <b>${semana}</b> en los últimos 7 días · meta 2–3 por semana`;
+    cntEl.innerHTML = `<b>${hechos.length}</b> sesión${hechos.length === 1 ? '' : 'es'} en total · <b>${semana}</b> en los últimos 7 días · meta 5 por semana`;
   }
   const grid = document.getElementById('move-grid');
   if(grid){
@@ -2772,6 +2988,77 @@ function renderMovimiento(){
     grid.innerHTML = html;
   }
 }
+
+function calcPasosCal(){
+  const inp = document.getElementById('pasos-input');
+  const out = document.getElementById('pasos-out');
+  if(!inp || !out) return;
+  const raw = String(inp.value).trim();
+  lsSet(LS.pasosCal, raw === '' ? '' : Math.max(0, Math.min(parseInt(raw, 10) || 0, 100000)));
+  if(raw === ''){ out.innerHTML = ''; return; }
+  const pasos = Math.max(0, Math.min(parseInt(raw, 10) || 0, 100000));
+  const peso = pesoUsuario();
+  if(peso == null){
+    out.innerHTML = `<span class="move-need-weight">Guarda tu peso en la calculadora (paso 1) para estimar las calorías.</span>`;
+    return;
+  }
+  const kc = Math.round(pasos * peso * PASOS_FACTOR);
+  const pasosFmt = String(pasos).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  out.innerHTML = `${pasosFmt} pasos ≈ <b>${kc}</b> kcal · aproximado (varía según ritmo, terreno y tu altura).`;
+}
+
+function renderRutinaMov(){
+  const cont = document.getElementById('move-rutina');
+  const tabs = document.getElementById('move-day-tabs');
+  if(!cont || !tabs) return;
+  const hoy = new Date().getDay();
+  if(diaMovActivo === null) diaMovActivo = hoy;
+
+  tabs.innerHTML = ORDEN_DIAS.map(d => {
+    const r = RUTINA_SEMANAL[d];
+    const cls = ['day-tab'];
+    if(d === diaMovActivo) cls.push('active');
+    if(r.descanso) cls.push('rest');
+    return `<button type="button" class="${cls.join(' ')}" onclick="setDiaMov(${d})" `
+      + `title="${DIAS_NOMBRE[d]}${d === hoy ? ' (hoy)' : ''}">${DIAS_CORTO[d]}${d === hoy ? '<span aria-hidden="true"> •</span>' : ''}</button>`;
+  }).join('');
+
+  const r = RUTINA_SEMANAL[diaMovActivo];
+  const esHoy = diaMovActivo === hoy;
+  const cab = `<div class="rutina-head">${DIAS_NOMBRE[diaMovActivo]}${esHoy ? ' · hoy' : ''}`;
+
+  if(r.descanso){
+    cont.innerHTML = cab + ' — Descanso<small>Descanso o cardio opcional</small></div>'
+      + '<div class="rest-day"><span class="big">Día de descanso</span>'
+      + '<p>Descansa o haz cardio suave: sal a caminar y usa el conversor de pasos de arriba.</p></div>';
+    return;
+  }
+
+  const peso = pesoUsuario();
+  let html = cab + ` — ${r.grupo}<small>${r.ejercicios.length} ejercicios · 4x10–12 orientativo</small></div>`;
+  if(peso == null){
+    html += '<div class="move-need-weight">Calcula tu plan en la calculadora (paso 1) para ver las calorías estimadas de cada ejercicio.</div>';
+  }
+  let total = 0;
+  r.ejercicios.forEach(e => {
+    const kc = kcalEjercicio(e.pesado);
+    if(kc != null) total += kc;
+    html += `<details class="ex-card">
+      <summary><span class="ex-sum-name">${e.nombre}</span><span class="ex-sum-series">${e.series}</span></summary>
+      <div class="ex-body">
+        ${e.fig}
+        <div class="ex-meta"><b>Músculo principal:</b> ${e.musculo}<br><b>Series × repeticiones:</b> ${e.series}</div>
+        ${kc != null ? `<div class="ex-kcal"><span class="n">≈ ${kc} kcal</span><span class="aprox">Aproximado, varía según intensidad, descansos y técnica.</span></div>` : ''}
+      </div>
+    </details>`;
+  });
+  if(peso != null){
+    html += `<div class="day-total"><span>Total aproximado de la rutina</span><span class="n">≈ ${total} kcal</span></div>`;
+  }
+  cont.innerHTML = html;
+}
+
+function setDiaMov(d){ diaMovActivo = d; renderRutinaMov(); }
 
 function toggleRutina(iso){
   const arr = lsGet(LS.mov, []);
