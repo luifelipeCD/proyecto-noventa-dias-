@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Transforma tu Cuerpo en 90 Días</title>
-<meta name="description" content="Calcula tu déficit calórico y tu proteína, arma tu menú con más de 60 recetas altas en proteína y sigue tu avance durante 90 días. Todo funciona en tu navegador, sin cuenta.">
+<meta name="description" content="Calcula tus calorías y tu proteína según tu objetivo —bajar de peso, mantener o ganar músculo—, arma tu menú con más de 60 recetas altas en proteína y sigue tu avance durante 90 días. Todo funciona en tu navegador, sin cuenta.">
 <meta name="theme-color" content="#1f4a36">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232f6b4f'/><text x='50' y='71' font-size='54' text-anchor='middle' fill='white' font-family='Arial,Helvetica,sans-serif' font-weight='bold'>90</text></svg>">
 <!-- PWA: instalable en el celular + caché offline -->
@@ -126,6 +126,17 @@
   .gender-toggle button{flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);
     background:#fcfbf9;cursor:pointer;font-size:13px;font-weight:700;color:var(--muted);}
   .gender-toggle button.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  /* Selector de objetivo (primer paso de la calculadora) */
+  .goal-toggle{display:flex;flex-direction:column;gap:8px;}
+  .goal-opt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;
+    padding:10px 12px;border:1.5px solid var(--border);border-radius:12px;background:#fff;cursor:pointer;
+    transition:border-color .15s ease,background .15s ease;font-family:inherit;}
+  .goal-opt:hover{border-color:var(--accent);}
+  .goal-opt.active{border-color:var(--accent);background:var(--accent-light);}
+  .goal-opt .goal-t{font-weight:700;font-size:13px;color:var(--ink);}
+  .goal-opt .goal-d{font-size:11.5px;color:var(--muted);line-height:1.4;}
+  .goal-opt.active .goal-t{color:var(--accent-dark);}
+  #goal-explain{margin-top:10px;}
 
   .btn-primary{margin-top:6px;width:100%;padding:13px;border:none;border-radius:11px;background:var(--orange);
     color:#fff;font-size:15px;font-weight:800;cursor:pointer;transition:background .15s ease;}
@@ -493,6 +504,24 @@
     <section class="panel side-panel" data-panel="calculadora" id="panel-calculadora">
       <h2><span class="step-n">1</span> Tu plan</h2>
       <p class="hint">Se calcula una vez y se guarda solo en tu navegador.</p>
+      <div class="field">
+        <label>¿Cuál es tu objetivo?</label>
+        <div class="goal-toggle" id="goal-toggle">
+          <button type="button" class="goal-opt active" data-goal="bajar" onclick="setObjetivo('bajar')">
+            <span class="goal-t">📉 Bajar de peso</span>
+            <span class="goal-d">Déficit calórico: comes menos de lo que gastas para perder grasa.</span>
+          </button>
+          <button type="button" class="goal-opt" data-goal="subir" onclick="setObjetivo('subir')">
+            <span class="goal-t">📈 Subir de peso / masa muscular</span>
+            <span class="goal-d">Superávit del +10%: comes un poco más para ganar músculo con la menor grasa posible.</span>
+          </button>
+          <button type="button" class="goal-opt" data-goal="mantener" onclick="setObjetivo('mantener')">
+            <span class="goal-t">⚖️ Mantener mi peso</span>
+            <span class="goal-d">Usa tu gasto diario (TDEE) tal cual, sin déficit ni superávit.</span>
+          </button>
+        </div>
+        <div class="note" id="goal-explain" hidden></div>
+      </div>
       <div class="grid2">
         <div class="field">
           <label for="peso">Peso (kg)</label>
@@ -525,7 +554,7 @@
         </select>
       </div>
       <details class="more" id="adv-more">
-        <summary>Ajuste avanzado</summary>
+        <summary>Ajuste avanzado del déficit</summary>
         <div class="more-body">
           <div class="field" style="margin-bottom:0;">
             <label for="intensidad">Intensidad del déficit</label>
@@ -626,7 +655,7 @@
       <details class="more" id="checkin-more">
         <summary>Recalcular mi plan (cada 2 semanas)</summary>
         <div class="more-body">
-          <p class="hint">Al bajar de peso tu cuerpo gasta menos. Registra tu peso y recalculamos.</p>
+          <p class="hint">Tu gasto cambia según tu peso. Registra el peso actual y recalculamos tu plan.</p>
           <div id="checkin-status"></div>
           <div class="weight-form">
             <div class="field"><label for="ci-peso">Peso actual (kg)</label><input type="number" id="ci-peso" min="30" max="300" step="0.1" placeholder="76.4"></div>
@@ -642,7 +671,7 @@
     <!-- MOVIMIENTO -->
     <section class="panel main-panel" data-panel="movimiento" id="panel-movimiento">
       <h2>Movimiento diario</h2>
-      <p class="hint">Complemento opcional. Acelera tu déficit y protege tu músculo, sin gimnasio.</p>
+      <p class="hint">Complemento opcional. Suma gasto y da estímulo a tu músculo, te ayude a bajar grasa o a ganar masa, sin gimnasio.</p>
 
       <div class="move-steps">
         <span class="move-steps-label">Pasos al día recomendados</span>
@@ -700,15 +729,15 @@
     <div class="why-grid">
       <div class="why-card">
         <div class="why-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 10 13 14 9 21 16"/><polyline points="21 10 21 16 15 16"/></svg></div>
-        <p><b>Déficit moderado.</b> Comes un poco menos de lo que gastas: eso baja el peso, sin pasar hambre.</p>
+        <p><b>Calorías con un objetivo.</b> Déficit para bajar grasa, mantenimiento, o un superávit pequeño para ganar músculo: tú eliges y el plan ajusta el número.</p>
       </div>
       <div class="why-card">
         <div class="why-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg></div>
-        <p><b>Proteína alta.</b> ≈2 g/kg protege tu músculo y te mantiene saciado.</p>
+        <p><b>Proteína alta.</b> ≈2 g/kg protege o construye músculo —según tu objetivo— y te mantiene saciado.</p>
       </div>
       <div class="why-card">
         <div class="why-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8.5 15l2.5 2.5 4.5-5"/></svg></div>
-        <p><b>90 días.</b> Tiempo real para ver resultados y crear el hábito.</p>
+        <p><b>90 días.</b> Tiempo real para ver resultados —pierdas grasa o ganes músculo— y crear el hábito.</p>
       </div>
       <div class="why-card">
         <div class="why-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 13.7-5.6L20 8"/><path d="M20 4v4h-4"/><path d="M20 12a8 8 0 0 1-13.7 5.6L4 16"/><path d="M4 20v-4h4"/></svg></div>
@@ -724,16 +753,24 @@
     <h2>Preguntas frecuentes</h2>
     <div class="faq-list">
       <details>
+        <summary>¿Qué objetivo debería elegir?</summary>
+        <p>Elige <b>bajar de peso</b> si quieres perder grasa; <b>subir de peso / masa muscular</b> si estás delgado, entrenas fuerza y quieres construir músculo; <b>mantener</b> si estás a gusto con tu peso y solo quieres comer mejor. Puedes cambiarlo y recalcular cuando quieras.</p>
+      </details>
+      <details>
+        <summary>¿Qué es un superávit calórico?</summary>
+        <p>Comer un poco más de lo que gastas. Combinado con entrenamiento de fuerza y suficiente proteína, ese excedente se usa para construir músculo nuevo. Un superávit pequeño (+10%) minimiza la grasa que se gana en el proceso. Es el espejo del déficit que se usa para bajar de peso.</p>
+      </details>
+      <details>
         <summary>¿Tengo que contar calorías para siempre?</summary>
         <p>No. La idea es que durante estos 90 días aprendas cómo se ve un plato alto en proteína dentro de tu rango de calorías. Después, la mayoría de personas mantiene el peso "a ojo" usando el recetario como referencia.</p>
       </details>
       <details>
         <summary>¿Funciona si no voy al gimnasio?</summary>
-        <p>Sí. El déficit calórico es lo que baja el peso. Entrenar fuerza ayuda a conservar más músculo, pero la ingesta alta de proteína ya hace gran parte de ese trabajo aunque solo camines.</p>
+        <p>Depende de tu objetivo. Para <b>bajar de peso</b>, el déficit calórico es lo que manda y la proteína alta protege tu músculo aunque solo camines. Para <b>ganar músculo</b> sí conviene entrenar fuerza: sin ese estímulo, buena parte del superávit se va a grasa.</p>
       </details>
       <details>
-        <summary>Llevo dos semanas sin bajar de peso, ¿qué hago?</summary>
-        <p>Primero haz el check-in: al perder peso tu cuerpo gasta menos y puede tocar recalcular. Revisa también porciones y bebidas. Un estancamiento de 1–2 semanas es normal; si se alarga, baja un escalón la intensidad del déficit.</p>
+        <summary>Llevo dos semanas sin cambios en el peso, ¿qué hago?</summary>
+        <p>Si tu objetivo es <b>bajar de peso</b>: haz el check-in (al perder peso tu cuerpo gasta menos), revisa porciones y bebidas y, si el estancamiento pasa de 1–2 semanas, baja un escalón la intensidad del déficit. Si tu objetivo es <b>subir</b> y la balanza no se mueve, sube un poco las porciones de carbohidratos. Un estancamiento corto es normal en ambos casos.</p>
       </details>
       <details>
         <summary>¿Las recetas veganas llegan a la proteína?</summary>
@@ -1410,8 +1447,9 @@ function lsSet(key, val){
 }
 
 let genero = null;
+let objetivo = 'bajar'; // 'bajar' (déficit) | 'subir' (superávit +10%) | 'mantener' (TDEE)
 let plan = lsGet(LS.plan, null); // {calorias, proteina, carbos, grasa}
-let datos = lsGet(LS.datos, null); // {peso, altura, edad, genero, actividad, intensidad}
+let datos = lsGet(LS.datos, null); // {peso, altura, edad, genero, actividad, intensidad, objetivo}
 let checkins = lsGet(LS.checkins, []); // [{fecha:'YYYY-MM-DD', peso, plan:{...}}]
 let filtroActivo = 'todas';
 let miDia = lsGet(LS.miDia, []);  // array de ids de receta (permite repetidos)
@@ -1424,8 +1462,9 @@ let favIng = lsGet(LS.favIng, []); // ingredientes que el usuario marcó como fa
 let recetasIA = [];                // recetas generadas por IA en esta sesión (no se persisten)
 let iaIdSeq = 9000;                // ids para las recetas de IA (fuera del rango de RECETAS)
 
-// Restaura el sexo guardado para que el recálculo funcione tras recargar
+// Restaura el sexo y el objetivo guardados para que el recálculo funcione tras recargar
 if(datos && datos.genero) genero = datos.genero;
+if(datos && datos.objetivo) objetivo = datos.objetivo;
 
 function getReceta(id){ return RECETAS.find(r => r.id === id) || recetasIA.find(r => r.id === id); }
 
@@ -1435,15 +1474,39 @@ function setGender(g){
   document.getElementById('btn-mujer').classList.toggle('active', g==='mujer');
 }
 
+// Explicación que aparece al elegir cada objetivo (misma idea que ya se explica el déficit)
+const GOAL_EXPLAIN = {
+  bajar: '<b>Déficit calórico:</b> comer un poco menos de lo que gastas. Con la proteína alta, tu cuerpo cubre esa diferencia tirando de la grasa almacenada y conserva el músculo. El menú apunta a ese número más bajo.',
+  subir: '<b>Superávit calórico:</b> comer un poco más de lo que gastas. Combinado con entrenamiento de fuerza y suficiente proteína, ese excedente se usa para construir músculo nuevo. Un superávit pequeño (+10%) minimiza la grasa que se gana en el proceso.',
+  mantener: '<b>Mantenimiento:</b> comes aproximadamente lo que gastas (tu TDEE), así tu peso se mantiene estable. Con fuerza y proteína alta puedes recomponer poco a poco —perder algo de grasa y ganar algo de músculo— sin que la balanza se mueva.'
+};
+
+function setObjetivo(g){
+  objetivo = g;
+  document.querySelectorAll('#goal-toggle .goal-opt').forEach(b =>
+    b.classList.toggle('active', b.dataset.goal === g));
+  // El ajuste de intensidad del déficit solo aplica al objetivo "bajar"
+  const adv = document.getElementById('adv-more');
+  if(adv){
+    adv.hidden = (g !== 'bajar');
+    if(g !== 'bajar') adv.open = false;
+  }
+  const ex = document.getElementById('goal-explain');
+  if(ex){
+    ex.innerHTML = GOAL_EXPLAIN[g] || '';
+    ex.hidden = !ex.innerHTML;
+  }
+}
+
 // ---------- Fórmula del plan (pura, reutilizable en cada check-in) ----------
-// Recibe {peso, altura, edad, genero, actividad, intensidad} y devuelve
-// {bmr, tdee, calorias, proteina, carbos, grasa, limitado}
+// Recibe {peso, altura, edad, genero, actividad, intensidad, objetivo} y devuelve
+// {bmr, tdee, calorias, proteina, carbos, grasa, objetivo, limitado}
+// La proteína se mantiene en ~2 g/kg en los tres objetivos.
 function computePlan(d){
   const peso = parseFloat(d.peso);
   const altura = parseFloat(d.altura);
   const edad = parseFloat(d.edad);
   const actividad = parseFloat(d.actividad);
-  const intensidad = parseFloat(d.intensidad);
 
   // Mifflin-St Jeor
   let bmr = d.genero === 'hombre'
@@ -1451,12 +1514,24 @@ function computePlan(d){
     : 10*peso + 6.25*altura - 5*edad - 161;
 
   const tdee = bmr * actividad;
-  let target = tdee * (1 - intensidad);
+  const objetivo = d.objetivo || 'bajar';
 
-  // Piso de seguridad: no bajar de un mínimo saludable ni de ~85% de la TMB
-  const piso = Math.max(d.genero === 'hombre' ? 1500 : 1200, bmr * 0.85);
+  let target;
   let limitado = false;
-  if(target < piso){ target = piso; limitado = true; }
+  if(objetivo === 'subir'){
+    // Superávit del +10% sobre el gasto: ganancia de músculo controlada, mínima grasa
+    target = tdee * 1.10;
+  } else if(objetivo === 'mantener'){
+    // Mantenimiento: comer lo que se gasta (TDEE tal cual)
+    target = tdee;
+  } else {
+    // Bajar de peso: déficit según la intensidad elegida
+    const intensidad = parseFloat(d.intensidad) || 0.25;
+    target = tdee * (1 - intensidad);
+    // Piso de seguridad: no bajar de un mínimo saludable ni de ~85% de la TMB
+    const piso = Math.max(d.genero === 'hombre' ? 1500 : 1200, bmr * 0.85);
+    if(target < piso){ target = piso; limitado = true; }
+  }
 
   // Proteína: 2.0 g/kg de peso corporal
   const proteinaG = Math.round(peso * 2.0);
@@ -1473,6 +1548,7 @@ function computePlan(d){
     proteina: proteinaG,
     carbos: carbosG,
     grasa: grasaG,
+    objetivo,
     limitado
   };
 }
@@ -1507,12 +1583,26 @@ function pintarResultado(res, nota){
   document.getElementById('resultado').style.display = 'block';
 }
 
+// Mensaje del resultado del plan, coherente con el objetivo elegido
+function notaPlan(res){
+  if(res.objetivo === 'subir'){
+    return 'Superávit del +10% sobre tu gasto: suficiente para construir músculo, poco para acumular grasa. Mantén la proteína alta y entrena fuerza.';
+  }
+  if(res.objetivo === 'mantener'){
+    return 'Comes lo que gastas: tu peso se mantiene estable. La proteína alta y la fuerza te ayudan a recomponer con el tiempo.';
+  }
+  return res.limitado
+    ? 'Ajustamos tu meta a un mínimo seguro: un déficit más agresivo es difícil de sostener 90 días.'
+    : 'Déficit alto pero sostenible, con proteína alta para cuidar tu músculo.';
+}
+
 function calcular(){
   const nuevosDatos = {
     peso: parseFloat(document.getElementById('peso').value),
     altura: parseFloat(document.getElementById('altura').value),
     edad: parseFloat(document.getElementById('edad').value),
     genero: genero,
+    objetivo: objetivo,
     actividad: parseFloat(document.getElementById('actividad').value),
     intensidad: parseFloat(document.getElementById('intensidad').value)
   };
@@ -1529,10 +1619,7 @@ function calcular(){
   plan = { calorias: res.calorias, proteina: res.proteina, carbos: res.carbos, grasa: res.grasa };
   lsSet(LS.plan, plan);
 
-  const nota = res.limitado
-    ? 'Ajustamos tu meta a un mínimo seguro: un déficit más agresivo es difícil de sostener 90 días.'
-    : 'Déficit alto pero sostenible, con proteína alta para cuidar tu músculo.';
-  pintarResultado(res, nota);
+  pintarResultado(res, notaPlan(res));
 
   const subtitulo = document.querySelector('#plan-dia .section-sub');
   if(subtitulo) subtitulo.textContent = 'Tu objetivo: ' + plan.calorias + ' kcal y ' + plan.proteina + ' g de proteína al día.';
@@ -2317,7 +2404,7 @@ function registrarCheckin(){
 
   // Refleja el nuevo plan en toda la página
   document.getElementById('peso').value = nuevoPeso;
-  pintarResultado(res, res.limitado
+  pintarResultado(res, (res.objetivo === 'bajar' && res.limitado)
     ? 'Ajustamos tu meta calórica a un mínimo seguro para tu perfil.'
     : 'Plan recalculado con tu peso actual.');
   const subtitulo = document.querySelector('#plan-dia .section-sub');
@@ -2540,7 +2627,7 @@ const TOUR_KEY = 'rp90_tour_done';
 const TOUR_STEPS = [
   {tab:'calculadora', sel:'#panel-calculadora',
    title:'1 · Tu plan',
-   text:'Llena tus datos y pulsa <b>Calcular mi plan</b>. Se hace una sola vez.'},
+   text:'Elige tu objetivo (bajar, subir o mantener), llena tus datos y pulsa <b>Calcular mi plan</b>. Se hace una sola vez.'},
   {tab:'midia', sel:'#panel-midia',
    title:'2 · Tu menú del día',
    text:'Pulsa <b>Generar menú del día</b> o agrega recetas. Los anillos te muestran cómo vas.'},
@@ -2650,6 +2737,7 @@ function endTour(){
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
   setTab(isMobile() ? 'calculadora' : 'recetario');
+  setObjetivo(objetivo);
   initFiltros();
   renderRecetario('todas');
   renderIngredientes();
@@ -2666,6 +2754,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('altura').value = datos.altura;
       document.getElementById('edad').value = datos.edad;
       if(datos.genero) setGender(datos.genero);
+      if(datos.objetivo) setObjetivo(datos.objetivo);
       document.getElementById('actividad').value = datos.actividad;
       document.getElementById('intensidad').value = datos.intensidad;
     }
