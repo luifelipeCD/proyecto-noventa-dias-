@@ -556,6 +556,14 @@
   .ex-body{padding:12px 13px;}
   .ex-fig{width:100%;max-width:220px;height:auto;display:block;margin:0 auto 12px;color:var(--primary-bright);
     background:var(--surface-lowest);border:1px solid var(--outline-soft);border-radius:12px;padding:10px;}
+  /* Fotos reales de la postura correcta (inicio / fin) */
+  .ex-photos{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 auto 12px;max-width:360px;}
+  .ex-photos figure{margin:0;}
+  .ex-photos img{width:100%;aspect-ratio:4 / 3;object-fit:cover;border-radius:12px;
+    border:1px solid var(--outline-soft);background:var(--surface-lowest);display:block;}
+  .ex-photos figcaption{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;
+    color:var(--ink-var);text-align:center;margin-top:5px;}
+  @media (max-width:360px){.ex-photos{grid-template-columns:1fr;max-width:220px;}}
   .ex-meta{font-size:12.5px;color:var(--ink-var);line-height:1.7;}
   .ex-meta b{color:var(--ink);}
   .ex-kcal{margin-top:8px;background:var(--primary-soft);border:1px solid var(--primary-line);border-radius:10px;padding:8px 10px;}
@@ -2928,6 +2936,49 @@ const FIG = {
                 + '<line x1="33" y1="38" x2="46" y2="40"/><line x1="46" y1="40" x2="44" y2="52"/>' + movManc(43, 55)),
 };
 
+// ============================================================
+// Fotos reales de cada ejercicio (postura correcta: 0 = inicio, 1 = fin).
+// Fuente: free-exercise-db (github.com/yuhonas/free-exercise-db), licencia libre,
+// servida por el CDN de jsDelivr. Si una imagen no carga en el navegador,
+// la tarjeta cae automáticamente al diagrama SVG de FIG (ver exFotoFalla).
+// ============================================================
+const EX_FOTO_BASE = 'https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/';
+const EX_FOTOS = {
+  bench:      ["Barbell_Bench_Press_-_Medium_Grip/0.jpg", "Barbell_Bench_Press_-_Medium_Grip/1.jpg"],  // Barbell Bench Press - Medium Grip
+  incline:    ["Incline_Dumbbell_Press/0.jpg", "Incline_Dumbbell_Press/1.jpg"],  // Incline Dumbbell Press
+  fly:        ["Dumbbell_Flyes/0.jpg", "Dumbbell_Flyes/1.jpg"],  // Dumbbell Flyes
+  dips:       ["Dips_-_Chest_Version/0.jpg", "Dips_-_Chest_Version/1.jpg"],  // Dips - Chest Version
+  pushup:     ["Pushups/0.jpg", "Pushups/1.jpg"],  // Pushups
+  pullup:     ["Pullups/0.jpg", "Pullups/1.jpg"],  // Pullups
+  bbrow:      ["Bent_Over_Barbell_Row/0.jpg", "Bent_Over_Barbell_Row/1.jpg"],  // Bent Over Barbell Row
+  cablerow:   ["Seated_Cable_Rows/0.jpg", "Seated_Cable_Rows/1.jpg"],  // Seated Cable Rows
+  deadlift:   ["Barbell_Deadlift/0.jpg", "Barbell_Deadlift/1.jpg"],  // Barbell Deadlift
+  machrow:    ["Leverage_Iso_Row/0.jpg", "Leverage_Iso_Row/1.jpg"],  // Leverage Iso Row
+  squat:      ["Barbell_Squat/0.jpg", "Barbell_Squat/1.jpg"],  // Barbell Squat
+  legpress:   ["Leg_Press/0.jpg", "Leg_Press/1.jpg"],  // Leg Press
+  lunge:      ["Dumbbell_Lunges/0.jpg", "Dumbbell_Lunges/1.jpg"],  // Dumbbell Lunges
+  legcurl:    ["Lying_Leg_Curls/0.jpg", "Lying_Leg_Curls/1.jpg"],  // Lying Leg Curls
+  legext:     ["Leg_Extensions/0.jpg", "Leg_Extensions/1.jpg"],  // Leg Extensions
+  calf:       ["Standing_Calf_Raises/0.jpg", "Standing_Calf_Raises/1.jpg"],  // Standing Calf Raises
+  ohp:        ["Standing_Military_Press/0.jpg", "Standing_Military_Press/1.jpg"],  // Standing Military Press
+  latraise:   ["Side_Lateral_Raise/0.jpg", "Side_Lateral_Raise/1.jpg"],  // Side Lateral Raise
+  frontraise: ["Front_Dumbbell_Raise/0.jpg", "Front_Dumbbell_Raise/1.jpg"],  // Front Dumbbell Raise
+  reardelt:   ["Reverse_Flyes/0.jpg", "Reverse_Flyes/1.jpg"],  // Reverse Flyes
+  arnold:     ["Arnold_Dumbbell_Press/0.jpg", "Arnold_Dumbbell_Press/1.jpg"],  // Arnold Dumbbell Press
+  bbcurl:     ["Barbell_Curl/0.jpg", "Barbell_Curl/1.jpg"],  // Barbell Curl
+  hammer:     ["Hammer_Curls/0.jpg", "Hammer_Curls/1.jpg"],  // Hammer Curls
+  skull:      ["Lying_Triceps_Press/0.jpg", "Lying_Triceps_Press/1.jpg"],  // Lying Triceps Press
+  pushdown:   ["Triceps_Pushdown/0.jpg", "Triceps_Pushdown/1.jpg"],  // Triceps Pushdown
+  conccurl:   ["Concentration_Curls/0.jpg", "Concentration_Curls/1.jpg"],  // Concentration Curls
+};
+// Índice inverso valor-de-FIG -> clave, para elegir las fotos por ejercicio sin tocar RUTINA_SEMANAL.
+const FIG_CLAVE = new Map(Object.entries(FIG).map(([k, v]) => [v, k]));
+function exFotosDe(e){
+  const clave = FIG_CLAVE.get(e.fig);
+  const par = clave && EX_FOTOS[clave];
+  return par ? [EX_FOTO_BASE + par[0], EX_FOTO_BASE + par[1]] : null;
+}
+
 // getDay(): 0 = domingo … 6 = sábado
 const RUTINA_SEMANAL = {
   1: { grupo: 'Pecho', ejercicios: [
@@ -3075,10 +3126,20 @@ function renderRutinaMov(){
   r.ejercicios.forEach(e => {
     const kc = kcalEjercicio(e.pesado);
     if(kc != null) total += kc;
+    const fotos = exFotosDe(e);
+    const ilustracion = fotos
+      ? `<div class="ex-illus">
+          <div class="ex-photos">
+            <figure><img src="${fotos[0]}" alt="${e.nombre}: posición inicial" loading="lazy" onerror="exFotoFalla(this)"><figcaption>Inicio</figcaption></figure>
+            <figure><img src="${fotos[1]}" alt="${e.nombre}: posición final" loading="lazy" onerror="exFotoFalla(this)"><figcaption>Fin</figcaption></figure>
+          </div>
+          <div class="ex-fig-wrap" hidden>${e.fig}</div>
+        </div>`
+      : e.fig;
     html += `<details class="ex-card">
       <summary><span class="ex-sum-name">${e.nombre}</span><span class="ex-sum-series">${e.series}</span></summary>
       <div class="ex-body">
-        ${e.fig}
+        ${ilustracion}
         <div class="ex-meta"><b>Músculo principal:</b> ${e.musculo}<br><b>Series × repeticiones:</b> ${e.series}</div>
         ${kc != null ? `<div class="ex-kcal"><span class="n">≈ ${kc} kcal</span><span class="aprox">Aproximado, varía según intensidad, descansos y técnica.</span></div>` : ''}
       </div>
@@ -3091,6 +3152,16 @@ function renderRutinaMov(){
 }
 
 function setDiaMov(d){ diaMovActivo = d; renderRutinaMov(); }
+
+// Si una de las fotos del ejercicio no carga, ocultamos el par y mostramos el diagrama SVG.
+function exFotoFalla(img){
+  const illus = img.closest('.ex-illus');
+  if(!illus) return;
+  const ph = illus.querySelector('.ex-photos');
+  const fw = illus.querySelector('.ex-fig-wrap');
+  if(ph) ph.hidden = true;
+  if(fw) fw.hidden = false;
+}
 
 function toggleRutina(iso){
   const arr = lsGet(LS.mov, []);
