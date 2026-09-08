@@ -164,8 +164,6 @@
   @media (max-width:460px){.ring-mid{height:auto;top:22%;}}
   .ring-cap{font-size:11px;font-weight:700;color:var(--ink);margin-top:2px;line-height:1.2;}
   .ring-cap span{display:block;font-weight:400;color:var(--muted);font-size:10px;}
-  .day-cost{margin-top:12px;font-size:12.5px;color:var(--muted);background:var(--accent-light);
-    border-radius:10px;padding:8px 10px;}
   .midia-actions{margin:14px 0 4px;}
 
   /* ---------- MI DIA: lista ---------- */
@@ -176,12 +174,6 @@
   .rm-btn{border:none;background:var(--orange-light);color:var(--orange);font-weight:800;border-radius:8px;
     padding:5px 9px;cursor:pointer;font-size:11px;flex-shrink:0;}
   .rm-btn:hover{background:var(--orange);color:#fff;}
-
-  /* ---------- LISTA DE COMPRAS ---------- */
-  .shopping{background:#fff;border:1px solid var(--border);border-left:4px solid var(--orange);
-    border-radius:12px;padding:14px 16px;margin-top:14px;}
-  .shopping h4{margin:0 0 8px;font-size:14px;}
-  .shopping ul{margin:0;padding-left:16px;columns:1;font-size:12.5px;color:var(--muted);}
 
   /* ---------- FILTROS ---------- */
   .filters{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
@@ -210,8 +202,9 @@
   .rc-macros .mc b{color:var(--mc-c,var(--ink));}
   .mc-kcal{--mc-c:var(--kcal);} .mc-prot{--mc-c:var(--prot);}
   .mc-carb{--mc-c:var(--carb);} .mc-fat{--mc-c:var(--fat);}
-  .rc-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:6px;}
-  .rc-cost{font-size:11.5px;color:#8a4a26;font-weight:700;background:var(--orange-light);border-radius:999px;padding:3px 8px;}
+  .rc-ings{margin:0 0 10px;padding-left:16px;font-size:11.5px;color:var(--muted);line-height:1.5;}
+  .rc-ings li{margin:1px 0;}
+  .rc-foot{margin-top:auto;display:flex;align-items:center;justify-content:flex-end;gap:6px;}
   .add-btn{padding:7px 10px;border-radius:9px;border:1.5px solid var(--accent);background:var(--accent-light);
     color:var(--accent-dark);font-weight:800;font-size:11.5px;cursor:pointer;flex-shrink:0;}
   .add-btn:hover{background:var(--accent);color:#fff;}
@@ -240,6 +233,13 @@
   .modal-card .macros .mc::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--mc-c,var(--muted));}
   .modal-card .macros .mc b{color:var(--mc-c,var(--ink));}
   .modal-card .macros b{color:var(--ink);}
+  .ing-hint{font-weight:400;color:var(--muted);font-size:11.5px;}
+  .modal-card ul.ing-list{list-style:none;padding:0;margin:8px 0;}
+  .modal-card ul.ing-list li{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
+    padding:6px 0;border-bottom:1px solid var(--border);font-size:12.5px;}
+  .modal-card ul.ing-list li:last-child{border-bottom:none;}
+  .ing-name{color:var(--ink);}
+  .ing-macros{color:var(--muted);font-size:11.5px;white-space:nowrap;}
   .modal-head{display:flex;align-items:flex-start;gap:12px;}
   .modal-head .cat-icon{width:40px;height:40px;flex-shrink:0;margin-top:2px;}
   .modal-head h3{margin:0;}
@@ -288,8 +288,6 @@
   .batch-meta{font-size:12px;color:var(--muted);margin-bottom:8px;}
   .batch-card ul{margin:0;padding-left:16px;font-size:12.5px;color:var(--ink);}
   .batch-tip{margin-top:8px;font-size:12px;color:var(--muted);background:var(--accent-light);border-radius:8px;padding:7px 10px;}
-  .cost-pill{display:inline-block;font-size:11px;font-weight:700;color:#8a4a26;background:var(--orange-light);
-    border-radius:999px;padding:3px 8px;margin-left:5px;}
 
   /* ---------- BOTONES FLOTANTES ---------- */
   .fab{position:fixed;right:14px;bottom:14px;z-index:50;background:var(--orange);color:#fff;border:none;
@@ -563,10 +561,6 @@
       <h3>Lo que llevas hoy</h3>
       <div id="mi-dia-bars"></div>
       <div id="mi-dia-list" class="miday-list"></div>
-      <details class="more" id="shop-more" hidden>
-        <summary>Ver lista de compras de mi día</summary>
-        <div class="more-body" id="mi-dia-shopping"></div>
-      </details>
     </section>
 
   </aside>
@@ -763,237 +757,636 @@
 // Base de recetas altas en proteína — Transforma tu Cuerpo en 90 Días
 // Cada receta: id, nombre, categoria (desayuno | comida | snack),
 //   dieta ('omnivora' | 'vegetariana' | 'vegana'),
-//   kcal, proteina(g), carbos(g), grasa(g), ingredientes[], pasos[]
+//   ingredientes[] -> cada uno con { n, g (gramos), kcal, proteina, carbos, grasa }
+//   Los totales kcal/proteina/carbos/grasa se calculan SUMANDO los ingredientes.
 // ============================================================
 
 const RECETAS = [
   // ---------- DESAYUNOS ----------
-  {id:1, nombre:"Tortilla de claras con espinaca y queso bajo en grasa", categoria:"desayuno", dieta:"vegetariana", kcal:220, proteina:28, carbos:6, grasa:8,
-    ingredientes:["4 claras de huevo + 1 huevo entero","1 taza de espinaca fresca","20 g de queso bajo en grasa rallado","Sal, pimienta y ajo en polvo al gusto","Spray de aceite"],
+  {id:1, nombre:"Tortilla de claras con espinaca y queso bajo en grasa", categoria:"desayuno", dieta:"vegetariana",
+    ingredientes:[
+      {n:"Clara de huevo", g:132, kcal:69, proteina:15, carbos:1, grasa:0},
+      {n:"Huevo", g:50, kcal:72, proteina:7, carbos:1, grasa:5},
+      {n:"Espinaca", g:30, kcal:7, proteina:1, carbos:1, grasa:0},
+      {n:"Queso bajo en grasa rallado", g:20, kcal:50, proteina:5, carbos:1, grasa:3},
+      {n:"Sal, pimienta y especias", g:2, kcal:0, proteina:0, carbos:0, grasa:0},
+      {n:"Spray de aceite", g:1, kcal:9, proteina:0, carbos:0, grasa:1}
+    ],
     pasos:["Bate los huevos y las claras con sal y pimienta.","Saltea la espinaca en un sartén antiadherente con el spray de aceite hasta que se marchite.","Agrega la mezcla de huevo, cocina a fuego medio-bajo y añade el queso antes de doblar la tortilla."]},
-  {id:2, nombre:"Yogur griego con proteína, moras y chía", categoria:"desayuno", dieta:"vegetariana", kcal:250, proteina:24, carbos:20, grasa:7,
-    ingredientes:["200 g de yogur griego natural bajo en grasa","1/2 taza de moras (fresas, arándanos o mix)","1 cucharada de semillas de chía","1 scoop de proteína en polvo (opcional)","Canela al gusto"],
+  {id:2, nombre:"Yogur griego con proteína, moras y chía", categoria:"desayuno", dieta:"vegetariana",
+    ingredientes:[
+      {n:"Yogur griego natural bajo en grasa", g:200, kcal:118, proteina:20, carbos:7, grasa:1},
+      {n:"Frutos rojos", g:75, kcal:32, proteina:1, carbos:7, grasa:0},
+      {n:"Semillas de chía", g:12, kcal:58, proteina:2, carbos:5, grasa:4},
+      {n:"Proteína en polvo (whey)", g:15, kcal:57, proteina:12, carbos:1, grasa:1},
+      {n:"Canela", g:1, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Mezcla el yogur con el scoop de proteína hasta integrar.","Agrega las semillas de chía y revuelve.","Corona con las moras y canela al gusto."]},
-  {id:3, nombre:"Avena proteica con canela y manzana", categoria:"desayuno", dieta:"vegetariana", kcal:300, proteina:22, carbos:40, grasa:6,
-    ingredientes:["1/2 taza de avena en hojuelas","1 scoop de proteína en polvo sabor vainilla","1/2 manzana picada","Canela al gusto","200 ml de agua o leche descremada"],
+  {id:3, nombre:"Avena proteica con canela y manzana", categoria:"desayuno", dieta:"vegetariana",
+    ingredientes:[
+      {n:"Avena en hojuelas", g:40, kcal:156, proteina:5, carbos:26, grasa:3},
+      {n:"Proteína en polvo (whey)", g:25, kcal:95, proteina:20, carbos:2, grasa:1},
+      {n:"Manzana", g:70, kcal:36, proteina:0, carbos:10, grasa:0},
+      {n:"Canela", g:1, kcal:0, proteina:0, carbos:0, grasa:0},
+      {n:"Leche descremada", g:150, kcal:51, proteina:5, carbos:8, grasa:0}
+    ],
     pasos:["Cocina la avena con el agua o leche a fuego medio por 5 minutos.","Retira del fuego y deja entibiar un poco antes de mezclar el scoop de proteína (para que no se cocine el polvo).","Agrega la manzana picada y canela."]},
-  {id:4, nombre:"Batido de proteína con plátano y mantequilla de maní light", categoria:"desayuno", dieta:"vegetariana", kcal:280, proteina:30, carbos:25, grasa:8,
-    ingredientes:["1 scoop de proteína en polvo","1/2 plátano","1 cucharadita de mantequilla de maní light","250 ml de leche descremada o bebida vegetal sin azúcar","Hielo al gusto"],
+  {id:4, nombre:"Batido de proteína con plátano y mantequilla de maní light", categoria:"desayuno", dieta:"vegetariana",
+    ingredientes:[
+      {n:"Proteína en polvo (whey)", g:30, kcal:114, proteina:24, carbos:2, grasa:2},
+      {n:"Plátano", g:60, kcal:53, proteina:1, carbos:14, grasa:0},
+      {n:"Mantequilla de maní light", g:8, kcal:40, proteina:2, carbos:2, grasa:3},
+      {n:"Leche descremada", g:250, kcal:85, proteina:9, carbos:13, grasa:0}
+    ],
     pasos:["Coloca todos los ingredientes en la licuadora.","Licúa hasta obtener una textura homogénea.","Sirve frío."]},
-  {id:5, nombre:"Tostada integral con huevo pochado y aguacate", categoria:"desayuno", dieta:"vegetariana", kcal:260, proteina:18, carbos:22, grasa:12,
-    ingredientes:["1 rebanada de pan integral","1 huevo","1/4 de aguacate","Sal, limón y chile en hojuelas"],
+  {id:5, nombre:"Tostada integral con huevo pochado y aguacate", categoria:"desayuno", dieta:"vegetariana",
+    ingredientes:[
+      {n:"Pan integral", g:30, kcal:74, proteina:4, carbos:12, grasa:1},
+      {n:"Huevo", g:55, kcal:79, proteina:7, carbos:1, grasa:5},
+      {n:"Aguacate", g:40, kcal:64, proteina:1, carbos:4, grasa:6},
+      {n:"Limón", g:3, kcal:0, proteina:0, carbos:0, grasa:0},
+      {n:"Sal, pimienta y especias", g:2, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Pocha el huevo en agua hirviendo con un chorrito de vinagre por 3 minutos.","Tuesta el pan y machaca el aguacate encima con sal y limón.","Corona con el huevo pochado y chile en hojuelas."]},
-  {id:6, nombre:"Bowl de requesón con piña y semillas de chía", categoria:"desayuno", dieta:"vegetariana", kcal:210, proteina:26, carbos:18, grasa:5,
-    ingredientes:["200 g de requesón (cottage cheese) bajo en grasa","1/2 taza de piña picada","1 cucharadita de semillas de chía","Un toque de vainilla"],
+  {id:6, nombre:"Bowl de requesón con piña y semillas de chía", categoria:"desayuno", dieta:"vegetariana",
+    ingredientes:[
+      {n:"Requesón bajo en grasa", g:200, kcal:160, proteina:22, carbos:7, grasa:5},
+      {n:"Piña", g:90, kcal:45, proteina:0, carbos:12, grasa:0},
+      {n:"Semillas de chía", g:6, kcal:29, proteina:1, carbos:3, grasa:2},
+      {n:"Vainilla", g:1, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Mezcla el requesón con la vainilla.","Agrega la piña picada encima.","Espolvorea las semillas de chía."]},
-  {id:7, nombre:"Panqueques proteicos de avena y claras", categoria:"desayuno", dieta:"vegetariana", kcal:270, proteina:25, carbos:28, grasa:6,
-    ingredientes:["1/2 taza de avena molida","3 claras de huevo","1 scoop de proteína en polvo","1/2 cucharadita de polvo de hornear","Canela al gusto"],
+  {id:7, nombre:"Panqueques proteicos de avena y claras", categoria:"desayuno", dieta:"vegetariana",
+    ingredientes:[
+      {n:"Avena en hojuelas", g:40, kcal:156, proteina:5, carbos:26, grasa:3},
+      {n:"Clara de huevo", g:99, kcal:51, proteina:11, carbos:1, grasa:0},
+      {n:"Proteína en polvo (whey)", g:25, kcal:95, proteina:20, carbos:2, grasa:1},
+      {n:"Polvo de hornear", g:2, kcal:0, proteina:0, carbos:0, grasa:0},
+      {n:"Canela", g:1, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Licúa todos los ingredientes hasta obtener una mezcla homogénea.","Cocina pequeñas porciones en sartén antiadherente a fuego medio-bajo, 2 minutos por lado.","Sirve con fruta picada si gustas."]},
-  {id:8, nombre:"Huevos revueltos con champiñones y pavo", categoria:"desayuno", dieta:"omnivora", kcal:240, proteina:27, carbos:5, grasa:12,
-    ingredientes:["2 huevos enteros + 2 claras","50 g de pechuga de pavo en cubos","1/2 taza de champiñones fileteados","Sal, pimienta y perejil"],
+  {id:8, nombre:"Huevos revueltos con champiñones y pavo", categoria:"desayuno", dieta:"omnivora",
+    ingredientes:[
+      {n:"Huevo", g:100, kcal:143, proteina:13, carbos:1, grasa:10},
+      {n:"Clara de huevo", g:66, kcal:34, proteina:7, carbos:0, grasa:0},
+      {n:"Pechuga de pavo", g:50, kcal:57, proteina:12, carbos:0, grasa:1},
+      {n:"Champiñones", g:60, kcal:13, proteina:2, carbos:2, grasa:0},
+      {n:"Sal, pimienta y especias", g:2, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Saltea los champiñones y el pavo en sartén antiadherente hasta dorar.","Agrega los huevos batidos y revuelve a fuego medio-bajo.","Sazona y sirve con perejil fresco."]},
-  {id:33, nombre:"Tofu revuelto con cúrcuma y espinaca", categoria:"desayuno", dieta:"vegana", kcal:230, proteina:22, carbos:8, grasa:12,
-    ingredientes:["200 g de tofu firme desmenuzado","1 taza de espinaca","1/2 cucharadita de cúrcuma","Levadura nutricional, sal negra (kala namak) y pimienta","Spray de aceite"],
+  {id:33, nombre:"Tofu revuelto con cúrcuma y espinaca", categoria:"desayuno", dieta:"vegana",
+    ingredientes:[
+      {n:"Tofu firme", g:160, kcal:230, proteina:26, carbos:4, grasa:14},
+      {n:"Espinaca", g:40, kcal:9, proteina:1, carbos:1, grasa:0},
+      {n:"Levadura nutricional", g:5, kcal:19, proteina:3, carbos:2, grasa:0},
+      {n:"Sal, pimienta y especias", g:3, kcal:0, proteina:0, carbos:0, grasa:0},
+      {n:"Spray de aceite", g:1, kcal:9, proteina:0, carbos:0, grasa:1}
+    ],
     pasos:["Desmenuza el tofu con las manos y sazónalo con cúrcuma, sal y pimienta.","Saltéalo en sartén antiadherente 4-5 minutos.","Agrega la espinaca y la levadura nutricional, cocina 2 minutos más."]},
-  {id:34, nombre:"Pudín de chía con leche de soya y frutos rojos", categoria:"desayuno", dieta:"vegana", kcal:250, proteina:16, carbos:26, grasa:10,
-    ingredientes:["3 cucharadas de semillas de chía","250 ml de leche de soya sin azúcar","1/2 scoop de proteína vegetal de vainilla","1/2 taza de frutos rojos","Canela"],
+  {id:34, nombre:"Pudín de chía con leche de soya y frutos rojos", categoria:"desayuno", dieta:"vegana",
+    ingredientes:[
+      {n:"Semillas de chía", g:30, kcal:146, proteina:5, carbos:13, grasa:9},
+      {n:"Leche de soya sin azúcar", g:250, kcal:83, proteina:8, carbos:5, grasa:5},
+      {n:"Proteína vegetal en polvo", g:15, kcal:56, proteina:11, carbos:2, grasa:1},
+      {n:"Frutos rojos", g:75, kcal:32, proteina:1, carbos:7, grasa:0},
+      {n:"Canela", g:1, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Mezcla la chía con la leche de soya y la proteína, revuelve bien.","Refrigera al menos 4 horas o toda la noche.","Sirve con los frutos rojos y canela encima."]},
-  {id:35, nombre:"Pan integral con hummus, tomate y semillas de girasol", categoria:"desayuno", dieta:"vegana", kcal:280, proteina:14, carbos:34, grasa:11,
-    ingredientes:["2 rebanadas de pan integral","4 cucharadas de hummus","1 tomate en rodajas","1 cucharada de semillas de girasol","Sal y pimienta"],
+  {id:35, nombre:"Pan integral con hummus, tomate y semillas de girasol", categoria:"desayuno", dieta:"vegana",
+    ingredientes:[
+      {n:"Pan integral", g:55, kcal:136, proteina:7, carbos:23, grasa:2},
+      {n:"Hummus", g:55, kcal:94, proteina:4, carbos:8, grasa:5},
+      {n:"Tomate", g:80, kcal:14, proteina:1, carbos:3, grasa:0},
+      {n:"Semillas de girasol", g:8, kcal:47, proteina:2, carbos:2, grasa:4},
+      {n:"Sal, pimienta y especias", g:2, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Tuesta el pan.","Unta el hummus generosamente.","Coloca el tomate, las semillas y sazona."]},
-  {id:36, nombre:"Smoothie verde con proteína vegetal, espinaca y piña", categoria:"desayuno", dieta:"vegana", kcal:260, proteina:26, carbos:30, grasa:5,
-    ingredientes:["1 scoop de proteína vegetal","1 taza de espinaca","1/2 taza de piña congelada","250 ml de bebida vegetal sin azúcar","Hielo"],
+  {id:36, nombre:"Smoothie verde con proteína vegetal, espinaca y piña", categoria:"desayuno", dieta:"vegana",
+    ingredientes:[
+      {n:"Proteína vegetal en polvo", g:30, kcal:113, proteina:23, carbos:3, grasa:2},
+      {n:"Espinaca", g:30, kcal:7, proteina:1, carbos:1, grasa:0},
+      {n:"Piña", g:90, kcal:45, proteina:0, carbos:12, grasa:0},
+      {n:"Bebida vegetal sin azúcar", g:250, kcal:38, proteina:1, carbos:1, grasa:3}
+    ],
     pasos:["Coloca todo en la licuadora.","Licúa hasta que quede cremoso.","Sirve de inmediato."]},
-  {id:37, nombre:"Bowl de yogur de soya con granola sin azúcar y plátano", categoria:"desayuno", dieta:"vegana", kcal:290, proteina:18, carbos:38, grasa:8,
-    ingredientes:["200 g de yogur de soya natural","1/3 taza de granola sin azúcar","1/2 plátano en rodajas","1 cucharadita de semillas de lino molidas"],
+  {id:37, nombre:"Bowl de yogur de soya con granola sin azúcar y plátano", categoria:"desayuno", dieta:"vegana",
+    ingredientes:[
+      {n:"Yogur de soya natural", g:200, kcal:100, proteina:8, carbos:8, grasa:5},
+      {n:"Granola sin azúcar", g:28, kcal:126, proteina:3, carbos:15, grasa:6},
+      {n:"Plátano", g:50, kcal:45, proteina:1, carbos:12, grasa:0},
+      {n:"Semillas de lino molidas", g:8, kcal:43, proteina:1, carbos:2, grasa:3}
+    ],
     pasos:["Sirve el yogur de soya en un bowl.","Agrega la granola y el plátano.","Espolvorea las semillas de lino."]},
-  {id:38, nombre:"Omelette de harina de garbanzo con pimientos", categoria:"desayuno", dieta:"vegana", kcal:250, proteina:16, carbos:28, grasa:9,
-    ingredientes:["1/2 taza de harina de garbanzo","1/2 taza de agua","1/4 taza de pimiento picado","Cebollín, cúrcuma, sal y pimienta","Spray de aceite"],
+  {id:38, nombre:"Omelette de harina de garbanzo con pimientos", categoria:"desayuno", dieta:"vegana",
+    ingredientes:[
+      {n:"Harina de garbanzo", g:55, kcal:213, proteina:12, carbos:32, grasa:4},
+      {n:"Pimiento", g:50, kcal:13, proteina:1, carbos:3, grasa:0},
+      {n:"Sal, pimienta y especias", g:3, kcal:0, proteina:0, carbos:0, grasa:0},
+      {n:"Spray de aceite", g:1, kcal:9, proteina:0, carbos:0, grasa:1}
+    ],
     pasos:["Bate la harina de garbanzo con el agua y las especias hasta que no queden grumos.","Vierte en sartén antiadherente caliente y reparte el pimiento encima.","Cocina 3-4 minutos por lado hasta que cuaje."]},
-  {id:39, nombre:"Requesón batido con cacao y fresas", categoria:"desayuno", dieta:"vegetariana", kcal:220, proteina:25, carbos:16, grasa:5,
-    ingredientes:["200 g de requesón bajo en grasa","1 cucharadita de cacao en polvo sin azúcar","1/2 taza de fresas","Edulcorante al gusto"],
+  {id:39, nombre:"Requesón batido con cacao y fresas", categoria:"desayuno", dieta:"vegetariana",
+    ingredientes:[
+      {n:"Requesón bajo en grasa", g:200, kcal:160, proteina:22, carbos:7, grasa:5},
+      {n:"Cacao en polvo sin azúcar", g:6, kcal:14, proteina:1, carbos:1, grasa:1},
+      {n:"Fresas", g:90, kcal:29, proteina:1, carbos:7, grasa:0},
+      {n:"Edulcorante", g:1, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Bate el requesón con el cacao y el edulcorante hasta que quede cremoso.","Corta las fresas.","Sirve el requesón con las fresas encima."]},
-  {id:40, nombre:"Huevos al horno con frijoles y salsa (shakshuka de frijol)", categoria:"desayuno", dieta:"vegetariana", kcal:300, proteina:22, carbos:26, grasa:12,
-    ingredientes:["2 huevos","1/2 taza de frijoles cocidos","1/2 taza de salsa de tomate natural","Cebolla, ajo, comino y pimentón","Cilantro"],
+  {id:40, nombre:"Huevos al horno con frijoles y salsa (shakshuka de frijol)", categoria:"desayuno", dieta:"vegetariana",
+    ingredientes:[
+      {n:"Huevo", g:110, kcal:157, proteina:14, carbos:1, grasa:10},
+      {n:"Frijoles negros cocidos", g:90, kcal:119, proteina:8, carbos:22, grasa:0},
+      {n:"Salsa de tomate natural", g:120, kcal:35, proteina:2, carbos:8, grasa:0},
+      {n:"Cebolla", g:30, kcal:12, proteina:0, carbos:3, grasa:0},
+      {n:"Hierbas frescas", g:5, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Sofríe cebolla y ajo, agrega la salsa, los frijoles y las especias.","Haz dos huecos y casca los huevos dentro.","Tapa y cocina 6-8 minutos hasta que la clara cuaje. Sirve con cilantro."]},
 
   // ---------- COMIDAS (almuerzo/cena) ----------
-  {id:9, nombre:"Pechuga de pollo a la plancha con brócoli y camote", categoria:"comida", dieta:"omnivora", kcal:420, proteina:42, carbos:35, grasa:10,
-    ingredientes:["150 g de pechuga de pollo","1 taza de brócoli al vapor","1 camote mediano horneado","Ajo, limón, sal y pimienta"],
+  {id:9, nombre:"Pechuga de pollo a la plancha con brócoli y camote", categoria:"comida", dieta:"omnivora",
+    ingredientes:[
+      {n:"Pechuga de pollo", g:150, kcal:180, proteina:34, carbos:0, grasa:4},
+      {n:"Brócoli", g:150, kcal:51, proteina:4, carbos:11, grasa:1},
+      {n:"Camote", g:180, kcal:155, proteina:3, carbos:36, grasa:0},
+      {n:"Ajo", g:5, kcal:0, proteina:0, carbos:0, grasa:0},
+      {n:"Limón", g:5, kcal:0, proteina:0, carbos:0, grasa:0},
+      {n:"Sal, pimienta y especias", g:2, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Sazona el pollo con ajo, sal y pimienta, cocina a la plancha 5-6 min por lado.","Hornea el camote en cubos a 200°C por 25 minutos.","Sirve con el brócoli al vapor y un toque de limón."]},
-  {id:10, nombre:"Salmón al horno con espárragos y quinoa", categoria:"comida", dieta:"omnivora", kcal:460, proteina:38, carbos:30, grasa:18,
-    ingredientes:["150 g de filete de salmón","1 taza de espárragos","1/2 taza de quinoa cocida","Limón, eneldo, sal y pimienta"],
+  {id:10, nombre:"Salmón al horno con espárragos y quinoa", categoria:"comida", dieta:"omnivora",
+    ingredientes:[
+      {n:"Salmón", g:140, kcal:291, proteina:28, carbos:0, grasa:18},
+      {n:"Espárragos", g:150, kcal:30, proteina:3, carbos:6, grasa:0},
+      {n:"Quinoa cocida", g:120, kcal:144, proteina:5, carbos:25, grasa:2},
+      {n:"Limón", g:5, kcal:0, proteina:0, carbos:0, grasa:0},
+      {n:"Sal, pimienta y especias", g:2, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Hornea el salmón con limón y eneldo a 200°C por 15 minutos.","Saltea o hornea los espárragos con sal y un toque de aceite.","Sirve todo sobre la quinoa cocida."]},
-  {id:11, nombre:"Ensalada de atún con garbanzos y limón", categoria:"comida", dieta:"omnivora", kcal:380, proteina:34, carbos:28, grasa:12,
-    ingredientes:["1 lata de atún en agua","1/2 taza de garbanzos cocidos","Lechuga, tomate y pepino","Limón, aceite de oliva (poco) y sal"],
+  {id:11, nombre:"Ensalada de atún con garbanzos y limón", categoria:"comida", dieta:"omnivora",
+    ingredientes:[
+      {n:"Atún en agua", g:100, kcal:116, proteina:26, carbos:0, grasa:1},
+      {n:"Garbanzos cocidos", g:120, kcal:197, proteina:11, carbos:32, grasa:3},
+      {n:"Lechuga", g:50, kcal:8, proteina:1, carbos:1, grasa:0},
+      {n:"Tomate", g:60, kcal:11, proteina:1, carbos:2, grasa:0},
+      {n:"Pepino", g:50, kcal:8, proteina:0, carbos:2, grasa:0},
+      {n:"Aceite de oliva", g:5, kcal:44, proteina:0, carbos:0, grasa:5},
+      {n:"Limón", g:5, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Escurre el atún y mézclalo con los garbanzos.","Agrega las verduras picadas.","Aliña con limón, un chorrito de aceite de oliva y sal."]},
-  {id:12, nombre:"Lomo de res magro con ensalada de tomate y cebolla", categoria:"comida", dieta:"omnivora", kcal:440, proteina:40, carbos:15, grasa:20,
-    ingredientes:["150 g de lomo de res magro","Tomate y cebolla morada en rodajas","Orégano, limón, sal y pimienta"],
+  {id:12, nombre:"Lomo de res magro con ensalada de tomate y cebolla", categoria:"comida", dieta:"omnivora",
+    ingredientes:[
+      {n:"Lomo de res magro", g:180, kcal:270, proteina:38, carbos:0, grasa:13},
+      {n:"Tomate", g:120, kcal:22, proteina:1, carbos:5, grasa:0},
+      {n:"Cebolla", g:40, kcal:16, proteina:0, carbos:4, grasa:0},
+      {n:"Aceite de oliva", g:6, kcal:53, proteina:0, carbos:0, grasa:6},
+      {n:"Limón", g:5, kcal:0, proteina:0, carbos:0, grasa:0},
+      {n:"Sal, pimienta y especias", g:2, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Sazona el lomo y cocina a la plancha al término deseado.","Prepara la ensalada de tomate y cebolla con orégano, limón y sal.","Sirve juntos, dejando reposar la carne 3 minutos antes de cortar."]},
-  {id:13, nombre:"Pechuga de pavo rellena de espinaca y champiñones", categoria:"comida", dieta:"omnivora", kcal:400, proteina:39, carbos:12, grasa:16,
-    ingredientes:["150 g de pechuga de pavo","1/2 taza de espinaca salteada","1/4 taza de champiñones picados","Ajo y especias al gusto"],
+  {id:13, nombre:"Pechuga de pavo rellena de espinaca y champiñones", categoria:"comida", dieta:"omnivora",
+    ingredientes:[
+      {n:"Pechuga de pavo", g:200, kcal:228, proteina:48, carbos:0, grasa:3},
+      {n:"Espinaca", g:60, kcal:14, proteina:2, carbos:2, grasa:0},
+      {n:"Champiñones", g:50, kcal:11, proteina:2, carbos:2, grasa:0},
+      {n:"Aceite de oliva", g:5, kcal:44, proteina:0, carbos:0, grasa:5},
+      {n:"Ajo", g:5, kcal:0, proteina:0, carbos:0, grasa:0},
+      {n:"Sal, pimienta y especias", g:2, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Abre la pechuga en mariposa y rellena con la espinaca y champiñones salteados.","Cierra con palillos y cocina en sartén tapado a fuego medio, 6-7 min por lado.","Retira los palillos antes de servir."]},
-  {id:14, nombre:"Camarones salteados con vegetales y arroz integral", categoria:"comida", dieta:"omnivora", kcal:410, proteina:32, carbos:45, grasa:8,
-    ingredientes:["180 g de camarones pelados","1 taza de vegetales mixtos (pimiento, cebolla, zanahoria)","1/2 taza de arroz integral cocido","Salsa de soya baja en sodio, ajo y jengibre"],
+  {id:14, nombre:"Camarones salteados con vegetales y arroz integral", categoria:"comida", dieta:"omnivora",
+    ingredientes:[
+      {n:"Camarones", g:180, kcal:153, proteina:36, carbos:0, grasa:1},
+      {n:"Vegetales mixtos", g:150, kcal:53, proteina:3, carbos:11, grasa:0},
+      {n:"Arroz integral cocido", g:150, kcal:168, proteina:4, carbos:36, grasa:1},
+      {n:"Salsa de soya", g:12, kcal:7, proteina:1, carbos:1, grasa:0},
+      {n:"Ajo", g:5, kcal:0, proteina:0, carbos:0, grasa:0},
+      {n:"Jengibre", g:3, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Saltea el ajo y jengibre, agrega los camarones hasta que estén rosados.","Añade los vegetales y saltea 3-4 minutos más.","Sirve sobre el arroz integral con un chorrito de salsa de soya."]},
-  {id:15, nombre:"Tofu marinado a la plancha con vegetales asados y arroz integral", categoria:"comida", dieta:"vegana", kcal:380, proteina:24, carbos:42, grasa:12,
-    ingredientes:["200 g de tofu firme","Vegetales al gusto (calabacín, pimiento, cebolla)","1/2 taza de arroz integral cocido","Salsa de soya, ajo y un toque de aceite de sésamo"],
+  {id:15, nombre:"Tofu marinado a la plancha con vegetales asados y arroz integral", categoria:"comida", dieta:"vegana",
+    ingredientes:[
+      {n:"Tofu firme", g:150, kcal:216, proteina:24, carbos:4, grasa:13},
+      {n:"Vegetales mixtos", g:150, kcal:53, proteina:3, carbos:11, grasa:0},
+      {n:"Arroz integral cocido", g:130, kcal:146, proteina:3, carbos:31, grasa:1},
+      {n:"Salsa de soya", g:12, kcal:7, proteina:1, carbos:1, grasa:0},
+      {n:"Aceite de sésamo", g:3, kcal:27, proteina:0, carbos:0, grasa:3},
+      {n:"Ajo", g:5, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Marina el tofu en cubos con salsa de soya y ajo por 10 minutos.","Cocina el tofu y los vegetales en sartén o al horno hasta dorar.","Sirve sobre el arroz integral."]},
-  {id:16, nombre:"Chili de pavo molido con frijoles negros", categoria:"comida", dieta:"omnivora", kcal:430, proteina:36, carbos:38, grasa:12,
-    ingredientes:["150 g de pavo molido","1/2 taza de frijoles negros cocidos","Tomate triturado, cebolla, ajo","Comino, pimentón y chile al gusto"],
+  {id:16, nombre:"Chili de pavo molido con frijoles negros", categoria:"comida", dieta:"omnivora",
+    ingredientes:[
+      {n:"Pavo molido", g:130, kcal:221, proteina:26, carbos:0, grasa:13},
+      {n:"Frijoles negros cocidos", g:120, kcal:158, proteina:11, carbos:29, grasa:1},
+      {n:"Tomate triturado", g:150, kcal:48, proteina:2, carbos:11, grasa:0},
+      {n:"Cebolla", g:40, kcal:16, proteina:0, carbos:4, grasa:0},
+      {n:"Sal, pimienta y especias", g:3, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Dora el pavo molido con cebolla y ajo.","Agrega el tomate triturado, los frijoles y las especias.","Cocina a fuego medio 15-20 minutos hasta espesar."]},
-  {id:17, nombre:"Merluza al horno con puré de coliflor", categoria:"comida", dieta:"omnivora", kcal:350, proteina:33, carbos:18, grasa:10,
-    ingredientes:["180 g de filete de merluza (o pescado blanco similar)","1 taza de coliflor","Ajo, limón, sal y pimienta","Un toque de leche descremada"],
+  {id:17, nombre:"Merluza al horno con puré de coliflor", categoria:"comida", dieta:"omnivora",
+    ingredientes:[
+      {n:"Pescado blanco", g:200, kcal:184, proteina:38, carbos:0, grasa:3},
+      {n:"Coliflor", g:250, kcal:63, proteina:5, carbos:13, grasa:1},
+      {n:"Leche descremada", g:30, kcal:10, proteina:1, carbos:2, grasa:0},
+      {n:"Aceite de oliva", g:4, kcal:35, proteina:0, carbos:0, grasa:4},
+      {n:"Ajo", g:5, kcal:0, proteina:0, carbos:0, grasa:0},
+      {n:"Limón", g:5, kcal:0, proteina:0, carbos:0, grasa:0},
+      {n:"Sal, pimienta y especias", g:2, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Hornea el pescado con limón, ajo, sal y pimienta a 200°C por 15 min.","Cocina la coliflor al vapor y hazla puré con un toque de leche descremada, sal y pimienta.","Sirve el pescado sobre el puré."]},
-  {id:18, nombre:"Wrap integral de pollo con yogur en lugar de mayonesa", categoria:"comida", dieta:"omnivora", kcal:390, proteina:35, carbos:32, grasa:10,
-    ingredientes:["1 tortilla integral grande","120 g de pechuga de pollo cocida y desmenuzada","Lechuga, tomate, pepino","2 cucharadas de yogur griego natural + mostaza"],
+  {id:18, nombre:"Wrap integral de pollo con yogur en lugar de mayonesa", categoria:"comida", dieta:"omnivora",
+    ingredientes:[
+      {n:"Tortilla integral", g:60, kcal:186, proteina:5, carbos:30, grasa:5},
+      {n:"Pechuga de pollo", g:120, kcal:144, proteina:27, carbos:0, grasa:3},
+      {n:"Lechuga", g:30, kcal:5, proteina:0, carbos:1, grasa:0},
+      {n:"Tomate", g:50, kcal:9, proteina:0, carbos:2, grasa:0},
+      {n:"Pepino", g:40, kcal:6, proteina:0, carbos:1, grasa:0},
+      {n:"Yogur griego natural bajo en grasa", g:40, kcal:24, proteina:4, carbos:1, grasa:0},
+      {n:"Mostaza", g:5, kcal:3, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Mezcla el yogur griego con la mostaza para hacer el aderezo.","Rellena la tortilla con el pollo, vegetales y el aderezo.","Enrolla y corta a la mitad."]},
-  {id:19, nombre:"Lentejas guisadas con pechuga de pollo desmenuzada", categoria:"comida", dieta:"omnivora", kcal:420, proteina:34, carbos:40, grasa:10,
-    ingredientes:["1/2 taza de lentejas cocidas","100 g de pechuga de pollo desmenuzada","Cebolla, ajo, tomate, zanahoria","Comino y pimentón al gusto"],
+  {id:19, nombre:"Lentejas guisadas con pechuga de pollo desmenuzada", categoria:"comida", dieta:"omnivora",
+    ingredientes:[
+      {n:"Lentejas cocidas", g:180, kcal:209, proteina:16, carbos:36, grasa:1},
+      {n:"Pechuga de pollo", g:120, kcal:144, proteina:27, carbos:0, grasa:3},
+      {n:"Cebolla", g:30, kcal:12, proteina:0, carbos:3, grasa:0},
+      {n:"Tomate", g:60, kcal:11, proteina:1, carbos:2, grasa:0},
+      {n:"Zanahoria", g:40, kcal:16, proteina:0, carbos:4, grasa:0},
+      {n:"Aceite de oliva", g:4, kcal:35, proteina:0, carbos:0, grasa:4},
+      {n:"Sal, pimienta y especias", g:3, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Sofríe la cebolla, ajo y zanahoria.","Agrega el tomate, las lentejas y un poco de agua o caldo, cocina 10 minutos.","Incorpora el pollo desmenuzado y cocina 5 minutos más."]},
-  {id:20, nombre:"Bowl de quinoa con garbanzos, pepino y feta bajo en grasa", categoria:"comida", dieta:"vegetariana", kcal:400, proteina:22, carbos:45, grasa:12,
-    ingredientes:["1/2 taza de quinoa cocida","1/2 taza de garbanzos cocidos","Pepino y tomate picados","30 g de queso feta bajo en grasa","Limón y orégano"],
+  {id:20, nombre:"Bowl de quinoa con garbanzos, pepino y feta bajo en grasa", categoria:"comida", dieta:"vegetariana",
+    ingredientes:[
+      {n:"Quinoa cocida", g:120, kcal:144, proteina:5, carbos:25, grasa:2},
+      {n:"Garbanzos cocidos", g:120, kcal:197, proteina:11, carbos:32, grasa:3},
+      {n:"Pepino", g:60, kcal:9, proteina:0, carbos:2, grasa:0},
+      {n:"Tomate", g:60, kcal:11, proteina:1, carbos:2, grasa:0},
+      {n:"Queso feta bajo en grasa", g:30, kcal:57, proteina:4, carbos:1, grasa:4},
+      {n:"Limón", g:5, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Mezcla la quinoa con los garbanzos y vegetales picados.","Agrega el queso feta desmenuzado.","Aliña con limón, orégano y una pizca de sal."]},
-  {id:21, nombre:"Pescado blanco al vapor con vegetales al limón", categoria:"comida", dieta:"omnivora", kcal:320, proteina:30, carbos:20, grasa:8,
-    ingredientes:["180 g de pescado blanco (tilapia o similar)","Vegetales mixtos al vapor","Limón, eneldo, sal y pimienta"],
+  {id:21, nombre:"Pescado blanco al vapor con vegetales al limón", categoria:"comida", dieta:"omnivora",
+    ingredientes:[
+      {n:"Pescado blanco", g:220, kcal:202, proteina:42, carbos:0, grasa:3},
+      {n:"Vegetales mixtos", g:250, kcal:88, proteina:5, carbos:18, grasa:1},
+      {n:"Aceite de oliva", g:4, kcal:35, proteina:0, carbos:0, grasa:4},
+      {n:"Limón", g:8, kcal:0, proteina:0, carbos:0, grasa:0},
+      {n:"Sal, pimienta y especias", g:2, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Cocina el pescado al vapor con rodajas de limón encima, 10-12 minutos.","Cocina los vegetales al vapor por separado.","Sirve juntos con un toque de eneldo fresco."]},
-  {id:22, nombre:"Albóndigas de pavo en salsa de tomate con zoodles", categoria:"comida", dieta:"omnivora", kcal:380, proteina:33, carbos:18, grasa:14,
-    ingredientes:["150 g de pavo molido","1 huevo (para varias porciones)","Ajo, perejil, sal y pimienta","Salsa de tomate natural","1 calabacín en espiral (zoodles)"],
+  {id:22, nombre:"Albóndigas de pavo en salsa de tomate con zoodles", categoria:"comida", dieta:"omnivora",
+    ingredientes:[
+      {n:"Pavo molido", g:150, kcal:255, proteina:30, carbos:0, grasa:15},
+      {n:"Huevo", g:15, kcal:21, proteina:2, carbos:0, grasa:1},
+      {n:"Salsa de tomate natural", g:150, kcal:44, proteina:2, carbos:10, grasa:0},
+      {n:"Calabacín", g:200, kcal:34, proteina:2, carbos:6, grasa:1},
+      {n:"Sal, pimienta y especias", g:3, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Mezcla el pavo molido con ajo, perejil, sal y un poco de huevo, forma las albóndigas.","Cocina las albóndigas en la salsa de tomate a fuego medio 15 minutos.","Saltea los zoodles 2 minutos y sirve con las albóndigas encima."]},
-  {id:23, nombre:"Ensalada César light con pollo (aderezo de yogur)", categoria:"comida", dieta:"omnivora", kcal:360, proteina:36, carbos:15, grasa:14,
-    ingredientes:["150 g de pechuga de pollo a la plancha","Lechuga romana","2 cucharadas de yogur griego natural","Ajo, limón, mostaza, queso parmesano (poco), sal y pimienta"],
+  {id:23, nombre:"Ensalada César light con pollo (aderezo de yogur)", categoria:"comida", dieta:"omnivora",
+    ingredientes:[
+      {n:"Pechuga de pollo", g:170, kcal:204, proteina:38, carbos:0, grasa:4},
+      {n:"Lechuga", g:100, kcal:15, proteina:1, carbos:3, grasa:0},
+      {n:"Pan integral", g:25, kcal:62, proteina:3, carbos:10, grasa:1},
+      {n:"Yogur griego natural bajo en grasa", g:40, kcal:24, proteina:4, carbos:1, grasa:0},
+      {n:"Queso parmesano", g:10, kcal:43, proteina:4, carbos:0, grasa:3},
+      {n:"Aceite de oliva", g:4, kcal:35, proteina:0, carbos:0, grasa:4},
+      {n:"Mostaza", g:5, kcal:3, proteina:0, carbos:0, grasa:0},
+      {n:"Limón", g:5, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Prepara el aderezo mezclando yogur, ajo, limón, mostaza y sal.","Corta el pollo a la plancha en tiras.","Mezcla la lechuga con el aderezo y corona con el pollo y un poco de parmesano."]},
-  {id:24, nombre:"Curry de pollo bajo en grasa con arroz integral", categoria:"comida", dieta:"omnivora", kcal:430, proteina:35, carbos:40, grasa:10,
-    ingredientes:["150 g de pechuga de pollo en cubos","Leche de coco light","Curry en polvo, cúrcuma, ajo y cebolla","1/2 taza de arroz integral cocido"],
+  {id:24, nombre:"Curry de pollo bajo en grasa con arroz integral", categoria:"comida", dieta:"omnivora",
+    ingredientes:[
+      {n:"Pechuga de pollo", g:150, kcal:180, proteina:34, carbos:0, grasa:4},
+      {n:"Leche de coco light", g:80, kcal:58, proteina:1, carbos:1, grasa:6},
+      {n:"Cebolla", g:30, kcal:12, proteina:0, carbos:3, grasa:0},
+      {n:"Sal, pimienta y especias", g:4, kcal:0, proteina:0, carbos:0, grasa:0},
+      {n:"Arroz integral cocido", g:150, kcal:168, proteina:4, carbos:36, grasa:1}
+    ],
     pasos:["Sofríe la cebolla y el ajo, agrega el pollo hasta sellar.","Añade las especias y la leche de coco light, cocina 12-15 minutos.","Sirve sobre el arroz integral."]},
-  {id:41, nombre:"Curry de garbanzos y espinaca con arroz integral", categoria:"comida", dieta:"vegana", kcal:430, proteina:20, carbos:58, grasa:12,
-    ingredientes:["1 taza de garbanzos cocidos","2 tazas de espinaca","1/2 taza de tomate triturado","Leche de coco light, curry, ajo y cebolla","1/2 taza de arroz integral cocido"],
+  {id:41, nombre:"Curry de garbanzos y espinaca con arroz integral", categoria:"comida", dieta:"vegana",
+    ingredientes:[
+      {n:"Garbanzos cocidos", g:130, kcal:213, proteina:12, carbos:35, grasa:3},
+      {n:"Espinaca", g:80, kcal:18, proteina:2, carbos:3, grasa:0},
+      {n:"Tomate triturado", g:120, kcal:38, proteina:2, carbos:8, grasa:0},
+      {n:"Leche de coco light", g:60, kcal:44, proteina:0, carbos:1, grasa:4},
+      {n:"Cebolla", g:30, kcal:12, proteina:0, carbos:3, grasa:0},
+      {n:"Arroz integral cocido", g:130, kcal:146, proteina:3, carbos:31, grasa:1}
+    ],
     pasos:["Sofríe cebolla y ajo, añade el curry.","Agrega tomate, garbanzos y leche de coco, cocina 10 minutos.","Incorpora la espinaca hasta que se marchite y sirve con el arroz."]},
-  {id:42, nombre:"Bowl de lentejas rojas con verduras asadas", categoria:"comida", dieta:"vegana", kcal:400, proteina:22, carbos:52, grasa:9,
-    ingredientes:["3/4 taza de lentejas rojas cocidas","Calabacín, pimiento y cebolla en cubos","Comino, pimentón, ajo","Limón y perejil"],
+  {id:42, nombre:"Bowl de lentejas rojas con verduras asadas", categoria:"comida", dieta:"vegana",
+    ingredientes:[
+      {n:"Lentejas cocidas", g:230, kcal:267, proteina:21, carbos:46, grasa:1},
+      {n:"Calabacín", g:90, kcal:15, proteina:1, carbos:3, grasa:0},
+      {n:"Pimiento", g:90, kcal:23, proteina:1, carbos:5, grasa:0},
+      {n:"Cebolla", g:40, kcal:16, proteina:0, carbos:4, grasa:0},
+      {n:"Aceite de oliva", g:6, kcal:53, proteina:0, carbos:0, grasa:6},
+      {n:"Limón", g:5, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Asa las verduras a 200°C por 20 minutos con especias.","Calienta las lentejas con un poco de agua y comino.","Sirve las lentejas con las verduras encima, limón y perejil."]},
-  {id:43, nombre:"Chili sin carne de frijol y soya texturizada", categoria:"comida", dieta:"vegana", kcal:410, proteina:26, carbos:50, grasa:8,
-    ingredientes:["1/2 taza de soya texturizada hidratada","1/2 taza de frijoles rojos cocidos","Tomate triturado, cebolla, ajo, pimiento","Comino, pimentón, chile y orégano"],
+  {id:43, nombre:"Chili sin carne de frijol y soya texturizada", categoria:"comida", dieta:"vegana",
+    ingredientes:[
+      {n:"Soya texturizada hidratada", g:120, kcal:156, proteina:22, carbos:14, grasa:1},
+      {n:"Frijoles rojos cocidos", g:120, kcal:152, proteina:10, carbos:28, grasa:1},
+      {n:"Tomate triturado", g:150, kcal:48, proteina:2, carbos:11, grasa:0},
+      {n:"Cebolla", g:40, kcal:16, proteina:0, carbos:4, grasa:0},
+      {n:"Pimiento", g:50, kcal:13, proteina:1, carbos:3, grasa:0},
+      {n:"Sal, pimienta y especias", g:4, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Sofríe cebolla, ajo y pimiento.","Agrega la soya texturizada, los frijoles, el tomate y las especias.","Cocina a fuego medio 20 minutos hasta espesar."]},
-  {id:44, nombre:"Tacos de tempeh con repollo morado y salsa", categoria:"comida", dieta:"vegana", kcal:390, proteina:25, carbos:40, grasa:14,
-    ingredientes:["150 g de tempeh en tiras","2 tortillas de maíz","1 taza de repollo morado rallado","Salsa de tomate picante, limón y cilantro","Salsa de soya y comino para marinar"],
+  {id:44, nombre:"Tacos de tempeh con repollo morado y salsa", categoria:"comida", dieta:"vegana",
+    ingredientes:[
+      {n:"Tempeh", g:130, kcal:250, proteina:26, carbos:10, grasa:14},
+      {n:"Tortilla de maíz", g:50, kcal:109, proteina:3, carbos:23, grasa:1},
+      {n:"Repollo morado", g:100, kcal:31, proteina:1, carbos:7, grasa:0},
+      {n:"Salsa de tomate picante", g:40, kcal:12, proteina:1, carbos:3, grasa:0},
+      {n:"Salsa de soya", g:10, kcal:6, proteina:1, carbos:1, grasa:0},
+      {n:"Limón", g:5, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Marina el tempeh con salsa de soya y comino 10 minutos, luego dóralo en sartén.","Calienta las tortillas.","Arma los tacos con el tempeh, el repollo, la salsa, limón y cilantro."]},
-  {id:45, nombre:"Ensalada de quinoa, edamame y aguacate", categoria:"comida", dieta:"vegana", kcal:420, proteina:20, carbos:44, grasa:18,
-    ingredientes:["3/4 taza de quinoa cocida","1/2 taza de edamame pelado","1/4 de aguacate en cubos","Pepino, tomate cherry, cebollín","Limón, salsa de soya y sésamo"],
+  {id:45, nombre:"Ensalada de quinoa, edamame y aguacate", categoria:"comida", dieta:"vegana",
+    ingredientes:[
+      {n:"Quinoa cocida", g:180, kcal:216, proteina:8, carbos:38, grasa:3},
+      {n:"Edamame", g:90, kcal:109, proteina:11, carbos:8, grasa:5},
+      {n:"Aguacate", g:50, kcal:80, proteina:1, carbos:5, grasa:8},
+      {n:"Pepino", g:50, kcal:8, proteina:0, carbos:2, grasa:0},
+      {n:"Tomate", g:50, kcal:9, proteina:0, carbos:2, grasa:0},
+      {n:"Salsa de soya", g:10, kcal:6, proteina:1, carbos:1, grasa:0}
+    ],
     pasos:["Mezcla la quinoa fría con el edamame y las verduras.","Agrega el aguacate con cuidado.","Aliña con limón, salsa de soya y sésamo."]},
-  {id:46, nombre:"Pasta integral con lentejas a la boloñesa", categoria:"comida", dieta:"vegana", kcal:450, proteina:24, carbos:70, grasa:8,
-    ingredientes:["70 g de pasta integral (en seco)","1/2 taza de lentejas cocidas","Tomate triturado, cebolla, ajo, zanahoria","Orégano, albahaca y pimienta"],
+  {id:46, nombre:"Pasta integral con lentejas a la boloñesa", categoria:"comida", dieta:"vegana",
+    ingredientes:[
+      {n:"Pasta integral (seca)", g:60, kcal:209, proteina:8, carbos:43, grasa:2},
+      {n:"Lentejas cocidas", g:120, kcal:139, proteina:11, carbos:24, grasa:0},
+      {n:"Tomate triturado", g:150, kcal:48, proteina:2, carbos:11, grasa:0},
+      {n:"Cebolla", g:30, kcal:12, proteina:0, carbos:3, grasa:0},
+      {n:"Zanahoria", g:40, kcal:16, proteina:0, carbos:4, grasa:0},
+      {n:"Aceite de oliva", g:4, kcal:35, proteina:0, carbos:0, grasa:4},
+      {n:"Sal, pimienta y especias", g:3, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Cocina la pasta al dente.","Sofríe cebolla, ajo y zanahoria, agrega tomate y lentejas, cocina 12 minutos.","Mezcla la salsa con la pasta y sirve con hierbas."]},
-  {id:47, nombre:"Buddha bowl de tofu al horno, brócoli y camote", categoria:"comida", dieta:"vegana", kcal:430, proteina:26, carbos:44, grasa:16,
-    ingredientes:["200 g de tofu firme en cubos","1 taza de brócoli","1 camote pequeño en cubos","Salsa de soya, ajo, pimentón","Tahini y limón para el aderezo"],
+  {id:47, nombre:"Buddha bowl de tofu al horno, brócoli y camote", categoria:"comida", dieta:"vegana",
+    ingredientes:[
+      {n:"Tofu firme", g:160, kcal:230, proteina:26, carbos:4, grasa:14},
+      {n:"Brócoli", g:150, kcal:51, proteina:4, carbos:11, grasa:1},
+      {n:"Camote", g:130, kcal:112, proteina:2, carbos:26, grasa:0},
+      {n:"Tahini", g:12, kcal:71, proteina:2, carbos:3, grasa:6},
+      {n:"Salsa de soya", g:10, kcal:6, proteina:1, carbos:1, grasa:0},
+      {n:"Limón", g:5, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Hornea el tofu y el camote a 200°C por 25 minutos, y el brócoli los últimos 12.","Mezcla tahini con limón y agua para el aderezo.","Sirve todo en un bowl con el aderezo por encima."]},
-  {id:48, nombre:"Hamburguesa de frijol negro con ensalada", categoria:"comida", dieta:"vegana", kcal:400, proteina:20, carbos:52, grasa:12,
-    ingredientes:["1 taza de frijoles negros","3 cucharadas de avena molida","Cebolla, ajo, comino y pimentón","1 pan integral","Ensalada verde de acompañamiento"],
+  {id:48, nombre:"Hamburguesa de frijol negro con ensalada", categoria:"comida", dieta:"vegana",
+    ingredientes:[
+      {n:"Frijoles negros cocidos", g:150, kcal:198, proteina:13, carbos:36, grasa:1},
+      {n:"Avena en hojuelas", g:20, kcal:78, proteina:3, carbos:13, grasa:1},
+      {n:"Cebolla", g:20, kcal:8, proteina:0, carbos:2, grasa:0},
+      {n:"Pan integral", g:50, kcal:124, proteina:7, carbos:21, grasa:2},
+      {n:"Lechuga", g:50, kcal:8, proteina:1, carbos:1, grasa:0},
+      {n:"Tomate", g:40, kcal:7, proteina:0, carbos:2, grasa:0}
+    ],
     pasos:["Machaca los frijoles con la avena y las especias, forma una hamburguesa.","Dórala en sartén 4 minutos por lado.","Sirve en el pan integral con la ensalada."]},
-  {id:49, nombre:"Salteado de tofu y vegetales con fideos soba", categoria:"comida", dieta:"vegana", kcal:420, proteina:24, carbos:56, grasa:10,
-    ingredientes:["150 g de tofu firme","60 g de fideos soba (en seco)","Brócoli, zanahoria y pimiento","Salsa de soya, jengibre, ajo y sésamo"],
+  {id:49, nombre:"Salteado de tofu y vegetales con fideos soba", categoria:"comida", dieta:"vegana",
+    ingredientes:[
+      {n:"Tofu firme", g:150, kcal:216, proteina:24, carbos:4, grasa:13},
+      {n:"Fideos soba (secos)", g:50, kcal:175, proteina:7, carbos:38, grasa:0},
+      {n:"Brócoli", g:80, kcal:27, proteina:2, carbos:6, grasa:0},
+      {n:"Zanahoria", g:50, kcal:21, proteina:0, carbos:5, grasa:0},
+      {n:"Pimiento", g:50, kcal:13, proteina:1, carbos:3, grasa:0},
+      {n:"Salsa de soya", g:12, kcal:7, proteina:1, carbos:1, grasa:0}
+    ],
     pasos:["Cocina los fideos soba y reserva.","Saltea el tofu hasta dorar, agrega los vegetales, ajo y jengibre.","Incorpora los fideos y la salsa de soya, saltea 2 minutos y termina con sésamo."]},
-  {id:50, nombre:"Sopa espesa de lentejas con verduras", categoria:"comida", dieta:"vegana", kcal:340, proteina:20, carbos:48, grasa:5,
-    ingredientes:["3/4 taza de lentejas","Zanahoria, apio, cebolla y ajo","1 tomate","Comino, laurel, sal y pimienta","Caldo de verduras"],
+  {id:50, nombre:"Sopa espesa de lentejas con verduras", categoria:"comida", dieta:"vegana",
+    ingredientes:[
+      {n:"Lentejas cocidas", g:240, kcal:278, proteina:22, carbos:48, grasa:1},
+      {n:"Zanahoria", g:50, kcal:21, proteina:0, carbos:5, grasa:0},
+      {n:"Apio", g:40, kcal:6, proteina:0, carbos:1, grasa:0},
+      {n:"Cebolla", g:40, kcal:16, proteina:0, carbos:4, grasa:0},
+      {n:"Tomate", g:80, kcal:14, proteina:1, carbos:3, grasa:0},
+      {n:"Aceite de oliva", g:4, kcal:35, proteina:0, carbos:0, grasa:4},
+      {n:"Caldo de verduras", g:200, kcal:8, proteina:0, carbos:1, grasa:0}
+    ],
     pasos:["Sofríe la cebolla, el ajo, la zanahoria y el apio.","Agrega las lentejas, el tomate, el laurel y el caldo.","Cocina 30-35 minutos hasta que las lentejas estén tiernas."]},
-  {id:51, nombre:"Berenjena rellena de quinoa y garbanzos", categoria:"comida", dieta:"vegana", kcal:380, proteina:18, carbos:46, grasa:12,
-    ingredientes:["1 berenjena mediana","1/2 taza de quinoa cocida","1/2 taza de garbanzos","Tomate, cebolla, ajo, comino","Perejil y limón"],
+  {id:51, nombre:"Berenjena rellena de quinoa y garbanzos", categoria:"comida", dieta:"vegana",
+    ingredientes:[
+      {n:"Berenjena", g:250, kcal:63, proteina:3, carbos:15, grasa:1},
+      {n:"Quinoa cocida", g:100, kcal:120, proteina:4, carbos:21, grasa:2},
+      {n:"Garbanzos cocidos", g:100, kcal:164, proteina:9, carbos:27, grasa:3},
+      {n:"Tomate", g:60, kcal:11, proteina:1, carbos:2, grasa:0},
+      {n:"Cebolla", g:30, kcal:12, proteina:0, carbos:3, grasa:0},
+      {n:"Aceite de oliva", g:4, kcal:35, proteina:0, carbos:0, grasa:4},
+      {n:"Limón", g:5, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Hornea la berenjena partida a la mitad 20 minutos y retira parte de la pulpa.","Saltea la pulpa con cebolla, ajo, tomate, garbanzos y quinoa.","Rellena la berenjena y hornea 12 minutos más."]},
-  {id:52, nombre:"Wrap de falafel al horno con salsa de yogur de soya", categoria:"comida", dieta:"vegana", kcal:430, proteina:19, carbos:52, grasa:16,
-    ingredientes:["1 taza de garbanzos","Ajo, cebolla, perejil, comino y harina de garbanzo","1 tortilla integral","Lechuga, tomate y pepino","Yogur de soya con limón y pepino rallado"],
+  {id:52, nombre:"Wrap de falafel al horno con salsa de yogur de soya", categoria:"comida", dieta:"vegana",
+    ingredientes:[
+      {n:"Garbanzos cocidos", g:120, kcal:197, proteina:11, carbos:32, grasa:3},
+      {n:"Harina de garbanzo", g:12, kcal:46, proteina:3, carbos:7, grasa:1},
+      {n:"Tortilla integral", g:50, kcal:155, proteina:4, carbos:25, grasa:4},
+      {n:"Lechuga", g:30, kcal:5, proteina:0, carbos:1, grasa:0},
+      {n:"Tomate", g:50, kcal:9, proteina:0, carbos:2, grasa:0},
+      {n:"Yogur de soya natural", g:50, kcal:25, proteina:2, carbos:2, grasa:1}
+    ],
     pasos:["Procesa los garbanzos con ajo, cebolla, perejil y especias, forma bolitas y hornéalas 20 minutos a 200°C.","Prepara la salsa mezclando yogur de soya, limón y pepino.","Arma el wrap con los falafel, las verduras y la salsa."]},
-  {id:53, nombre:"Pollo al curry rojo con verduras", categoria:"comida", dieta:"omnivora", kcal:420, proteina:37, carbos:24, grasa:18,
-    ingredientes:["150 g de pechuga de pollo en cubos","Pasta de curry rojo","Leche de coco light","Pimiento, calabacín y cebolla","Cilantro y limón"],
+  {id:53, nombre:"Pollo al curry rojo con verduras", categoria:"comida", dieta:"omnivora",
+    ingredientes:[
+      {n:"Pechuga de pollo", g:170, kcal:204, proteina:38, carbos:0, grasa:4},
+      {n:"Pasta de curry rojo", g:20, kcal:22, proteina:1, carbos:3, grasa:1},
+      {n:"Leche de coco light", g:90, kcal:66, proteina:1, carbos:1, grasa:6},
+      {n:"Pimiento", g:60, kcal:16, proteina:1, carbos:4, grasa:0},
+      {n:"Calabacín", g:60, kcal:10, proteina:1, carbos:2, grasa:0},
+      {n:"Cebolla", g:30, kcal:12, proteina:0, carbos:3, grasa:0}
+    ],
     pasos:["Sella el pollo en la sartén.","Agrega la pasta de curry, la leche de coco y las verduras.","Cocina 12 minutos y sirve con cilantro y limón."]},
-  {id:54, nombre:"Pescado blanco a la plancha con ensalada tibia de garbanzo", categoria:"comida", dieta:"omnivora", kcal:390, proteina:38, carbos:30, grasa:12,
-    ingredientes:["180 g de pescado blanco","3/4 taza de garbanzos cocidos","Espinaca, tomate cherry y cebolla","Limón, comino y aceite de oliva (poco)"],
+  {id:54, nombre:"Pescado blanco a la plancha con ensalada tibia de garbanzo", categoria:"comida", dieta:"omnivora",
+    ingredientes:[
+      {n:"Pescado blanco", g:180, kcal:166, proteina:34, carbos:0, grasa:3},
+      {n:"Garbanzos cocidos", g:130, kcal:213, proteina:12, carbos:35, grasa:3},
+      {n:"Espinaca", g:40, kcal:9, proteina:1, carbos:1, grasa:0},
+      {n:"Tomate", g:60, kcal:11, proteina:1, carbos:2, grasa:0},
+      {n:"Cebolla", g:30, kcal:12, proteina:0, carbos:3, grasa:0},
+      {n:"Aceite de oliva", g:4, kcal:35, proteina:0, carbos:0, grasa:4}
+    ],
     pasos:["Cocina el pescado a la plancha 3-4 minutos por lado.","Saltea los garbanzos con cebolla, tomate y comino, agrega la espinaca al final.","Sirve el pescado sobre la ensalada tibia con limón."]},
-  {id:55, nombre:"Atún sellado con ajonjolí y vegetales salteados", categoria:"comida", dieta:"omnivora", kcal:400, proteina:42, carbos:18, grasa:16,
-    ingredientes:["150 g de lomo de atún fresco","Ajonjolí","Bok choy o acelga, zanahoria y cebollín","Salsa de soya, jengibre y ajo"],
+  {id:55, nombre:"Atún sellado con ajonjolí y vegetales salteados", categoria:"comida", dieta:"omnivora",
+    ingredientes:[
+      {n:"Atún fresco", g:180, kcal:216, proteina:47, carbos:0, grasa:2},
+      {n:"Semillas de sésamo", g:10, kcal:57, proteina:2, carbos:2, grasa:5},
+      {n:"Acelga", g:120, kcal:23, proteina:2, carbos:4, grasa:0},
+      {n:"Zanahoria", g:50, kcal:21, proteina:0, carbos:5, grasa:0},
+      {n:"Arroz integral cocido", g:80, kcal:90, proteina:2, carbos:19, grasa:1},
+      {n:"Salsa de soya", g:12, kcal:7, proteina:1, carbos:1, grasa:0},
+      {n:"Jengibre", g:3, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Cubre el atún con ajonjolí y séllalo 1 minuto por lado (interior rosado).","Saltea los vegetales con jengibre, ajo y salsa de soya.","Corta el atún en láminas y sirve sobre los vegetales."]},
-  {id:56, nombre:"Pechuga de pollo BBQ al horno con elote y ensalada", categoria:"comida", dieta:"omnivora", kcal:440, proteina:44, carbos:34, grasa:12,
-    ingredientes:["160 g de pechuga de pollo","2 cucharadas de salsa BBQ sin azúcar añadida","1 elote (mazorca)","Ensalada de repollo y zanahoria con limón"],
+  {id:56, nombre:"Pechuga de pollo BBQ al horno con elote y ensalada", categoria:"comida", dieta:"omnivora",
+    ingredientes:[
+      {n:"Pechuga de pollo", g:180, kcal:216, proteina:41, carbos:0, grasa:5},
+      {n:"Salsa BBQ sin azúcar añadida", g:30, kcal:27, proteina:0, carbos:6, grasa:0},
+      {n:"Elote (mazorca)", g:120, kcal:115, proteina:4, carbos:25, grasa:2},
+      {n:"Repollo", g:80, kcal:20, proteina:1, carbos:5, grasa:0},
+      {n:"Zanahoria", g:40, kcal:16, proteina:0, carbos:4, grasa:0},
+      {n:"Limón", g:5, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Unta el pollo con la salsa BBQ y hornéalo a 200°C por 22 minutos.","Cocina el elote al vapor o hervido.","Sirve con la ensalada de repollo aliñada con limón."]},
 
   // ---------- SNACKS ----------
-  {id:25, nombre:"Palitos de zanahoria y pepino con hummus", categoria:"snack", dieta:"vegana", kcal:140, proteina:6, carbos:16, grasa:6,
-    ingredientes:["1 zanahoria en bastones","1/2 pepino en bastones","3 cucharadas de hummus"],
+  {id:25, nombre:"Palitos de zanahoria y pepino con hummus", categoria:"snack", dieta:"vegana",
+    ingredientes:[
+      {n:"Zanahoria", g:80, kcal:33, proteina:1, carbos:8, grasa:0},
+      {n:"Pepino", g:80, kcal:12, proteina:1, carbos:3, grasa:0},
+      {n:"Hummus", g:50, kcal:85, proteina:4, carbos:7, grasa:5}
+    ],
     pasos:["Corta las verduras en bastones.","Sirve con el hummus para acompañar."]},
-  {id:26, nombre:"Yogur griego natural con nueces", categoria:"snack", dieta:"vegetariana", kcal:160, proteina:15, carbos:8, grasa:8,
-    ingredientes:["150 g de yogur griego natural","6 mitades de nuez picadas"],
+  {id:26, nombre:"Yogur griego natural con nueces", categoria:"snack", dieta:"vegetariana",
+    ingredientes:[
+      {n:"Yogur griego natural bajo en grasa", g:150, kcal:89, proteina:15, carbos:5, grasa:1},
+      {n:"Nueces", g:12, kcal:78, proteina:2, carbos:2, grasa:8}
+    ],
     pasos:["Sirve el yogur en un bowl.","Agrega las nueces picadas encima."]},
-  {id:27, nombre:"Claras de huevo duras", categoria:"snack", dieta:"vegetariana", kcal:70, proteina:14, carbos:1, grasa:0,
-    ingredientes:["4 claras de huevo duro (2 huevos)","Sal y pimienta al gusto"],
+  {id:27, nombre:"Claras de huevo duras", categoria:"snack", dieta:"vegetariana",
+    ingredientes:[
+      {n:"Clara de huevo", g:132, kcal:69, proteina:15, carbos:1, grasa:0},
+      {n:"Sal, pimienta y especias", g:1, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Hierve los huevos 9-10 minutos.","Pela, separa las claras y sazona al gusto."]},
-  {id:28, nombre:"Batido proteico simple", categoria:"snack", dieta:"vegetariana", kcal:130, proteina:24, carbos:5, grasa:1,
-    ingredientes:["1 scoop de proteína en polvo","250 ml de agua fría","Hielo al gusto"],
+  {id:28, nombre:"Batido proteico simple", categoria:"snack", dieta:"vegetariana",
+    ingredientes:[
+      {n:"Proteína en polvo (whey)", g:30, kcal:114, proteina:24, carbos:2, grasa:2}
+    ],
     pasos:["Licúa o agita bien el scoop con el agua y hielo.","Sirve inmediatamente."]},
-  {id:29, nombre:"Requesón con canela y un toque de miel", categoria:"snack", dieta:"vegetariana", kcal:150, proteina:18, carbos:12, grasa:3,
-    ingredientes:["150 g de requesón bajo en grasa","Canela al gusto","1 cucharadita de miel"],
+  {id:29, nombre:"Requesón con canela y un toque de miel", categoria:"snack", dieta:"vegetariana",
+    ingredientes:[
+      {n:"Requesón bajo en grasa", g:150, kcal:120, proteina:17, carbos:5, grasa:3},
+      {n:"Canela", g:1, kcal:0, proteina:0, carbos:0, grasa:0},
+      {n:"Miel", g:7, kcal:21, proteina:0, carbos:6, grasa:0}
+    ],
     pasos:["Mezcla el requesón con la canela.","Agrega la miel por encima."]},
-  {id:30, nombre:"Edamame al vapor con sal", categoria:"snack", dieta:"vegana", kcal:120, proteina:11, carbos:10, grasa:5,
-    ingredientes:["1 taza de edamame con vaina","Sal marina al gusto"],
+  {id:30, nombre:"Edamame al vapor con sal", categoria:"snack", dieta:"vegana",
+    ingredientes:[
+      {n:"Edamame", g:100, kcal:121, proteina:12, carbos:9, grasa:5},
+      {n:"Sal, pimienta y especias", g:1, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Cocina el edamame al vapor o hervido 5 minutos.","Escurre y espolvorea sal marina."]},
-  {id:31, nombre:"Rodajas de manzana con mantequilla de maní light", categoria:"snack", dieta:"vegana", kcal:170, proteina:5, carbos:20, grasa:8,
-    ingredientes:["1 manzana en rodajas","1 cucharada de mantequilla de maní light"],
+  {id:31, nombre:"Rodajas de manzana con mantequilla de maní light", categoria:"snack", dieta:"vegana",
+    ingredientes:[
+      {n:"Manzana", g:150, kcal:78, proteina:0, carbos:21, grasa:0},
+      {n:"Mantequilla de maní light", g:16, kcal:80, proteina:4, carbos:4, grasa:5}
+    ],
     pasos:["Corta la manzana en rodajas.","Sirve con la mantequilla de maní para acompañar."]},
-  {id:32, nombre:"Atún en agua con galletas de arroz", categoria:"snack", dieta:"omnivora", kcal:150, proteina:20, carbos:12, grasa:2,
-    ingredientes:["1 lata pequeña de atún en agua","2 galletas de arroz","Limón y pimienta"],
+  {id:32, nombre:"Atún en agua con galletas de arroz", categoria:"snack", dieta:"omnivora",
+    ingredientes:[
+      {n:"Atún en agua", g:80, kcal:93, proteina:21, carbos:0, grasa:1},
+      {n:"Galletas de arroz", g:18, kcal:70, proteina:1, carbos:15, grasa:1},
+      {n:"Limón", g:3, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Escurre bien el atún y sazona con limón y pimienta.","Sirve sobre las galletas de arroz."]},
-  {id:57, nombre:"Garbanzos tostados crujientes con especias", categoria:"snack", dieta:"vegana", kcal:180, proteina:9, carbos:24, grasa:6,
-    ingredientes:["1 taza de garbanzos cocidos y secos","1 cucharadita de aceite de oliva","Pimentón, comino, ajo en polvo y sal"],
+  {id:57, nombre:"Garbanzos tostados crujientes con especias", categoria:"snack", dieta:"vegana",
+    ingredientes:[
+      {n:"Garbanzos cocidos", g:100, kcal:164, proteina:9, carbos:27, grasa:3},
+      {n:"Aceite de oliva", g:4, kcal:35, proteina:0, carbos:0, grasa:4},
+      {n:"Sal, pimienta y especias", g:2, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Seca bien los garbanzos y mézclalos con el aceite y las especias.","Hornéalos a 200°C por 25-30 minutos, agitando a la mitad.","Deja enfriar para que queden crujientes."]},
-  {id:58, nombre:"Hummus de edamame con crudités", categoria:"snack", dieta:"vegana", kcal:170, proteina:11, carbos:14, grasa:8,
-    ingredientes:["1 taza de edamame pelado","1 cucharada de tahini","Ajo, limón y comino","Bastones de zanahoria y apio"],
+  {id:58, nombre:"Hummus de edamame con crudités", categoria:"snack", dieta:"vegana",
+    ingredientes:[
+      {n:"Edamame", g:80, kcal:97, proteina:10, carbos:7, grasa:4},
+      {n:"Tahini", g:10, kcal:60, proteina:2, carbos:2, grasa:5},
+      {n:"Zanahoria", g:50, kcal:21, proteina:0, carbos:5, grasa:0},
+      {n:"Apio", g:40, kcal:6, proteina:0, carbos:1, grasa:0},
+      {n:"Limón", g:5, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Procesa el edamame con tahini, ajo, limón, comino y un poco de agua.","Sirve el puré en un bowl.","Acompaña con los bastones de verdura."]},
-  {id:59, nombre:"Batido de proteína vegetal con plátano", categoria:"snack", dieta:"vegana", kcal:160, proteina:22, carbos:16, grasa:3,
-    ingredientes:["1 scoop de proteína vegetal","1/2 plátano","250 ml de bebida vegetal sin azúcar","Canela y hielo"],
+  {id:59, nombre:"Batido de proteína vegetal con plátano", categoria:"snack", dieta:"vegana",
+    ingredientes:[
+      {n:"Proteína vegetal en polvo", g:25, kcal:94, proteina:19, carbos:3, grasa:2},
+      {n:"Plátano", g:60, kcal:53, proteina:1, carbos:14, grasa:0},
+      {n:"Bebida vegetal sin azúcar", g:250, kcal:38, proteina:1, carbos:1, grasa:3},
+      {n:"Canela", g:1, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Coloca todo en la licuadora.","Licúa hasta que quede homogéneo.","Sirve frío."]},
-  {id:60, nombre:"Galleta de arroz con crema de cacahuate y plátano", categoria:"snack", dieta:"vegana", kcal:180, proteina:7, carbos:22, grasa:8,
-    ingredientes:["2 galletas de arroz","1 cucharada de crema de cacahuate natural","1/2 plátano en rodajas","Canela"],
+  {id:60, nombre:"Galleta de arroz con crema de cacahuate y plátano", categoria:"snack", dieta:"vegana",
+    ingredientes:[
+      {n:"Galletas de arroz", g:18, kcal:70, proteina:1, carbos:15, grasa:1},
+      {n:"Crema de cacahuate natural", g:12, kcal:71, proteina:3, carbos:2, grasa:6},
+      {n:"Plátano", g:60, kcal:53, proteina:1, carbos:14, grasa:0},
+      {n:"Canela", g:1, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Unta la crema de cacahuate sobre las galletas.","Coloca las rodajas de plátano.","Espolvorea canela."]},
-  {id:61, nombre:"Bocaditos de avena, dátil y proteína vegetal", categoria:"snack", dieta:"vegana", kcal:170, proteina:10, carbos:22, grasa:6,
-    ingredientes:["1/2 taza de avena","2 dátiles sin hueso","1 scoop de proteína vegetal","1 cucharada de crema de cacahuate","Un poco de agua o bebida vegetal"],
+  {id:61, nombre:"Bocaditos de avena, dátil y proteína vegetal", categoria:"snack", dieta:"vegana",
+    ingredientes:[
+      {n:"Avena en hojuelas", g:18, kcal:70, proteina:2, carbos:12, grasa:1},
+      {n:"Dátil", g:15, kcal:42, proteina:0, carbos:11, grasa:0},
+      {n:"Proteína vegetal en polvo", g:12, kcal:45, proteina:9, carbos:1, grasa:1},
+      {n:"Crema de cacahuate natural", g:8, kcal:47, proteina:2, carbos:2, grasa:4}
+    ],
     pasos:["Procesa todos los ingredientes hasta formar una masa moldeable.","Forma bolitas con las manos.","Refrigera 30 minutos antes de comer."]},
-  {id:62, nombre:"Queso cottage con piña y semillas de calabaza", categoria:"snack", dieta:"vegetariana", kcal:160, proteina:16, carbos:14, grasa:5,
-    ingredientes:["150 g de queso cottage bajo en grasa","1/2 taza de piña picada","1 cucharada de semillas de calabaza"],
+  {id:62, nombre:"Queso cottage con piña y semillas de calabaza", categoria:"snack", dieta:"vegetariana",
+    ingredientes:[
+      {n:"Queso cottage bajo en grasa", g:130, kcal:104, proteina:14, carbos:5, grasa:3},
+      {n:"Piña", g:80, kcal:40, proteina:0, carbos:10, grasa:0},
+      {n:"Semillas de calabaza", g:8, kcal:45, proteina:2, carbos:1, grasa:4}
+    ],
     pasos:["Sirve el cottage en un bowl.","Agrega la piña y las semillas de calabaza."]},
-  {id:63, nombre:"Huevo duro con aguacate y semillas", categoria:"snack", dieta:"vegetariana", kcal:170, proteina:13, carbos:4, grasa:12,
-    ingredientes:["2 huevos duros","1/4 de aguacate","Semillas de sésamo, sal y chile en hojuelas"],
+  {id:63, nombre:"Huevo duro con aguacate y semillas", categoria:"snack", dieta:"vegetariana",
+    ingredientes:[
+      {n:"Huevo", g:100, kcal:143, proteina:13, carbos:1, grasa:10},
+      {n:"Aguacate", g:25, kcal:40, proteina:1, carbos:2, grasa:4},
+      {n:"Semillas de sésamo", g:3, kcal:17, proteina:1, carbos:1, grasa:2},
+      {n:"Sal, pimienta y especias", g:1, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Parte los huevos duros a la mitad.","Machaca el aguacate y colócalo encima.","Espolvorea sésamo, sal y chile."]},
-  {id:64, nombre:"Yogur islandés (skyr) con frutos rojos", categoria:"snack", dieta:"vegetariana", kcal:140, proteina:19, carbos:12, grasa:1,
-    ingredientes:["170 g de skyr natural","1/2 taza de frutos rojos","Edulcorante o canela al gusto"],
+  {id:64, nombre:"Yogur islandés (skyr) con frutos rojos", categoria:"snack", dieta:"vegetariana",
+    ingredientes:[
+      {n:"Yogur islandés (skyr) natural", g:170, kcal:107, proteina:19, carbos:7, grasa:0},
+      {n:"Frutos rojos", g:75, kcal:32, proteina:1, carbos:7, grasa:0},
+      {n:"Canela", g:1, kcal:0, proteina:0, carbos:0, grasa:0}
+    ],
     pasos:["Sirve el skyr en un bowl.","Agrega los frutos rojos y la canela."]},
 ];
 
 // ============================================================
-// Costo aproximado por porción en USD — estimado con precios
-// típicos de supermercado/mercado en Ecuador (2024-2025).
-// Son referencias: varían por ciudad, marca y temporada.
+// Totales por receta = SUMA de los valores de sus ingredientes.
+// Así kcal/proteína/carbos/grasa siempre cuadran con la lista de
+// ingredientes que se muestra en la tarjeta (verificable a mano).
+// Cada ingrediente ya trae sus macros calculadas con valores
+// nutricionales estándar por 100 g del alimento.
 // ============================================================
-const COSTOS = {
-  // Desayunos
-  1:1.10, 2:2.60, 3:1.25, 4:1.15, 5:0.85, 6:2.05, 7:1.05, 8:1.65,
-  33:1.75, 34:1.80, 35:1.30, 36:1.60, 37:1.80, 38:0.70, 39:2.15, 40:1.20,
-  // Comidas
-  9:2.35, 10:4.50, 11:2.10, 12:2.60, 13:2.70, 14:3.60, 15:2.10, 16:2.50,
-  17:2.80, 18:2.20, 19:1.75, 20:1.70, 21:2.40, 22:2.75, 23:2.50, 24:2.30,
-  41:1.90, 42:1.20, 43:1.30, 44:2.45, 45:1.80, 46:1.40, 47:2.20, 48:1.05,
-  49:2.25, 50:0.95, 51:1.60, 52:1.45, 53:3.10, 54:2.65, 55:4.00, 56:2.60,
-  // Snacks
-  25:0.80, 26:1.55, 27:0.35, 28:0.65, 29:1.30, 30:0.85, 31:0.55, 32:1.30,
-  57:0.50, 58:1.35, 59:1.15, 60:0.60, 61:1.35, 62:1.70, 63:0.80, 64:2.40
-};
-RECETAS.forEach(r => { r.costo = COSTOS[r.id] != null ? COSTOS[r.id] : 1.50; });
+RECETAS.forEach(r => {
+  const t = r.ingredientes.reduce((s, i) => ({
+    kcal: s.kcal + (i.kcal || 0),
+    proteina: s.proteina + (i.proteina || 0),
+    carbos: s.carbos + (i.carbos || 0),
+    grasa: s.grasa + (i.grasa || 0),
+  }), {kcal:0, proteina:0, carbos:0, grasa:0});
+  r.kcal = Math.round(t.kcal);
+  r.proteina = Math.round(t.proteina);
+  r.carbos = Math.round(t.carbos);
+  r.grasa = Math.round(t.grasa);
+});
 
-function fmtUSD(n){ return '$' + (Math.round(n*100)/100).toFixed(2); }
-function sumaCosto(recetas){ return recetas.reduce((s,r)=> s + (r.costo||0), 0); }
+// ---------- Helpers para mostrar ingredientes ----------
+// Las recetas del recetario traen ingredientes estructurados { n, g, ... };
+// las generadas con IA los traen como texto libre. Estas funciones aceptan ambos.
+function ingNombre(i){ return typeof i === 'string' ? i : i.n; }
+function ingTexto(i){
+  if(typeof i === 'string') return i;
+  if(i.g == null) return i.n;
+  return (i.kcal === 0 && i.g <= 8) ? `${i.n} — al gusto` : `${i.n} — ${i.g} g`;
+}
+function ingItemHTML(i){
+  if(typeof i === 'string') return `<li>${i}</li>`;
+  const hayMacros = i.kcal || i.proteina || i.carbos || i.grasa;
+  const macros = hayMacros
+    ? `<span class="ing-macros">${i.kcal} kcal · ${i.proteina} P · ${i.carbos} C · ${i.grasa} G</span>` : '';
+  return `<li><span class="ing-name">${ingTexto(i)}</span>${macros}</li>`;
+}
+
 
 </script>
 <script>
 // ============================================================
-// Lógica: calculadora + menú automático + recetario + mi día
-//         + lista de compras + tracker 90 días.
+// Lógica: calculadora + menú automático + recetario + mi día + tracker 90 días.
 // Todo corre en el navegador del usuario, sin enviar datos a ningún servidor.
 // ============================================================
 
@@ -1190,32 +1583,12 @@ function generarMenu(){
 
   const totalKcal = seleccion.reduce((s,x)=>s+x.r.kcal, 0);
   const totalProt = seleccion.reduce((s,x)=>s+x.r.proteina, 0);
-  const totalCosto = sumaCosto(seleccion.map(x=>x.r));
 
-  let html = `<div class="note" style="margin-bottom:14px;">Este menú suma aprox. <b>${totalKcal} kcal</b> y <b>${totalProt} g de proteína</b> (objetivo: ${plan.calorias} kcal, ${plan.proteina} g).<br>Costo estimado: <b>${fmtUSD(totalCosto)}</b> (~${fmtUSD(totalCosto*30)}/mes). Pulsa de nuevo para otra variante.</div>`;
-  html += renderListaCompras(seleccion.map(x=>x.r), 'Lista de compras del menú');
+  let html = `<div class="note" style="margin-bottom:14px;">Este menú suma aprox. <b>${totalKcal} kcal</b> y <b>${totalProt} g de proteína</b> (objetivo: ${plan.calorias} kcal, ${plan.proteina} g). Pulsa de nuevo para otra variante.</div>`;
   html += '<div class="recipe-list menu-grid">';
   seleccion.forEach(({label, r}) => { html += renderRecetaCard(r, label); });
   html += '</div>';
   cont.innerHTML = html;
-}
-
-// ---------- Lista de compras consolidada ----------
-function renderListaCompras(recetas, titulo){
-  // Consolida ingredientes idénticos y cuenta repeticiones
-  const mapa = new Map();
-  recetas.forEach(r => {
-    r.ingredientes.forEach(ing => {
-      const clave = ing.trim();
-      mapa.set(clave, (mapa.get(clave) || 0) + 1);
-    });
-  });
-  const items = [...mapa.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
-  const li = items.map(([ing, n]) => `<li>${ing}${n>1 ? ` <b>(×${n})</b>` : ''}</li>`).join('');
-  return `<div class="shopping">
-    <h4>🛒 ${titulo || 'Lista de compras'}</h4>
-    <ul>${li}</ul>
-  </div>`;
 }
 
 // ---------- Render de tarjeta de receta ----------
@@ -1271,7 +1644,7 @@ const RECETA_TIPOS = [
   {ic:'nuez',     c:'orange', kw:['nuez','nueces','semilla','almendra','tostados','galleta','mani','cacahuate']}
 ];
 function recetaThumb(r){
-  const n = normaliza(r.nombre + ' ' + (r.ingredientes ? r.ingredientes[0] : ''));
+  const n = normaliza(r.nombre + ' ' + (r.ingredientes && r.ingredientes[0] ? ingNombre(r.ingredientes[0]) : ''));
   let hit = RECETA_TIPOS.find(t => t.kw.some(k => n.includes(k)));
   if(!hit) hit = {ic:(r.categoria === 'snack' ? 'nuez' : r.categoria === 'desayuno' ? 'huevo' : 'plato'), c:'accent'};
   const C = {carb:'var(--carb)', prot:'var(--prot)', kcal:'var(--kcal)', veg:'var(--veg)', accent:'var(--accent)', orange:'var(--orange)'};
@@ -1294,8 +1667,8 @@ function renderRecetaCard(r, etiqueta){
         <span class="mc mc-carb"><b>${r.carbos}g</b> carb</span>
         <span class="mc mc-fat"><b>${r.grasa}g</b> grasa</span>
       </div>
+      <ul class="rc-ings">${r.ingredientes.map(i => `<li>${ingTexto(i)}</li>`).join('')}</ul>
       <div class="rc-foot">
-        <span class="rc-cost" title="Costo aprox. por porción (Ecuador)">💵 ${fmtUSD(r.costo)}</span>
         <button class="add-btn" onclick="event.stopPropagation(); agregarAMiDia(${r.id});">➕ Mi día</button>
       </div>
     </div>`;
@@ -1315,10 +1688,9 @@ function abrirReceta(id){
       <span class="mc mc-prot"><b>${r.proteina}g</b> proteína</span>
       <span class="mc mc-carb"><b>${r.carbos}g</b> carbos</span>
       <span class="mc mc-fat"><b>${r.grasa}g</b> grasa</span>
-      <span>💵 <b>${fmtUSD(r.costo)}</b></span>
     </div>
-    <h5>Ingredientes</h5>
-    <ul>${r.ingredientes.map(i=>`<li>${i}</li>`).join('')}</ul>
+    <h5>Ingredientes <span class="ing-hint">— cantidad y aporte por porción</span></h5>
+    <ul class="ing-list">${r.ingredientes.map(ingItemHTML).join('')}</ul>
     <h5>Preparación</h5>
     <ol>${r.pasos.map(p=>`<li>${p}</li>`).join('')}</ol>
     <button class="btn-primary" style="margin-top:8px;" onclick="agregarAMiDia(${r.id}); cerrarReceta();">➕ Agregar a mi día</button>`;
@@ -1425,7 +1797,6 @@ async function generarRecetaIA(){
     }
     const r = data.receta;
     r.id = ++iaIdSeq;
-    r.costo = 1.5;
     r.ia = true;
     recetasIA.unshift(r);
     const quedan = (typeof data.restantes === 'number')
@@ -1520,7 +1891,7 @@ function renderBatch(){
   const panel = document.getElementById('batch-panel');
   const grupos = BATCH_BASES.map(base => {
     const recetas = RECETAS.filter(r =>
-      r.ingredientes.some(ing => base.keys.some(k => normaliza(ing).includes(k)))
+      r.ingredientes.some(ing => base.keys.some(k => normaliza(ingNombre(ing)).includes(k)))
     );
     return {base, recetas};
   }).filter(g => g.recetas.length >= 2)
@@ -1529,10 +1900,9 @@ function renderBatch(){
   let html = `<div class="note" style="margin:0 0 16px;">Cocina un ingrediente base <b>una sola vez</b> y resuélvelo en varias recetas de la semana. Cada grupo te dice cuántos días cubre y qué preparar.</div>`;
 
   html += grupos.map(({base, recetas}) => {
-    const costoTotal = sumaCosto(recetas);
     const items = recetas.map(r => {
       const cat = r.categoria === 'desayuno' ? 'Desayuno' : r.categoria === 'comida' ? 'Almuerzo/Cena' : 'Snack';
-      return `<li><b>${r.nombre}</b> <span style="color:var(--muted);">— ${cat} · ${r.proteina}g proteína · ${fmtUSD(r.costo)}</span></li>`;
+      return `<li><b>${r.nombre}</b> <span style="color:var(--muted);">— ${cat} · ${r.proteina}g proteína</span></li>`;
     }).join('');
     return `<div class="batch-card">
       <h4>${base.emoji} ${base.nombre}</h4>
@@ -1592,13 +1962,11 @@ function anillo(nombre, total, objetivo, unidad, cvar){
 function renderMiDia(){
   const barsEl = document.getElementById('mi-dia-bars');
   const listEl = document.getElementById('mi-dia-list');
-  const shopEl = document.getElementById('mi-dia-shopping');
 
   const recetas = miDia.map(getReceta).filter(Boolean);
   const tot = recetas.reduce((s,r)=>({
     kcal:s.kcal+r.kcal, prot:s.prot+r.proteina, carbos:s.carbos+r.carbos, grasa:s.grasa+r.grasa
   }), {kcal:0,prot:0,carbos:0,grasa:0});
-  const totCosto = sumaCosto(recetas);
 
   const obj = plan || null;
   let barsHtml = '';
@@ -1611,14 +1979,10 @@ function renderMiDia(){
   barsHtml += anillo('Carbos', tot.carbos, obj && obj.carbos, 'g', '--carb');
   barsHtml += anillo('Grasa', tot.grasa, obj && obj.grasa, 'g', '--fat');
   barsHtml += '</div>';
-  if(recetas.length){
-    barsHtml += `<div class="day-cost">Costo estimado del día: <b>${fmtUSD(totCosto)}</b> · ~${fmtUSD(totCosto*30)}/mes</div>`;
-  }
   barsEl.innerHTML = barsHtml;
 
   if(recetas.length === 0){
     listEl.innerHTML = `<p style="color:var(--muted);margin-top:14px;">Aún no has agregado recetas a tu día. Ve al recetario y pulsa <em>"➕ Mi día"</em> en una tarjeta.</p>`;
-    shopEl.innerHTML = '';
   } else {
     let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
       <h3 style="margin:0;">${recetas.length} receta${recetas.length>1?'s':''} en tu día</h3>
@@ -1627,16 +1991,12 @@ function renderMiDia(){
       const r = getReceta(id);
       if(!r) return '';
       return `<div class="miday-item">
-        <div><div>${r.nombre}</div><div class="mi-macros">${r.kcal} kcal · ${r.proteina}g prot · ${r.carbos}g carb · ${r.grasa}g grasa · 💵 ${fmtUSD(r.costo)}</div></div>
+        <div><div>${r.nombre}</div><div class="mi-macros">${r.kcal} kcal · ${r.proteina}g prot · ${r.carbos}g carb · ${r.grasa}g grasa</div></div>
         <button class="rm-btn" onclick="quitarDeMiDia(${i})">Quitar ✕</button>
       </div>`;
     }).join('');
     listEl.innerHTML = html;
-    shopEl.innerHTML = renderListaCompras(recetas, 'Lista de compras de mi día');
   }
-
-  const shopMore = document.getElementById('shop-more');
-  if(shopMore) shopMore.hidden = recetas.length === 0;
 
   // FAB
   const fab = document.getElementById('fab');
