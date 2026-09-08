@@ -137,6 +137,15 @@
   .goal-opt .goal-d{font-size:11.5px;color:var(--muted);line-height:1.4;}
   .goal-opt.active .goal-t{color:var(--accent-dark);}
   #goal-explain{margin-top:10px;}
+  /* Niveles de déficit: verde = suave, ámbar = medio, rojo = agresivo */
+  .def-opt .goal-t{font-size:12.5px;}
+  .def-bajo.active{border-color:var(--accent);background:var(--accent-light);}
+  .def-bajo.active .goal-t{color:var(--accent-dark);}
+  .def-medio.active{border-color:var(--carb);background:var(--carb-bg);}
+  .def-medio.active .goal-t{color:#7a4e12;}
+  .def-alto.active{border-color:var(--prot);background:var(--prot-bg);}
+  .def-alto.active .goal-t{color:var(--prot);}
+  .def-opt:hover{border-color:var(--muted);}
 
   .btn-primary{margin-top:6px;width:100%;padding:13px;border:none;border-radius:11px;background:var(--orange);
     color:#fff;font-size:15px;font-weight:800;cursor:pointer;transition:background .15s ease;}
@@ -555,19 +564,23 @@
           <option value="1.9">Muy activo (trabajo físico + ejercicio)</option>
         </select>
       </div>
-      <details class="more" id="adv-more">
-        <summary>Ajuste avanzado del déficit</summary>
-        <div class="more-body">
-          <div class="field" style="margin-bottom:0;">
-            <label for="intensidad">Intensidad del déficit</label>
-            <select id="intensidad">
-              <option value="0.20">Moderado (-20%)</option>
-              <option value="0.25" selected>Alto (-25%) — recomendado</option>
-              <option value="0.30">Muy alto (-30%)</option>
-            </select>
-          </div>
+      <div class="field" id="deficit-field">
+        <label>¿Qué tan rápido quieres bajar?</label>
+        <div class="goal-toggle" id="deficit-toggle">
+          <button type="button" class="goal-opt def-opt def-bajo" data-def="0.20" onclick="setIntensidad('0.20')">
+            <span class="goal-t">🐢 Déficit bajo (suave) · −20%</span>
+            <span class="goal-d">El más sostenible a largo plazo y con menor riesgo de perder masa muscular. Ideal si prefieres un proceso lento pero más cómodo.</span>
+          </button>
+          <button type="button" class="goal-opt def-opt def-medio active" data-def="0.25" onclick="setIntensidad('0.25')">
+            <span class="goal-t">🚶 Déficit medio · −25% · recomendado</span>
+            <span class="goal-d">Un balance entre velocidad de resultados y sostenibilidad. La opción recomendada para la mayoría.</span>
+          </button>
+          <button type="button" class="goal-opt def-opt def-alto" data-def="0.30" onclick="setIntensidad('0.30')">
+            <span class="goal-t">🏃 Déficit alto (agresivo) · −30%</span>
+            <span class="goal-d">Resultados más rápidos, pero exige más disciplina y sube el riesgo de perder masa muscular si no cuidas la proteína y la fibra. No se recomienda mantenerlo por periodos muy largos.</span>
+          </button>
         </div>
-      </details>
+      </div>
       <button class="btn-primary" onclick="calcular()">Calcular mi plan</button>
       <div id="resultado">
         <div class="result-grid">
@@ -761,6 +774,10 @@
       <details>
         <summary>¿Qué objetivo debería elegir?</summary>
         <p>Elige <b>bajar de peso</b> si quieres perder grasa; <b>subir de peso / masa muscular</b> si estás delgado, entrenas fuerza y quieres construir músculo; <b>mantener</b> si estás a gusto con tu peso y solo quieres comer mejor. Puedes cambiarlo y recalcular cuando quieras.</p>
+      </details>
+      <details>
+        <summary>¿Qué diferencia hay entre los niveles de déficit?</summary>
+        <p>Es cuánto recortas sobre tu gasto diario. <b>Bajo (−20%)</b>: el más sostenible y el que mejor conserva el músculo; avanzas más lento pero con menos hambre. <b>Medio (−25%)</b>: el equilibrio entre resultados y sostenibilidad, recomendado para la mayoría. <b>Alto (−30%)</b>: baja más rápido, pero exige disciplina, sube el riesgo de perder músculo si descuidas la proteína y la fibra, y no conviene sostenerlo muchos meses. En los tres casos la proteína se mantiene en ~2 g/kg.</p>
       </details>
       <details>
         <summary>¿Qué es un superávit calórico?</summary>
@@ -1055,6 +1072,7 @@ function lsSet(key, val){
 
 let genero = null;
 let objetivo = 'bajar'; // 'bajar' (déficit) | 'subir' (superávit +10%) | 'mantener' (TDEE)
+let intensidad = 0.25;  // solo aplica a 'bajar': 0.20 (suave) | 0.25 (medio) | 0.30 (agresivo)
 let plan = lsGet(LS.plan, null); // {calorias, proteina, carbos, grasa}
 let datos = lsGet(LS.datos, null); // {peso, altura, edad, genero, actividad, intensidad, objetivo}
 let checkins = lsGet(LS.checkins, []); // [{fecha:'YYYY-MM-DD', peso, plan:{...}}]
@@ -1072,6 +1090,7 @@ let iaIdSeq = 9000;                // ids para las recetas de IA (fuera del rang
 // Restaura el sexo y el objetivo guardados para que el recálculo funcione tras recargar
 if(datos && datos.genero) genero = datos.genero;
 if(datos && datos.objetivo) objetivo = datos.objetivo;
+if(datos && datos.intensidad != null) intensidad = parseFloat(datos.intensidad);
 
 function getReceta(id){ return RECETAS.find(r => r.id === id) || recetasIA.find(r => r.id === id); }
 
@@ -1092,17 +1111,21 @@ function setObjetivo(g){
   objetivo = g;
   document.querySelectorAll('#goal-toggle .goal-opt').forEach(b =>
     b.classList.toggle('active', b.dataset.goal === g));
-  // El ajuste de intensidad del déficit solo aplica al objetivo "bajar"
-  const adv = document.getElementById('adv-more');
-  if(adv){
-    adv.hidden = (g !== 'bajar');
-    if(g !== 'bajar') adv.open = false;
-  }
+  // Los niveles de déficit solo aplican al objetivo "bajar"
+  const defField = document.getElementById('deficit-field');
+  if(defField) defField.hidden = (g !== 'bajar');
   const ex = document.getElementById('goal-explain');
   if(ex){
     ex.innerHTML = GOAL_EXPLAIN[g] || '';
     ex.hidden = !ex.innerHTML;
   }
+}
+
+// Nivel de déficit elegido (tarjetas visibles, no un ajuste escondido)
+function setIntensidad(v){
+  intensidad = parseFloat(v);
+  document.querySelectorAll('#deficit-toggle .def-opt').forEach(b =>
+    b.classList.toggle('active', parseFloat(b.dataset.def) === intensidad));
 }
 
 // ---------- Fórmula del plan (pura, reutilizable en cada check-in) ----------
@@ -1211,7 +1234,7 @@ function calcular(){
     genero: genero,
     objetivo: objetivo,
     actividad: parseFloat(document.getElementById('actividad').value),
-    intensidad: parseFloat(document.getElementById('intensidad').value)
+    intensidad: intensidad
   };
 
   if(!nuevosDatos.peso || !nuevosDatos.altura || !nuevosDatos.edad || !genero){
@@ -2377,6 +2400,7 @@ function endTour(){
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
   setTab(isMobile() ? 'calculadora' : 'recetario');
+  setIntensidad(intensidad);
   setObjetivo(objetivo);
   initFiltros();
   renderRecetario('todas');
@@ -2394,9 +2418,9 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('altura').value = datos.altura;
       document.getElementById('edad').value = datos.edad;
       if(datos.genero) setGender(datos.genero);
+      if(datos.intensidad != null) setIntensidad(datos.intensidad);
       if(datos.objetivo) setObjetivo(datos.objetivo);
       document.getElementById('actividad').value = datos.actividad;
-      document.getElementById('intensidad').value = datos.intensidad;
     }
     pintarResultado(
       {bmr:null, tdee:null, calorias:plan.calorias, proteina:plan.proteina, carbos:plan.carbos, grasa:plan.grasa},
