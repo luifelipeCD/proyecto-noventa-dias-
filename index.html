@@ -14,10 +14,11 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="90 Días">
-<!-- Tipografía: Plus Jakarta Sans (sistema "Kinetic Vitality"). Si no hay internet, cae a fuentes del sistema. -->
+<!-- Tipografía: Plus Jakarta Sans para texto (sistema "Kinetic Vitality") + Sora solo para los
+     números "hero" (kcal restantes, contador de días). Si no hay internet, cae a fuentes del sistema. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@700;800&display=swap" rel="stylesheet">
 <!-- Cloudflare Turnstile (captcha invisible) para el generador de recetas con IA -->
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>
@@ -102,6 +103,17 @@
 
     --font-body:'Plus Jakarta Sans','Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
     --font-head:var(--font-body);
+    /* Fuente display: solo para los números "hero" (kcal restantes, contador de días) */
+    --font-display:'Sora',var(--font-body);
+
+    /* ===== Espaciado — grilla de 8pt (con medio paso de 4px) ===== */
+    --space-2xs:4px;
+    --space-xs:8px;
+    --space-sm:12px;
+    --space-md:16px;
+    --space-lg:24px;
+    --space-xl:32px;
+    --space-2xl:48px;
   }
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth;background:var(--surface);}
@@ -140,7 +152,7 @@
   .panel{background:var(--container);border:1px solid var(--outline-soft);border-radius:var(--radius);
     box-shadow:var(--shadow);padding:20px;}
   .panel > h2{margin:0 0 4px;font-size:22px;letter-spacing:-0.015em;font-weight:700;color:var(--ink);}
-  .panel h3{font-size:11px;margin:22px 0 8px;text-transform:uppercase;letter-spacing:0.07em;font-weight:700;color:var(--ink-var);}
+  .panel h3{font-size:11px;margin:var(--space-lg) 0 var(--space-xs);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;color:var(--ink-var);}
   .hint{color:var(--ink-var);font-size:13px;margin:0 0 14px;}
   .section-sub{color:var(--ink-var);font-size:13px;margin:0 0 10px;}
 
@@ -179,8 +191,8 @@
   .gender-toggle button.active{background:var(--primary);border-color:var(--primary);color:var(--on-primary);}
   /* Selector de objetivo (primer paso de la calculadora) */
   .goal-toggle{display:flex;flex-direction:column;gap:8px;}
-  .goal-opt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;
-    padding:12px 13px;border:1px solid var(--outline);border-radius:12px;background:var(--surface-lowest);cursor:pointer;
+  .goal-opt{display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-2xs);text-align:left;
+    padding:var(--space-sm);border:1px solid var(--outline);border-radius:12px;background:var(--surface-lowest);cursor:pointer;
     transition:border-color .15s ease,background .15s ease,box-shadow .15s ease;font-family:inherit;}
   .goal-opt:hover{border-color:var(--primary-line);}
   .goal-opt.active{border-color:var(--primary-line);background:var(--container-high);box-shadow:inset 3px 0 0 var(--primary);}
@@ -236,10 +248,11 @@
       radial-gradient(closest-side, var(--container) 78%, transparent 79% 100%),
       conic-gradient(from 180deg, var(--primary) 0turn, var(--primary-bright) 0.82turn, var(--surface-bright) 0.82turn 1turn);
   }
-  .result-grid:has(#r-target) .stat:has(#r-target) .num{font-size:36px;color:var(--ink);}
+  .result-grid:has(#r-target) .stat:has(#r-target) .num{font-size:36px;color:var(--ink);
+    font-family:var(--font-display);font-weight:800;letter-spacing:-0.04em;}
   .result-grid:has(#r-target) .stat:has(#r-target) .label{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;}
   .note{font-size:12.5px;color:var(--ink-var);background:var(--container-high);border:1px solid var(--outline-soft);
-    border-radius:12px;padding:11px 13px;margin-top:10px;}
+    border-radius:12px;padding:var(--space-sm);margin-top:var(--space-xs);}
 
   /* ---------- ANILLOS DE PROGRESO ---------- */
   .rings{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
@@ -278,7 +291,7 @@
   .plan-meal-body h4:hover{color:var(--primary-bright);}
   .plan-meal-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;flex-wrap:wrap;}
   .check-btn{border:1px solid var(--outline);background:var(--container-high);color:var(--ink-var);font-weight:700;
-    border-radius:999px;padding:7px 13px;cursor:pointer;font-size:12px;flex-shrink:0;
+    border-radius:999px;padding:var(--space-xs) var(--space-sm);cursor:pointer;font-size:12px;flex-shrink:0;
     transition:background .15s ease,border-color .15s ease,color .15s ease;}
   .check-btn.on{background:var(--primary);border-color:var(--primary);color:var(--on-primary);}
   .check-btn:disabled{opacity:.6;cursor:default;}
@@ -346,7 +359,7 @@
   .modal-bg{position:fixed;inset:0;background:rgba(4,7,14,0.72);z-index:120;display:none;
     align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
   .modal-bg.open{display:flex;}
-  .modal-card{background:var(--container-high);border:1px solid var(--outline);border-radius:var(--radius);padding:22px;max-width:420px;width:100%;
+  .modal-card{background:var(--container-high);border:1px solid var(--outline);border-radius:var(--radius);padding:var(--space-lg);max-width:420px;width:100%;
     text-align:center;box-shadow:var(--shadow-lg);position:relative;max-height:90vh;overflow-y:auto;color:var(--ink);}
   .modal-card.receta{max-width:520px;text-align:left;}
   .modal-x{position:absolute;right:10px;top:10px;border:none;background:var(--surface-lowest);color:var(--ink-var);
@@ -395,7 +408,8 @@
     color:var(--ink-var);background:var(--surface-lowest);cursor:pointer;user-select:none;}
   #cal-grid .cal-day.done{background:var(--primary);border-color:var(--primary);color:var(--on-primary);}
   .tracker-stat{display:flex;align-items:baseline;gap:8px;}
-  .tracker-stat .big{font-size:30px;font-weight:800;color:var(--ink);}
+  .tracker-stat .big{font-size:30px;font-weight:800;color:var(--ink);
+    font-family:var(--font-display);letter-spacing:-0.04em;}
   .weight-form{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-top:8px;}
   .weight-form .field{margin-bottom:0;flex:1;min-width:88px;}
   .chart-box{margin-top:12px;border:1px solid var(--outline-soft);border-radius:12px;padding:10px;background:var(--surface-lowest);overflow-x:auto;}
@@ -417,11 +431,11 @@
   .batch-tip{margin-top:8px;font-size:12px;color:var(--ink-var);background:var(--surface-lowest);border-radius:10px;padding:8px 10px;}
 
   /* ---------- BOTONES FLOTANTES ---------- */
-  .fab{position:fixed;right:14px;bottom:14px;z-index:50;background:var(--primary);color:var(--on-primary);border:none;
-    border-radius:999px;padding:13px 20px;font-size:13px;font-weight:800;cursor:pointer;letter-spacing:0.01em;
+  .fab{position:fixed;right:var(--space-sm);bottom:var(--space-sm);z-index:50;background:var(--primary);color:var(--on-primary);border:none;
+    border-radius:999px;padding:var(--space-sm) var(--space-lg);font-size:13px;font-weight:800;cursor:pointer;letter-spacing:0.01em;
     box-shadow:0 14px 32px -6px rgba(34,197,94,0.55);display:none;}
   .fab.show{display:block;}
-  .help-fab{position:fixed;left:14px;bottom:14px;z-index:50;width:44px;height:44px;border-radius:50%;
+  .help-fab{position:fixed;left:var(--space-sm);bottom:var(--space-sm);z-index:50;width:44px;height:44px;border-radius:50%;
     border:1px solid var(--outline);background:var(--container-high);color:var(--primary-bright);font-size:20px;font-weight:800;cursor:pointer;
     box-shadow:var(--shadow);transition:background .15s ease;}
   .help-fab:hover{background:var(--container-highest);}
@@ -577,7 +591,7 @@
 
   /* Tarjeta de ejercicio (expandible) */
   .ex-card{border:1px solid var(--outline-soft);border-radius:12px;background:var(--container);margin-bottom:8px;overflow:hidden;}
-  .ex-card > summary{list-style:none;cursor:pointer;padding:11px 13px;display:flex;align-items:center;
+  .ex-card > summary{list-style:none;cursor:pointer;padding:var(--space-sm);display:flex;align-items:center;
     justify-content:space-between;gap:10px;}
   .ex-card > summary::-webkit-details-marker{display:none;}
   .ex-card > summary::after{content:'';width:8px;height:8px;flex-shrink:0;border-right:2px solid var(--ink-var);
@@ -586,7 +600,7 @@
   .ex-card[open] > summary{border-bottom:1px solid var(--outline-soft);}
   .ex-sum-name{font-weight:700;font-size:13.5px;color:var(--ink);line-height:1.3;}
   .ex-sum-series{font-size:11.5px;font-weight:800;color:var(--primary-bright);white-space:nowrap;}
-  .ex-body{padding:12px 13px;}
+  .ex-body{padding:var(--space-sm);}
   .ex-fig{width:100%;max-width:220px;height:auto;display:block;margin:0 auto 12px;color:var(--primary-bright);
     background:var(--surface-lowest);border:1px solid var(--outline-soft);border-radius:12px;padding:10px;}
   /* Fotos reales de la postura correcta (inicio / fin) */
@@ -605,7 +619,7 @@
   .day-total{margin-top:12px;background:var(--container-high);color:var(--ink);border:1px solid var(--outline-soft);border-radius:12px;padding:12px 14px;
     display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;}
   .day-total .n{font-family:var(--font-head);font-weight:800;font-size:22px;color:var(--primary-bright);letter-spacing:-0.02em;}
-  .rest-day{background:var(--container-high);color:var(--ink);border:1px solid var(--outline-soft);border-radius:12px;padding:22px 16px;text-align:center;}
+  .rest-day{background:var(--container-high);color:var(--ink);border:1px solid var(--outline-soft);border-radius:12px;padding:var(--space-lg) var(--space-md);text-align:center;}
   .rest-day .big{font-family:var(--font-head);font-weight:800;letter-spacing:-0.015em;
     font-size:18px;color:var(--primary-bright);display:block;margin-bottom:5px;}
   .rest-day p{margin:0;font-size:12.5px;color:var(--ink-var);line-height:1.55;}
@@ -646,6 +660,60 @@
     border-top:1px solid var(--outline-soft);}
   footer strong{color:var(--primary-bright);}
   .disclaimer{max-width:640px;margin:8px auto 0;opacity:0.85;}
+
+  /* ---------- ICONOS DE LÍNEA (nav/selectores) — reemplazan emojis de UI ---------- */
+  .ui-icon{width:16px;height:16px;flex-shrink:0;vertical-align:-3px;margin-right:5px;color:currentColor;}
+  .goal-opt .ui-icon,.def-opt .ui-icon{width:15px;height:15px;vertical-align:-2.5px;}
+  .fab .ui-icon,.btn-secondary .ui-icon{width:15px;height:15px;vertical-align:-2.5px;}
+
+  /* ---------- TARJETA "HERO": el anillo de Calorías destaca sobre los demás ---------- */
+  .rings:has(.hero-ring){grid-template-columns:repeat(3,1fr);}
+  @media (max-width:460px){.rings:has(.hero-ring){grid-template-columns:repeat(3,1fr);}}
+  .rings .ring.hero-ring{
+    grid-column:1 / -1;
+    background:radial-gradient(circle at 50% 35%, var(--primary-soft), transparent 72%);
+    border-radius:var(--radius);
+    padding:var(--space-sm) var(--space-xs) var(--space-2xs);
+  }
+  .rings .ring.hero-ring svg{max-width:112px;}
+  .rings .ring.hero-ring .ring-mid{height:112px;font-size:22px;font-family:var(--font-display);
+    font-weight:800;letter-spacing:-0.03em;}
+  .rings .ring.hero-ring .ring-cap{font-size:12px;margin-top:var(--space-2xs);}
+  @media (max-width:460px){
+    .rings .ring.hero-ring .ring-mid{height:auto;top:26%;}
+  }
+
+  /* ---------- ESTADO VACÍO ---------- */
+  .empty-state{text-align:center;padding:var(--space-xl) var(--space-md);color:var(--ink-var);}
+  .empty-state svg{width:40px;height:40px;margin:0 auto var(--space-sm);display:block;color:var(--ink-dim);animation:none;}
+  .empty-state p{margin:0;font-size:13px;line-height:1.55;max-width:320px;margin-inline:auto;}
+  .empty-state p b{color:var(--ink);}
+
+  /* ---------- MOVIMIENTO INTENCIONAL: transiciones de sección y aparición escalonada ---------- */
+  @keyframes panelFadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .panel.active,.main-panel.active{animation:panelFadeIn .32s cubic-bezier(.22,.61,.36,1) backwards;}
+
+  @keyframes cardFadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .recipe-card,.plan-meal,.why-card{animation:cardFadeIn .38s ease backwards;}
+  .recipe-list .recipe-card:nth-child(1){animation-delay:.02s;}
+  .recipe-list .recipe-card:nth-child(2){animation-delay:.05s;}
+  .recipe-list .recipe-card:nth-child(3){animation-delay:.08s;}
+  .recipe-list .recipe-card:nth-child(4){animation-delay:.11s;}
+  .recipe-list .recipe-card:nth-child(5){animation-delay:.14s;}
+  .recipe-list .recipe-card:nth-child(6){animation-delay:.17s;}
+  .recipe-list .recipe-card:nth-child(n+7){animation-delay:.2s;}
+  .plan-meal-list .plan-meal:nth-child(1){animation-delay:.04s;}
+  .plan-meal-list .plan-meal:nth-child(2){animation-delay:.11s;}
+  .plan-meal-list .plan-meal:nth-child(3){animation-delay:.18s;}
+  .plan-meal-list .plan-meal:nth-child(4){animation-delay:.25s;}
+  .why-grid .why-card:nth-child(1){animation-delay:.03s;}
+  .why-grid .why-card:nth-child(2){animation-delay:.09s;}
+  .why-grid .why-card:nth-child(3){animation-delay:.15s;}
+  .why-grid .why-card:nth-child(4){animation-delay:.21s;}
+
+  @media (prefers-reduced-motion:reduce){
+    .panel.active,.main-panel.active,.recipe-card,.plan-meal,.why-card{animation:none;}
+  }
 </style>
 </head>
 <body>
@@ -658,10 +726,10 @@
 
 <!-- PESTAÑAS (celular) -->
 <nav class="tabbar" id="tabbar">
-  <button class="tab-btn active" data-tab="calculadora" onclick="setTab('calculadora')">🧮 Mi plan</button>
-  <button class="tab-btn" data-tab="midia" onclick="setTab('midia')">🍽️ Mi día</button>
-  <button class="tab-btn" data-tab="progreso" onclick="setTab('progreso')">📅 Progreso</button>
-  <button class="tab-btn" data-tab="movimiento" onclick="setTab('movimiento')">🏃 Movimiento</button>
+  <button class="tab-btn active" data-tab="calculadora" onclick="setTab('calculadora')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1Z"/><rect x="5" y="6" width="14" height="15" rx="2"/><path d="M9 12h6M9 16h6"/></svg>Mi plan</button>
+  <button class="tab-btn" data-tab="midia" onclick="setTab('midia')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v6a2.2 2.2 0 0 0 4.4 0V3"/><path d="M8.2 11v10"/><path d="M17 3c-1.6 0-2.8 2-2.8 5s1.2 4.6 2.8 4.6"/><path d="M17 3v18"/></svg>Mi día</button>
+  <button class="tab-btn" data-tab="progreso" onclick="setTab('progreso')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8.5 15l2.5 2.5 4.5-5"/></svg>Progreso</button>
+  <button class="tab-btn" data-tab="movimiento" onclick="setTab('movimiento')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2-7 4 14 2-7h6"/></svg>Movimiento</button>
 </nav>
 
 <div class="app">
@@ -675,15 +743,15 @@
         <label>¿Cuál es tu objetivo?</label>
         <div class="goal-toggle" id="goal-toggle">
           <button type="button" class="goal-opt active" data-goal="bajar" onclick="setObjetivo('bajar')">
-            <span class="goal-t">📉 Bajar de peso</span>
+            <span class="goal-t"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 10 13 14 9 21 16"/><polyline points="21 10 21 16 15 16"/></svg>Bajar de peso</span>
             <span class="goal-d">Déficit calórico: comes menos de lo que gastas para perder grasa.</span>
           </button>
           <button type="button" class="goal-opt" data-goal="subir" onclick="setObjetivo('subir')">
-            <span class="goal-t">📈 Subir de peso / masa muscular</span>
+            <span class="goal-t"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 18 10 11 14 15 21 8"/><polyline points="15 8 21 8 21 14"/></svg>Subir de peso / masa muscular</span>
             <span class="goal-d">Superávit del +10%: comes un poco más para ganar músculo con la menor grasa posible.</span>
           </button>
           <button type="button" class="goal-opt" data-goal="mantener" onclick="setObjetivo('mantener')">
-            <span class="goal-t">⚖️ Mantener mi peso</span>
+            <span class="goal-t"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18"/><path d="M5 21h14"/><path d="M5 7h14"/><path d="M5 7l-3 6h6Z"/><path d="M19 7l-3 6h6Z"/></svg>Mantener mi peso</span>
             <span class="goal-d">Usa tu gasto diario (TDEE) tal cual, sin déficit ni superávit.</span>
           </button>
         </div>
@@ -724,15 +792,15 @@
         <label>¿Qué tan rápido quieres bajar?</label>
         <div class="goal-toggle" id="deficit-toggle">
           <button type="button" class="goal-opt def-opt def-bajo" data-def="0.20" onclick="setIntensidad('0.20')">
-            <span class="goal-t">🐢 Déficit bajo (suave) · −20%</span>
+            <span class="goal-t"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="14" width="4" height="8" rx="1.5" fill="currentColor"/><rect x="10" y="9" width="4" height="13" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="16" y="4" width="4" height="18" rx="1.5" stroke="currentColor" stroke-width="1.6"/></svg>Déficit bajo (suave) · −20%</span>
             <span class="goal-d">El más sostenible a largo plazo y con menor riesgo de perder masa muscular. Ideal si prefieres un proceso lento pero más cómodo.</span>
           </button>
           <button type="button" class="goal-opt def-opt def-medio active" data-def="0.25" onclick="setIntensidad('0.25')">
-            <span class="goal-t">🚶 Déficit medio · −25% · recomendado</span>
+            <span class="goal-t"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="14" width="4" height="8" rx="1.5" fill="currentColor"/><rect x="10" y="9" width="4" height="13" rx="1.5" fill="currentColor"/><rect x="16" y="4" width="4" height="18" rx="1.5" stroke="currentColor" stroke-width="1.6"/></svg>Déficit medio · −25% · recomendado</span>
             <span class="goal-d">Un balance entre velocidad de resultados y sostenibilidad. La opción recomendada para la mayoría.</span>
           </button>
           <button type="button" class="goal-opt def-opt def-alto" data-def="0.30" onclick="setIntensidad('0.30')">
-            <span class="goal-t">🏃 Déficit alto (agresivo) · −30%</span>
+            <span class="goal-t"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="14" width="4" height="8" rx="1.5" fill="currentColor"/><rect x="10" y="9" width="4" height="13" rx="1.5" fill="currentColor"/><rect x="16" y="4" width="4" height="18" rx="1.5" fill="currentColor"/></svg>Déficit alto (agresivo) · −30%</span>
             <span class="goal-d">Resultados más rápidos, pero exige más disciplina y sube el riesgo de perder masa muscular si no cuidas la proteína y la fibra. No se recomienda mantenerlo por periodos muy largos.</span>
           </button>
         </div>
@@ -758,15 +826,15 @@
       <div id="plan-dia"><p class="section-sub" style="margin-top:10px;">Calcula tu plan (paso 1) para generar tu menú de 90 días.</p></div>
       <h3>Tu progreso de hoy</h3>
       <div id="mi-dia-bars"></div>
-      <button class="btn-secondary" style="width:100%;margin-top:14px;" onclick="setTab('recetario')">📖 Ver todas las recetas</button>
+      <button class="btn-secondary" style="width:100%;margin-top:14px;" onclick="setTab('recetario')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v17H6.5A2.5 2.5 0 0 0 4 22Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v17h5.5a2.5 2.5 0 0 1 2.5 2Z"/></svg>Ver todas las recetas</button>
     </section>
 
   </aside>
 
   <main class="app-main">
     <nav class="main-nav">
-      <button data-tab="progreso" class="active" onclick="setTab('progreso')">📅 Progreso</button>
-      <button data-tab="movimiento" onclick="setTab('movimiento')">🏃 Movimiento</button>
+      <button data-tab="progreso" class="active" onclick="setTab('progreso')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8.5 15l2.5 2.5 4.5-5"/></svg>Progreso</button>
+      <button data-tab="movimiento" onclick="setTab('movimiento')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2-7 4 14 2-7h6"/></svg>Movimiento</button>
     </nav>
 
     <!-- RECETARIO: referencia de recetas, ya no es una pestaña independiente (ver setTab) -->
@@ -777,7 +845,7 @@
 
       <!-- Generador de recetas con IA -->
       <div class="ia-box">
-        <h3>✨ Tus ingredientes favoritos</h3>
+        <h3>Tus ingredientes favoritos</h3>
         <p class="section-sub">Elige o escribe ingredientes que te gusten y la IA arma una receta alta en proteína.</p>
         <div class="ia-input-row">
           <input type="text" id="ia-input" placeholder="Ej: pollo, arroz integral, brócoli" aria-label="Escribe un ingrediente"
@@ -878,7 +946,7 @@
   </main>
 </div>
 
-<button class="fab" id="fab" onclick="setTab('midia')">🍽️ Comidas de hoy (<span id="fab-count">0</span>)</button>
+<button class="fab" id="fab" onclick="setTab('midia')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v6a2.2 2.2 0 0 0 4.4 0V3"/><path d="M8.2 11v10"/><path d="M17 3c-1.6 0-2.8 2-2.8 5s1.2 4.6 2.8 4.6"/><path d="M17 3v18"/></svg>Comidas de hoy (<span id="fab-count">0</span>)</button>
 <button class="help-fab" id="help-btn" onclick="startTour(0)" title="Ver guía de uso" aria-label="Ver guía de uso">?</button>
 
 <!-- MODAL: receta -->
@@ -2458,7 +2526,7 @@ function renderBatch(){
       return `<li><b>${r.nombre}</b> <span style="color:var(--muted);">— ${cat} · ${r.proteina}g proteína</span></li>`;
     }).join('');
     return `<div class="batch-card">
-      <h4>${base.emoji} ${base.nombre}</h4>
+      <h4>${base.nombre}</h4>
       <div class="batch-meta">${recetas.length} recetas la usan · alcanza para ~${recetas.length} días de comidas</div>
       <ul>${items}</ul>
       <div class="batch-tip">👨‍🍳 <b>Prepara una vez:</b> ${base.tip}</div>
@@ -2474,7 +2542,7 @@ function renderBatch(){
 const MEAL_ORDER = ['desayuno', 'almuerzo', 'cena', 'merienda'];
 
 // Anillo de progreso (SVG) para un macro de "mi día". `cvar` = variable de color del macro.
-function anillo(nombre, total, objetivo, unidad, cvar){
+function anillo(nombre, total, objetivo, unidad, cvar, hero){
   const R = 30, CIRC = 2 * Math.PI * R;
   const pct = objetivo ? total / objetivo : 0;
   const off = CIRC * (1 - Math.max(0, Math.min(pct, 1)));
@@ -2484,7 +2552,7 @@ function anillo(nombre, total, objetivo, unidad, cvar){
     ? `${Math.round(total)} / ${Math.round(objetivo)} ${unidad}`
     : `${Math.round(total)} ${unidad}`;
   const estilo = cvar ? ` style="--ring-c:var(${cvar});--ring-bgc:var(${cvar}-bg)"` : '';
-  return `<div class="ring ${over ? 'over' : ''}"${estilo}>
+  return `<div class="ring ${over ? 'over' : ''} ${hero ? 'hero-ring' : ''}"${estilo}>
     <svg viewBox="0 0 72 72" aria-hidden="true">
       <circle class="ring-bg" cx="36" cy="36" r="${R}"></circle>
       <circle class="ring-fg" cx="36" cy="36" r="${R}" style="stroke-dasharray:${CIRC.toFixed(1)};stroke-dashoffset:${off.toFixed(1)}"></circle>
@@ -2578,13 +2646,18 @@ function terminarDia(){
   toast('Día terminado. Resumen guardado.');
 }
 
+// Estado vacío diseñado (ícono de línea + mensaje corto) en vez de una pantalla en blanco
+function emptyStateHTML(mensaje, icono){
+  return `<div class="empty-state">${icono || catIcon('comida')}<p>${mensaje}</p></div>`;
+}
+
 function renderPlanDia(){
   const cont = document.getElementById('plan-dia');
   const barsEl = document.getElementById('mi-dia-bars');
   if(!cont || !barsEl) return;
 
   if(!plan){
-    cont.innerHTML = `<p class="section-sub" style="margin-top:10px;">Calcula tu plan (paso 1) para generar tu menú de 90 días.</p>`;
+    cont.innerHTML = emptyStateHTML('Aún no tienes un plan. Calcula tu plan en el <b>paso 1</b> y aquí aparecerá tu menú automático de 90 días.');
     barsEl.innerHTML = '';
     actualizarFab();
     return;
@@ -2603,14 +2676,14 @@ function renderPlanDia(){
   html += '</div>';
   html += terminado
     ? renderResumenDia(terminado)
-    : `<button class="btn-primary" style="margin-top:14px;" onclick="terminarDia()">✅ Terminar día</button>`;
+    : `<button class="btn-primary" style="margin-top:14px;" onclick="terminarDia()"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9"/></svg>Terminar día</button>`;
   cont.innerHTML = html;
 
   const tot = terminado
     ? {kcal:terminado.kcal, prot:terminado.proteina, carbos:terminado.carbos, grasa:terminado.grasa}
     : totalesMarcados(diaPlan, marcado);
   barsEl.innerHTML = '<div class="rings">'
-    + anillo('Calorías', tot.kcal, plan.calorias, 'kcal', '--kcal')
+    + anillo('Calorías', tot.kcal, plan.calorias, 'kcal', '--kcal', true)
     + anillo('Proteína', tot.prot, plan.proteina, 'g', '--prot')
     + anillo('Carbos', tot.carbos, plan.carbos, 'g', '--carb')
     + anillo('Grasa', tot.grasa, plan.grasa, 'g', '--fat')
@@ -2639,7 +2712,7 @@ function renderHistorialDias(){
   if(!el) return;
   const fechas = Object.keys(diasTerminados).sort((a,b) => b.localeCompare(a));
   if(!fechas.length){
-    el.innerHTML = `<p class="section-sub">Aún no terminas ningún día desde <b>Mi día</b>.</p>`;
+    el.innerHTML = emptyStateHTML('Aún no terminas ningún día desde <b>Mi día</b>. Cuando lo hagas, el resumen aparece aquí.');
     return;
   }
   el.innerHTML = fechas.map(f => {
@@ -2673,7 +2746,7 @@ function renderCalendario(){
   }
   grid.innerHTML = html;
   const n = diasDone.size;
-  document.getElementById('dias-count').textContent = n;
+  animarNumero(document.getElementById('dias-count'), n, '');
   document.getElementById('dias-bar').style.width = (n/90*100) + '%';
 }
 
