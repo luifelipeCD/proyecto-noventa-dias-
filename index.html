@@ -140,12 +140,28 @@
   .brand .tagline{opacity:.9;font-size:12px;font-weight:500;letter-spacing:0;color:var(--ink-var);}
 
   /* ---------- PESTANAS (celular) ---------- */
-  .tabbar{position:sticky;top:0;z-index:38;display:flex;gap:6px;padding:8px 10px;background:rgba(10,17,32,0.9);
-    overflow-x:auto;border-bottom:1px solid var(--outline-soft);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
-  .tab-btn{flex:1 0 auto;white-space:nowrap;padding:9px 15px;border-radius:999px;border:1px solid var(--outline-soft);
-    background:var(--container);color:var(--ink-var);font-size:12.5px;font-weight:600;cursor:pointer;
+  .tabbar-wrap{position:sticky;top:0;z-index:38;}
+  .tabbar{display:flex;gap:4px;padding:8px 8px;background:rgba(10,17,32,0.9);
+    overflow-x:auto;border-bottom:1px solid var(--outline-soft);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    scrollbar-width:none;}
+  .tabbar::-webkit-scrollbar{display:none;}
+  .tab-btn{flex:1 0 auto;white-space:nowrap;padding:8px 8px;border-radius:999px;border:1px solid var(--outline-soft);
+    background:var(--container);color:var(--ink-var);font-size:11.5px;font-weight:600;cursor:pointer;
     transition:background .15s ease,border-color .15s ease,color .15s ease;}
   .tab-btn.active{background:var(--primary-soft);border-color:var(--primary-line);color:var(--primary-bright);}
+  .tab-btn .ui-icon{width:14px;height:14px;margin-right:4px;}
+  .tab-label-short{display:none;}
+  @media (max-width:400px){
+    .tab-label-full{display:none;}
+    .tab-label-short{display:inline;}
+  }
+  /* Degradado en los bordes: solo se muestra si de verdad hay más pestañas fuera de vista */
+  .tabbar-fade{position:absolute;top:0;bottom:1px;width:26px;pointer-events:none;opacity:0;
+    transition:opacity .15s ease;z-index:2;}
+  .tabbar-fade-l{left:0;background:linear-gradient(to right, rgba(10,17,32,0.95), transparent);}
+  .tabbar-fade-r{right:0;background:linear-gradient(to left, rgba(10,17,32,0.95), transparent);}
+  .tabbar-wrap.show-left .tabbar-fade-l{opacity:1;}
+  .tabbar-wrap.show-right .tabbar-fade-r{opacity:1;}
 
   /* ---------- LAYOUT ---------- */
   .app{max-width:1280px;margin:0 auto;padding:16px 18px 72px;}
@@ -157,7 +173,7 @@
   .section-sub{color:var(--ink-var);font-size:13px;margin:0 0 10px;}
 
   @media (min-width:981px){
-    .tabbar{display:none;}
+    .tabbar-wrap{display:none;}
     .app{display:grid;grid-template-columns:360px minmax(0,1fr);gap:20px;align-items:start;}
     .app-side{display:flex;flex-direction:column;gap:18px;position:sticky;top:14px;
       max-height:calc(100vh - 28px);overflow-y:auto;overflow-x:hidden;padding-right:4px;}
@@ -725,12 +741,16 @@
 </header>
 
 <!-- PESTAÑAS (celular) -->
+<div class="tabbar-wrap" id="tabbar-wrap">
 <nav class="tabbar" id="tabbar">
-  <button class="tab-btn active" data-tab="calculadora" onclick="setTab('calculadora')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1Z"/><rect x="5" y="6" width="14" height="15" rx="2"/><path d="M9 12h6M9 16h6"/></svg>Mi plan</button>
-  <button class="tab-btn" data-tab="midia" onclick="setTab('midia')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v6a2.2 2.2 0 0 0 4.4 0V3"/><path d="M8.2 11v10"/><path d="M17 3c-1.6 0-2.8 2-2.8 5s1.2 4.6 2.8 4.6"/><path d="M17 3v18"/></svg>Mi día</button>
-  <button class="tab-btn" data-tab="progreso" onclick="setTab('progreso')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8.5 15l2.5 2.5 4.5-5"/></svg>Progreso</button>
-  <button class="tab-btn" data-tab="movimiento" onclick="setTab('movimiento')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2-7 4 14 2-7h6"/></svg>Movimiento</button>
+  <button class="tab-btn active" data-tab="calculadora" onclick="setTab('calculadora')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1Z"/><rect x="5" y="6" width="14" height="15" rx="2"/><path d="M9 12h6M9 16h6"/></svg><span class="tab-label-full">Mi plan</span><span class="tab-label-short">Mi plan</span></button>
+  <button class="tab-btn" data-tab="midia" onclick="setTab('midia')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v6a2.2 2.2 0 0 0 4.4 0V3"/><path d="M8.2 11v10"/><path d="M17 3c-1.6 0-2.8 2-2.8 5s1.2 4.6 2.8 4.6"/><path d="M17 3v18"/></svg><span class="tab-label-full">Mi día</span><span class="tab-label-short">Mi día</span></button>
+  <button class="tab-btn" data-tab="progreso" onclick="setTab('progreso')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8.5 15l2.5 2.5 4.5-5"/></svg><span class="tab-label-full">Progreso</span><span class="tab-label-short">Progreso</span></button>
+  <button class="tab-btn" data-tab="movimiento" onclick="setTab('movimiento')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2-7 4 14 2-7h6"/></svg><span class="tab-label-full">Movimiento</span><span class="tab-label-short">Movim.</span></button>
 </nav>
+<div class="tabbar-fade tabbar-fade-l" aria-hidden="true"></div>
+<div class="tabbar-fade tabbar-fade-r" aria-hidden="true"></div>
+</div>
 
 <div class="app">
   <aside class="app-side">
@@ -1922,8 +1942,11 @@ function computePlan(d){
   // Proteína: 2.0 g/kg de peso corporal
   const proteinaG = Math.round(peso * 2.0);
   const proteinaKcal = proteinaG * 4;
-  // Grasa: ~25% de las calorías objetivo
-  const grasaG = Math.round((target * 0.25) / 9);
+  // Grasa: ~25% de las calorías objetivo, pero nunca más de lo que queda
+  // después de la proteína (casos extremos: peso muy alto + déficit muy agresivo,
+  // donde 2 g/kg de proteína por sí solo ya se acerca al objetivo calórico).
+  const grasaGDeseada = Math.round((target * 0.25) / 9);
+  const grasaG = Math.max(0, Math.min(grasaGDeseada, Math.round((target - proteinaKcal) / 9)));
   // Carbohidratos: el resto
   const carbosG = Math.round(Math.max(target - proteinaKcal - grasaG*9, 0) / 4);
 
@@ -1995,6 +2018,18 @@ function calcular(){
 
   if(!nuevosDatos.peso || !nuevosDatos.altura || !nuevosDatos.edad || !genero){
     alert('Por favor completa peso, estatura, edad y selecciona tu sexo antes de calcular.');
+    return;
+  }
+  if(nuevosDatos.peso < 30 || nuevosDatos.peso > 300){
+    alert('Ingresa un peso válido en kg (entre 30 y 300).');
+    return;
+  }
+  if(nuevosDatos.altura < 120 || nuevosDatos.altura > 230){
+    alert('Ingresa una estatura válida en cm (entre 120 y 230).');
+    return;
+  }
+  if(nuevosDatos.edad < 14 || nuevosDatos.edad > 90){
+    alert('Ingresa una edad válida en años (entre 14 y 90).');
     return;
   }
 
@@ -2829,7 +2864,7 @@ function dibujarTarjeta(data){
   // Eyebrow
   ctx.fillStyle = 'rgba(255,255,255,0.75)';
   ctx.font = '700 34px "Plus Jakarta Sans", Arial, sans-serif';
-  ctx.fillText('RECETARIO PROTEICO · 90 DÍAS', W/2, 145);
+  ctx.fillText('TRANSFORMA TU CUERPO · 90 DÍAS', W/2, 145);
 
   // Día completado
   ctx.fillStyle = '#ffffff';
@@ -2930,8 +2965,8 @@ function resetTracker(){
 function agregarPeso(){
   const semana = parseInt(document.getElementById('w-semana').value, 10);
   const peso = parseFloat(document.getElementById('w-peso').value);
-  if(!semana || semana < 1 || semana > 13 || !peso){
-    alert('Ingresa una semana entre 1 y 13 y un peso válido.');
+  if(!semana || semana < 1 || semana > 13 || !peso || peso < 30 || peso > 300){
+    alert('Ingresa una semana entre 1 y 13 y un peso válido en kg (entre 30 y 300).');
     return;
   }
   const existente = pesos.find(p => p.semana === semana);
@@ -3532,6 +3567,17 @@ function marcarRutinaHoy(){ toggleRutina(hoyISO()); }
 // ============================================================
 function isMobile(){ return window.matchMedia('(max-width: 980px)').matches; }
 
+// Muestra el degradado de "hay más pestañas" solo cuando de verdad hay
+// contenido oculto a cada lado (pantallas muy angostas o zoom grande).
+function actualizarTabbarFade(){
+  const wrap = document.getElementById('tabbar-wrap');
+  const tb = document.getElementById('tabbar');
+  if(!wrap || !tb) return;
+  const maxScroll = tb.scrollWidth - tb.clientWidth;
+  wrap.classList.toggle('show-left', tb.scrollLeft > 2);
+  wrap.classList.toggle('show-right', maxScroll > 2 && tb.scrollLeft < maxScroll - 2);
+}
+
 function setTab(name){
   const el = document.querySelector('.panel[data-panel="' + name + '"]');
   const isMain = !!(el && el.classList.contains('main-panel'));
@@ -3688,6 +3734,13 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCheckin();
   renderHistorialDias();
   renderMovimiento();
+
+  const tabbarEl = document.getElementById('tabbar');
+  if(tabbarEl){
+    actualizarTabbarFade();
+    tabbarEl.addEventListener('scroll', actualizarTabbarFade, {passive:true});
+    window.addEventListener('resize', actualizarTabbarFade);
+  }
 
   // Si ya había un plan guardado, restaurar resultados y plan de comidas
   if(plan){
