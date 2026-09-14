@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Transforma tu Cuerpo en 90 Días</title>
-<meta name="description" content="Calcula tus calorías y tu proteína según tu objetivo —bajar de peso, mantener o ganar músculo—, arma tu menú con más de 60 recetas altas en proteína y sigue tu avance durante 90 días. Todo funciona en tu navegador, sin cuenta.">
+<meta name="description" content="Calcula tus calorías y tu proteína según tu objetivo —bajar de peso, mantener o ganar músculo—, recibe un menú automático con más de 70 recetas altas en proteína y sigue tu avance durante 90 días. Todo funciona en tu navegador, sin cuenta.">
 <meta name="theme-color" content="#0b1326">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232f6b4f'/><text x='50' y='71' font-size='54' text-anchor='middle' fill='white' font-family='Arial,Helvetica,sans-serif' font-weight='bold'>90</text></svg>">
 <!-- PWA: instalable en el celular + caché offline -->
@@ -14,10 +14,11 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="90 Días">
-<!-- Tipografía: Plus Jakarta Sans (sistema "Kinetic Vitality"). Si no hay internet, cae a fuentes del sistema. -->
+<!-- Tipografía: Plus Jakarta Sans para texto (sistema "Kinetic Vitality") + Sora solo para los
+     números "hero" (kcal restantes, contador de días). Si no hay internet, cae a fuentes del sistema. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@700;800&display=swap" rel="stylesheet">
 <!-- Cloudflare Turnstile (captcha invisible) para el generador de recetas con IA -->
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>
@@ -102,6 +103,17 @@
 
     --font-body:'Plus Jakarta Sans','Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
     --font-head:var(--font-body);
+    /* Fuente display: solo para los números "hero" (kcal restantes, contador de días) */
+    --font-display:'Sora',var(--font-body);
+
+    /* ===== Espaciado — grilla de 8pt (con medio paso de 4px) ===== */
+    --space-2xs:4px;
+    --space-xs:8px;
+    --space-sm:12px;
+    --space-md:16px;
+    --space-lg:24px;
+    --space-xl:32px;
+    --space-2xl:48px;
   }
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth;background:var(--surface);}
@@ -140,7 +152,7 @@
   .panel{background:var(--container);border:1px solid var(--outline-soft);border-radius:var(--radius);
     box-shadow:var(--shadow);padding:20px;}
   .panel > h2{margin:0 0 4px;font-size:22px;letter-spacing:-0.015em;font-weight:700;color:var(--ink);}
-  .panel h3{font-size:11px;margin:22px 0 8px;text-transform:uppercase;letter-spacing:0.07em;font-weight:700;color:var(--ink-var);}
+  .panel h3{font-size:11px;margin:var(--space-lg) 0 var(--space-xs);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;color:var(--ink-var);}
   .hint{color:var(--ink-var);font-size:13px;margin:0 0 14px;}
   .section-sub{color:var(--ink-var);font-size:13px;margin:0 0 10px;}
 
@@ -179,8 +191,8 @@
   .gender-toggle button.active{background:var(--primary);border-color:var(--primary);color:var(--on-primary);}
   /* Selector de objetivo (primer paso de la calculadora) */
   .goal-toggle{display:flex;flex-direction:column;gap:8px;}
-  .goal-opt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;
-    padding:12px 13px;border:1px solid var(--outline);border-radius:12px;background:var(--surface-lowest);cursor:pointer;
+  .goal-opt{display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-2xs);text-align:left;
+    padding:var(--space-sm);border:1px solid var(--outline);border-radius:12px;background:var(--surface-lowest);cursor:pointer;
     transition:border-color .15s ease,background .15s ease,box-shadow .15s ease;font-family:inherit;}
   .goal-opt:hover{border-color:var(--primary-line);}
   .goal-opt.active{border-color:var(--primary-line);background:var(--container-high);box-shadow:inset 3px 0 0 var(--primary);}
@@ -236,10 +248,11 @@
       radial-gradient(closest-side, var(--container) 78%, transparent 79% 100%),
       conic-gradient(from 180deg, var(--primary) 0turn, var(--primary-bright) 0.82turn, var(--surface-bright) 0.82turn 1turn);
   }
-  .result-grid:has(#r-target) .stat:has(#r-target) .num{font-size:36px;color:var(--ink);}
+  .result-grid:has(#r-target) .stat:has(#r-target) .num{font-size:36px;color:var(--ink);
+    font-family:var(--font-display);font-weight:800;letter-spacing:-0.04em;}
   .result-grid:has(#r-target) .stat:has(#r-target) .label{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;}
   .note{font-size:12.5px;color:var(--ink-var);background:var(--container-high);border:1px solid var(--outline-soft);
-    border-radius:12px;padding:11px 13px;margin-top:10px;}
+    border-radius:12px;padding:var(--space-sm);margin-top:var(--space-xs);}
 
   /* ---------- ANILLOS DE PROGRESO ---------- */
   .rings{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
@@ -258,13 +271,52 @@
   .midia-actions{margin:14px 0 4px;}
 
   /* ---------- MI DIA: lista ---------- */
-  .miday-list{margin-top:12px;}
   .miday-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;
     border:1px solid var(--outline-soft);background:var(--surface-lowest);border-radius:12px;margin-bottom:7px;font-size:13px;color:var(--ink);}
   .mi-macros{font-size:11px;color:var(--ink-var);}
   .rm-btn{border:none;background:var(--prot-bg);color:var(--prot);font-weight:700;border-radius:999px;
     padding:5px 11px;cursor:pointer;font-size:11px;flex-shrink:0;transition:background .15s ease,color .15s ease;}
   .rm-btn:hover{background:var(--prot);color:var(--surface);}
+
+  /* ---------- PLAN DE COMIDAS DEL DÍA (Mi día) ---------- */
+  .plan-meal-list{display:flex;flex-direction:column;gap:12px;margin-top:4px;}
+  .plan-meal{display:flex;gap:12px;background:var(--surface-lowest);border:1px solid var(--outline-soft);
+    border-radius:var(--radius);padding:12px;transition:border-color .15s ease,background .15s ease;}
+  .plan-meal.done{border-color:var(--primary-line);background:var(--primary-soft);}
+  .plan-meal-media{width:96px;flex-shrink:0;}
+  .plan-meal-body{min-width:0;flex:1;}
+  .plan-meal-top{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:6px;}
+  .plan-meal-body h4{margin:0 0 6px;font-size:14px;line-height:1.3;color:var(--ink);font-family:var(--font-head);
+    font-weight:700;letter-spacing:-0.01em;cursor:pointer;}
+  .plan-meal-body h4:hover{color:var(--primary-bright);}
+  .plan-meal-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;flex-wrap:wrap;}
+  .check-btn{border:1px solid var(--outline);background:var(--container-high);color:var(--ink-var);font-weight:700;
+    border-radius:999px;padding:var(--space-xs) var(--space-sm);cursor:pointer;font-size:12px;flex-shrink:0;
+    transition:background .15s ease,border-color .15s ease,color .15s ease;}
+  .check-btn.on{background:var(--primary);border-color:var(--primary);color:var(--on-primary);}
+  .check-btn:disabled{opacity:.6;cursor:default;}
+  @media (max-width:360px){.plan-meal{flex-direction:column;} .plan-meal-media{width:100%;}}
+
+  .day-summary{margin-top:16px;background:var(--container-high);border:1px solid var(--primary-line);
+    border-radius:var(--radius);padding:14px 16px;}
+  .day-summary ul{list-style:none;padding:0;margin:8px 0 0;}
+  .day-summary li{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--outline-soft);font-size:12.5px;}
+  .day-summary li:last-child{border-bottom:none;}
+
+  /* ---------- FOTO DE PLATO (Wikimedia Commons, representativa por tipo) ---------- */
+  .rc-media{position:relative;border-radius:12px;overflow:hidden;margin-bottom:10px;background:var(--surface-lowest);}
+  .rc-photo-img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;}
+  .rc-media .rc-thumb-fallback{display:none;}
+  .rc-media.foto-error .rc-photo-img{display:none;}
+  .rc-media.foto-error .rc-thumb-fallback{display:flex;}
+  .rc-media.foto-error{background:none;}
+  .rc-media .rc-thumb-fallback .rc-thumb{margin:0;width:100%;}
+  .rc-photo-tag{position:absolute;left:6px;bottom:6px;font-size:8.5px;font-weight:800;text-transform:uppercase;
+    letter-spacing:.4px;color:#fff;background:rgba(4,7,14,0.55);padding:2px 7px;border-radius:999px;
+    backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
+  .plan-meal-media .rc-media{margin-bottom:0;}
+  .photo-credits{font-size:11px;color:var(--ink-var);line-height:1.7;}
+  .photo-credits a{color:var(--ink-var);font-weight:500;text-decoration:underline;}
 
   /* ---------- FILTROS ---------- */
   .filters{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
@@ -295,12 +347,6 @@
   .mc-carb{--mc-c:var(--carb);} .mc-fat{--mc-c:var(--fat);}
   .rc-ings{margin:0 0 10px;padding-left:16px;font-size:11.5px;color:var(--ink-var);line-height:1.5;}
   .rc-ings li{margin:1px 0;}
-  .rc-foot{margin-top:auto;display:flex;align-items:center;justify-content:flex-end;gap:6px;}
-  .add-btn{padding:8px 13px;border-radius:999px;border:1px solid var(--primary-line);background:var(--primary-soft);
-    color:var(--primary-bright);font-weight:700;font-size:11.5px;cursor:pointer;flex-shrink:0;
-    transition:background .15s ease,border-color .15s ease,color .15s ease;}
-  .add-btn:hover{background:var(--primary);border-color:var(--primary);color:var(--on-primary);}
-  .menu-grid{margin-top:12px;grid-template-columns:1fr;}
 
   /* ---------- ETIQUETAS ---------- */
   .tag{display:inline-block;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;
@@ -313,7 +359,7 @@
   .modal-bg{position:fixed;inset:0;background:rgba(4,7,14,0.72);z-index:120;display:none;
     align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
   .modal-bg.open{display:flex;}
-  .modal-card{background:var(--container-high);border:1px solid var(--outline);border-radius:var(--radius);padding:22px;max-width:420px;width:100%;
+  .modal-card{background:var(--container-high);border:1px solid var(--outline);border-radius:var(--radius);padding:var(--space-lg);max-width:420px;width:100%;
     text-align:center;box-shadow:var(--shadow-lg);position:relative;max-height:90vh;overflow-y:auto;color:var(--ink);}
   .modal-card.receta{max-width:520px;text-align:left;}
   .modal-x{position:absolute;right:10px;top:10px;border:none;background:var(--surface-lowest);color:var(--ink-var);
@@ -362,7 +408,8 @@
     color:var(--ink-var);background:var(--surface-lowest);cursor:pointer;user-select:none;}
   #cal-grid .cal-day.done{background:var(--primary);border-color:var(--primary);color:var(--on-primary);}
   .tracker-stat{display:flex;align-items:baseline;gap:8px;}
-  .tracker-stat .big{font-size:30px;font-weight:800;color:var(--ink);}
+  .tracker-stat .big{font-size:30px;font-weight:800;color:var(--ink);
+    font-family:var(--font-display);letter-spacing:-0.04em;}
   .weight-form{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-top:8px;}
   .weight-form .field{margin-bottom:0;flex:1;min-width:88px;}
   .chart-box{margin-top:12px;border:1px solid var(--outline-soft);border-radius:12px;padding:10px;background:var(--surface-lowest);overflow-x:auto;}
@@ -384,11 +431,11 @@
   .batch-tip{margin-top:8px;font-size:12px;color:var(--ink-var);background:var(--surface-lowest);border-radius:10px;padding:8px 10px;}
 
   /* ---------- BOTONES FLOTANTES ---------- */
-  .fab{position:fixed;right:14px;bottom:14px;z-index:50;background:var(--primary);color:var(--on-primary);border:none;
-    border-radius:999px;padding:13px 20px;font-size:13px;font-weight:800;cursor:pointer;letter-spacing:0.01em;
+  .fab{position:fixed;right:var(--space-sm);bottom:var(--space-sm);z-index:50;background:var(--primary);color:var(--on-primary);border:none;
+    border-radius:999px;padding:var(--space-sm) var(--space-lg);font-size:13px;font-weight:800;cursor:pointer;letter-spacing:0.01em;
     box-shadow:0 14px 32px -6px rgba(34,197,94,0.55);display:none;}
   .fab.show{display:block;}
-  .help-fab{position:fixed;left:14px;bottom:14px;z-index:50;width:44px;height:44px;border-radius:50%;
+  .help-fab{position:fixed;left:var(--space-sm);bottom:var(--space-sm);z-index:50;width:44px;height:44px;border-radius:50%;
     border:1px solid var(--outline);background:var(--container-high);color:var(--primary-bright);font-size:20px;font-weight:800;cursor:pointer;
     box-shadow:var(--shadow);transition:background .15s ease;}
   .help-fab:hover{background:var(--container-highest);}
@@ -544,7 +591,7 @@
 
   /* Tarjeta de ejercicio (expandible) */
   .ex-card{border:1px solid var(--outline-soft);border-radius:12px;background:var(--container);margin-bottom:8px;overflow:hidden;}
-  .ex-card > summary{list-style:none;cursor:pointer;padding:11px 13px;display:flex;align-items:center;
+  .ex-card > summary{list-style:none;cursor:pointer;padding:var(--space-sm);display:flex;align-items:center;
     justify-content:space-between;gap:10px;}
   .ex-card > summary::-webkit-details-marker{display:none;}
   .ex-card > summary::after{content:'';width:8px;height:8px;flex-shrink:0;border-right:2px solid var(--ink-var);
@@ -553,7 +600,7 @@
   .ex-card[open] > summary{border-bottom:1px solid var(--outline-soft);}
   .ex-sum-name{font-weight:700;font-size:13.5px;color:var(--ink);line-height:1.3;}
   .ex-sum-series{font-size:11.5px;font-weight:800;color:var(--primary-bright);white-space:nowrap;}
-  .ex-body{padding:12px 13px;}
+  .ex-body{padding:var(--space-sm);}
   .ex-fig{width:100%;max-width:220px;height:auto;display:block;margin:0 auto 12px;color:var(--primary-bright);
     background:var(--surface-lowest);border:1px solid var(--outline-soft);border-radius:12px;padding:10px;}
   /* Fotos reales de la postura correcta (inicio / fin) */
@@ -572,7 +619,7 @@
   .day-total{margin-top:12px;background:var(--container-high);color:var(--ink);border:1px solid var(--outline-soft);border-radius:12px;padding:12px 14px;
     display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;}
   .day-total .n{font-family:var(--font-head);font-weight:800;font-size:22px;color:var(--primary-bright);letter-spacing:-0.02em;}
-  .rest-day{background:var(--container-high);color:var(--ink);border:1px solid var(--outline-soft);border-radius:12px;padding:22px 16px;text-align:center;}
+  .rest-day{background:var(--container-high);color:var(--ink);border:1px solid var(--outline-soft);border-radius:12px;padding:var(--space-lg) var(--space-md);text-align:center;}
   .rest-day .big{font-family:var(--font-head);font-weight:800;letter-spacing:-0.015em;
     font-size:18px;color:var(--primary-bright);display:block;margin-bottom:5px;}
   .rest-day p{margin:0;font-size:12.5px;color:var(--ink-var);line-height:1.55;}
@@ -613,6 +660,60 @@
     border-top:1px solid var(--outline-soft);}
   footer strong{color:var(--primary-bright);}
   .disclaimer{max-width:640px;margin:8px auto 0;opacity:0.85;}
+
+  /* ---------- ICONOS DE LÍNEA (nav/selectores) — reemplazan emojis de UI ---------- */
+  .ui-icon{width:16px;height:16px;flex-shrink:0;vertical-align:-3px;margin-right:5px;color:currentColor;}
+  .goal-opt .ui-icon,.def-opt .ui-icon{width:15px;height:15px;vertical-align:-2.5px;}
+  .fab .ui-icon,.btn-secondary .ui-icon{width:15px;height:15px;vertical-align:-2.5px;}
+
+  /* ---------- TARJETA "HERO": el anillo de Calorías destaca sobre los demás ---------- */
+  .rings:has(.hero-ring){grid-template-columns:repeat(3,1fr);}
+  @media (max-width:460px){.rings:has(.hero-ring){grid-template-columns:repeat(3,1fr);}}
+  .rings .ring.hero-ring{
+    grid-column:1 / -1;
+    background:radial-gradient(circle at 50% 35%, var(--primary-soft), transparent 72%);
+    border-radius:var(--radius);
+    padding:var(--space-sm) var(--space-xs) var(--space-2xs);
+  }
+  .rings .ring.hero-ring svg{max-width:112px;}
+  .rings .ring.hero-ring .ring-mid{height:112px;font-size:22px;font-family:var(--font-display);
+    font-weight:800;letter-spacing:-0.03em;}
+  .rings .ring.hero-ring .ring-cap{font-size:12px;margin-top:var(--space-2xs);}
+  @media (max-width:460px){
+    .rings .ring.hero-ring .ring-mid{height:auto;top:26%;}
+  }
+
+  /* ---------- ESTADO VACÍO ---------- */
+  .empty-state{text-align:center;padding:var(--space-xl) var(--space-md);color:var(--ink-var);}
+  .empty-state svg{width:40px;height:40px;margin:0 auto var(--space-sm);display:block;color:var(--ink-dim);animation:none;}
+  .empty-state p{margin:0;font-size:13px;line-height:1.55;max-width:320px;margin-inline:auto;}
+  .empty-state p b{color:var(--ink);}
+
+  /* ---------- MOVIMIENTO INTENCIONAL: transiciones de sección y aparición escalonada ---------- */
+  @keyframes panelFadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .panel.active,.main-panel.active{animation:panelFadeIn .32s cubic-bezier(.22,.61,.36,1) backwards;}
+
+  @keyframes cardFadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .recipe-card,.plan-meal,.why-card{animation:cardFadeIn .38s ease backwards;}
+  .recipe-list .recipe-card:nth-child(1){animation-delay:.02s;}
+  .recipe-list .recipe-card:nth-child(2){animation-delay:.05s;}
+  .recipe-list .recipe-card:nth-child(3){animation-delay:.08s;}
+  .recipe-list .recipe-card:nth-child(4){animation-delay:.11s;}
+  .recipe-list .recipe-card:nth-child(5){animation-delay:.14s;}
+  .recipe-list .recipe-card:nth-child(6){animation-delay:.17s;}
+  .recipe-list .recipe-card:nth-child(n+7){animation-delay:.2s;}
+  .plan-meal-list .plan-meal:nth-child(1){animation-delay:.04s;}
+  .plan-meal-list .plan-meal:nth-child(2){animation-delay:.11s;}
+  .plan-meal-list .plan-meal:nth-child(3){animation-delay:.18s;}
+  .plan-meal-list .plan-meal:nth-child(4){animation-delay:.25s;}
+  .why-grid .why-card:nth-child(1){animation-delay:.03s;}
+  .why-grid .why-card:nth-child(2){animation-delay:.09s;}
+  .why-grid .why-card:nth-child(3){animation-delay:.15s;}
+  .why-grid .why-card:nth-child(4){animation-delay:.21s;}
+
+  @media (prefers-reduced-motion:reduce){
+    .panel.active,.main-panel.active,.recipe-card,.plan-meal,.why-card{animation:none;}
+  }
 </style>
 </head>
 <body>
@@ -625,11 +726,10 @@
 
 <!-- PESTAÑAS (celular) -->
 <nav class="tabbar" id="tabbar">
-  <button class="tab-btn active" data-tab="calculadora" onclick="setTab('calculadora')">🧮 Mi plan</button>
-  <button class="tab-btn" data-tab="midia" onclick="setTab('midia')">🍽️ Mi día</button>
-  <button class="tab-btn" data-tab="recetario" onclick="setTab('recetario')">📖 Recetas</button>
-  <button class="tab-btn" data-tab="progreso" onclick="setTab('progreso')">📅 Progreso</button>
-  <button class="tab-btn" data-tab="movimiento" onclick="setTab('movimiento')">🏃 Movimiento</button>
+  <button class="tab-btn active" data-tab="calculadora" onclick="setTab('calculadora')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1Z"/><rect x="5" y="6" width="14" height="15" rx="2"/><path d="M9 12h6M9 16h6"/></svg>Mi plan</button>
+  <button class="tab-btn" data-tab="midia" onclick="setTab('midia')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v6a2.2 2.2 0 0 0 4.4 0V3"/><path d="M8.2 11v10"/><path d="M17 3c-1.6 0-2.8 2-2.8 5s1.2 4.6 2.8 4.6"/><path d="M17 3v18"/></svg>Mi día</button>
+  <button class="tab-btn" data-tab="progreso" onclick="setTab('progreso')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8.5 15l2.5 2.5 4.5-5"/></svg>Progreso</button>
+  <button class="tab-btn" data-tab="movimiento" onclick="setTab('movimiento')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2-7 4 14 2-7h6"/></svg>Movimiento</button>
 </nav>
 
 <div class="app">
@@ -643,15 +743,15 @@
         <label>¿Cuál es tu objetivo?</label>
         <div class="goal-toggle" id="goal-toggle">
           <button type="button" class="goal-opt active" data-goal="bajar" onclick="setObjetivo('bajar')">
-            <span class="goal-t">📉 Bajar de peso</span>
+            <span class="goal-t"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 10 13 14 9 21 16"/><polyline points="21 10 21 16 15 16"/></svg>Bajar de peso</span>
             <span class="goal-d">Déficit calórico: comes menos de lo que gastas para perder grasa.</span>
           </button>
           <button type="button" class="goal-opt" data-goal="subir" onclick="setObjetivo('subir')">
-            <span class="goal-t">📈 Subir de peso / masa muscular</span>
+            <span class="goal-t"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 18 10 11 14 15 21 8"/><polyline points="15 8 21 8 21 14"/></svg>Subir de peso / masa muscular</span>
             <span class="goal-d">Superávit del +10%: comes un poco más para ganar músculo con la menor grasa posible.</span>
           </button>
           <button type="button" class="goal-opt" data-goal="mantener" onclick="setObjetivo('mantener')">
-            <span class="goal-t">⚖️ Mantener mi peso</span>
+            <span class="goal-t"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18"/><path d="M5 21h14"/><path d="M5 7h14"/><path d="M5 7l-3 6h6Z"/><path d="M19 7l-3 6h6Z"/></svg>Mantener mi peso</span>
             <span class="goal-d">Usa tu gasto diario (TDEE) tal cual, sin déficit ni superávit.</span>
           </button>
         </div>
@@ -692,15 +792,15 @@
         <label>¿Qué tan rápido quieres bajar?</label>
         <div class="goal-toggle" id="deficit-toggle">
           <button type="button" class="goal-opt def-opt def-bajo" data-def="0.20" onclick="setIntensidad('0.20')">
-            <span class="goal-t">🐢 Déficit bajo (suave) · −20%</span>
+            <span class="goal-t"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="14" width="4" height="8" rx="1.5" fill="currentColor"/><rect x="10" y="9" width="4" height="13" rx="1.5" stroke="currentColor" stroke-width="1.6"/><rect x="16" y="4" width="4" height="18" rx="1.5" stroke="currentColor" stroke-width="1.6"/></svg>Déficit bajo (suave) · −20%</span>
             <span class="goal-d">El más sostenible a largo plazo y con menor riesgo de perder masa muscular. Ideal si prefieres un proceso lento pero más cómodo.</span>
           </button>
           <button type="button" class="goal-opt def-opt def-medio active" data-def="0.25" onclick="setIntensidad('0.25')">
-            <span class="goal-t">🚶 Déficit medio · −25% · recomendado</span>
+            <span class="goal-t"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="14" width="4" height="8" rx="1.5" fill="currentColor"/><rect x="10" y="9" width="4" height="13" rx="1.5" fill="currentColor"/><rect x="16" y="4" width="4" height="18" rx="1.5" stroke="currentColor" stroke-width="1.6"/></svg>Déficit medio · −25% · recomendado</span>
             <span class="goal-d">Un balance entre velocidad de resultados y sostenibilidad. La opción recomendada para la mayoría.</span>
           </button>
           <button type="button" class="goal-opt def-opt def-alto" data-def="0.30" onclick="setIntensidad('0.30')">
-            <span class="goal-t">🏃 Déficit alto (agresivo) · −30%</span>
+            <span class="goal-t"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="14" width="4" height="8" rx="1.5" fill="currentColor"/><rect x="10" y="9" width="4" height="13" rx="1.5" fill="currentColor"/><rect x="16" y="4" width="4" height="18" rx="1.5" fill="currentColor"/></svg>Déficit alto (agresivo) · −30%</span>
             <span class="goal-d">Resultados más rápidos, pero exige más disciplina y sube el riesgo de perder masa muscular si no cuidas la proteína y la fibra. No se recomienda mantenerlo por periodos muy largos.</span>
           </button>
         </div>
@@ -719,35 +819,33 @@
       </div>
     </section>
 
-    <!-- 2 · MI DÍA / MENÚ -->
+    <!-- 2 · MI DÍA / PLAN DE COMIDAS -->
     <section class="panel side-panel" data-panel="midia" id="panel-midia">
-      <h2><span class="step-n">2</span> Tu menú del día</h2>
-      <p class="hint">Genera un menú o agrega recetas. Los anillos comparan con tu objetivo.</p>
-      <button class="btn-primary" onclick="generarMenu()">🍽️ Generar menú del día</button>
-      <div id="plan-dia"><p class="section-sub" style="margin-top:10px;">Calcula tu plan (paso 1) para generar un menú.</p></div>
-      <div id="menu-container"></div>
-      <h3>Lo que llevas hoy</h3>
+      <h2><span class="step-n">2</span> Tu día</h2>
+      <p class="hint">Tu plan de comidas se genera solo al calcular tu plan y no cambia: marca cada comida cuando te la comas.</p>
+      <div id="plan-dia"><p class="section-sub" style="margin-top:10px;">Calcula tu plan (paso 1) para generar tu menú de 90 días.</p></div>
+      <h3>Tu progreso de hoy</h3>
       <div id="mi-dia-bars"></div>
-      <div id="mi-dia-list" class="miday-list"></div>
+      <button class="btn-secondary" style="width:100%;margin-top:14px;" onclick="setTab('recetario')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v17H6.5A2.5 2.5 0 0 0 4 22Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v17h5.5a2.5 2.5 0 0 1 2.5 2Z"/></svg>Ver todas las recetas</button>
     </section>
 
   </aside>
 
   <main class="app-main">
     <nav class="main-nav">
-      <button data-tab="recetario" class="active" onclick="setTab('recetario')">📖 Recetas</button>
-      <button data-tab="progreso" onclick="setTab('progreso')">📅 Progreso</button>
-      <button data-tab="movimiento" onclick="setTab('movimiento')">🏃 Movimiento</button>
+      <button data-tab="progreso" class="active" onclick="setTab('progreso')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8.5 15l2.5 2.5 4.5-5"/></svg>Progreso</button>
+      <button data-tab="movimiento" onclick="setTab('movimiento')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2-7 4 14 2-7h6"/></svg>Movimiento</button>
     </nav>
 
-    <!-- RECETARIO -->
-    <section class="panel main-panel active" data-panel="recetario" id="panel-recetario">
+    <!-- RECETARIO: referencia de recetas, ya no es una pestaña independiente (ver setTab) -->
+    <section class="panel main-panel" data-panel="recetario" id="panel-recetario">
+      <button class="btn-link" style="padding-left:0;" onclick="setTab('midia')">← Volver a Mi día</button>
       <h2>Recetario</h2>
-      <p class="hint">+60 recetas altas en proteína. Toca una para ver la receta.</p>
+      <p class="hint">+70 recetas altas en proteína, de referencia. Tu plan de comidas ya se genera solo en <b>Mi día</b>.</p>
 
       <!-- Generador de recetas con IA -->
       <div class="ia-box">
-        <h3>✨ Tus ingredientes favoritos</h3>
+        <h3>Tus ingredientes favoritos</h3>
         <p class="section-sub">Elige o escribe ingredientes que te gusten y la IA arma una receta alta en proteína.</p>
         <div class="ia-input-row">
           <input type="text" id="ia-input" placeholder="Ej: pollo, arroz integral, brócoli" aria-label="Escribe un ingrediente"
@@ -771,10 +869,14 @@
         <summary>Cocina por lote — prepara 1 vez, come varios días</summary>
         <div class="more-body" id="batch-panel"></div>
       </details>
+      <details class="more" id="credits-more" ontoggle="if(this.open)renderCreditosFotos()">
+        <summary>Créditos de las fotos de platos</summary>
+        <div class="more-body" id="credits-panel"></div>
+      </details>
     </section>
 
     <!-- PROGRESO -->
-    <section class="panel main-panel" data-panel="progreso" id="panel-progreso">
+    <section class="panel main-panel active" data-panel="progreso" id="panel-progreso">
       <h2>Progreso 90 días</h2>
       <p class="hint">Marca cada día que cumpliste tu plan. Se guarda en tu navegador.</p>
       <div class="tracker-stat"><span class="big" id="dias-count">0</span><span>de 90 días completados</span></div>
@@ -805,6 +907,10 @@
           <ul class="checkin-list" id="checkin-list"></ul>
         </div>
       </details>
+
+      <h3>Historial de días de comida</h3>
+      <p class="hint">Resumen de cada día que terminaste desde <b>Mi día</b>: lo comido contra tu meta.</p>
+      <div id="historial-dias"></div>
     </section>
 
     <!-- MOVIMIENTO -->
@@ -840,7 +946,7 @@
   </main>
 </div>
 
-<button class="fab" id="fab" onclick="setTab('midia')">🍽️ Mi día (<span id="fab-count">0</span>)</button>
+<button class="fab" id="fab" onclick="setTab('midia')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v6a2.2 2.2 0 0 0 4.4 0V3"/><path d="M8.2 11v10"/><path d="M17 3c-1.6 0-2.8 2-2.8 5s1.2 4.6 2.8 4.6"/><path d="M17 3v18"/></svg>Comidas de hoy (<span id="fab-count">0</span>)</button>
 <button class="help-fab" id="help-btn" onclick="startTour(0)" title="Ver guía de uso" aria-label="Ver guía de uso">?</button>
 
 <!-- MODAL: receta -->
@@ -1697,7 +1803,10 @@ function ingItemHTML(i){
 const LS = {
   dias:'rp90_dias',
   pesos:'rp90_pesos',
-  miDia:'rp90_midia',
+  planDias:'rp90_plan_dias',       // array de 90 días: [{desayuno,almuerzo,cena,merienda}] (ids de receta)
+  planStart:'rp90_plan_start',     // fecha ISO del día 1 del plan de comidas
+  comidas:'rp90_comidas',          // {fechaISO: {desayuno:bool, almuerzo:bool, cena:bool, merienda:bool}}
+  diasTerminados:'rp90_dias_terminados', // {fechaISO: {kcal,proteina,carbos,grasa,objetivo,meals}}
   plan:'rp90_plan',
   datos:'rp90_datos',      // datos crudos de la calculadora, para poder recalcular
   checkins:'rp90_checkins', // historial de check-ins quincenales [{fecha, peso, plan}]
@@ -1721,7 +1830,10 @@ let plan = lsGet(LS.plan, null); // {calorias, proteina, carbos, grasa}
 let datos = lsGet(LS.datos, null); // {peso, altura, edad, genero, actividad, intensidad, objetivo}
 let checkins = lsGet(LS.checkins, []); // [{fecha:'YYYY-MM-DD', peso, plan:{...}}]
 let filtroActivo = 'todas';
-let miDia = lsGet(LS.miDia, []);  // array de ids de receta (permite repetidos)
+let planDias = lsGet(LS.planDias, null);           // plan de comidas fijo, generado una vez
+let planStart = lsGet(LS.planStart, null);         // fecha ISO del día 1 del plan
+let comidasMarcadas = lsGet(LS.comidas, {});       // comidas marcadas como "comidas", por fecha
+let diasTerminados = lsGet(LS.diasTerminados, {}); // resumen de cada día que se "terminó"
 
 // --- Generador de recetas con IA (backend: Cloudflare Worker, ver README-worker.md) ---
 // URL del Worker desplegado. Si algún día cambia el nombre/subdominio, actualízala aquí.
@@ -1895,61 +2007,144 @@ function calcular(){
 
   pintarResultado(res, notaPlan(res));
 
-  const subtitulo = document.querySelector('#plan-dia .section-sub');
-  if(subtitulo) subtitulo.textContent = 'Tu objetivo: ' + plan.calorias + ' kcal y ' + plan.proteina + ' g de proteína al día.';
-  generarMenu();
-  renderMiDia();
+  generarPlanDias();
+  renderPlanDia();
   renderCheckin();
   renderMovimiento();
   document.getElementById('resultado').scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
-// Distribución de calorías por comida
-const DISTRIBUCION = {
-  desayuno: 0.25,
-  comida: 0.45, // se reparte entre 2 comidas principales (almuerzo + cena)
-  snack: 0.10
-};
+// ============================================================
+// PLAN DE COMIDAS AUTOMÁTICO — se genera una sola vez (al calcular el
+// plan o en cada check-in) y queda fijo: no hay botón para cambiar o
+// regenerar platos individuales. Asigna desayuno/almuerzo/cena/merienda
+// para los 90 días, variando de un día a otro y respetando las metas
+// de kcal/proteína/carbos/grasa. Con déficit alto, prioriza recetas
+// "Alto volumen / bajo en calorías" en almuerzo/cena/merienda.
+// ============================================================
+const MEAL_PCT = { desayuno:0.25, almuerzo:0.35, cena:0.30, merienda:0.10 };
+const MEAL_LABELS = { desayuno:'Desayuno', almuerzo:'Almuerzo', cena:'Cena', merienda:'Merienda' };
 
-function elegirReceta(categoria, kcalObjetivo, usados){
-  const candidatas = RECETAS.filter(r => r.categoria === categoria && !usados.has(r.id));
-  const pool = candidatas.length ? candidatas : RECETAS.filter(r => r.categoria === categoria);
-  // ordenar por cercanía calórica y tomar entre las 3 más cercanas al azar (variedad)
-  const ordenadas = [...pool].sort((a,b) => Math.abs(a.kcal-kcalObjetivo) - Math.abs(b.kcal-kcalObjetivo));
-  const top = ordenadas.slice(0, Math.min(3, ordenadas.length));
-  const elegida = top[Math.floor(Math.random()*top.length)];
-  usados.add(elegida.id);
-  return elegida;
+function shuffleArr(arr){
+  const a = [...arr];
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
-function generarMenu(){
-  const cont = document.getElementById('menu-container');
-  if(!plan){
-    cont.innerHTML = '';
-    return;
+// "Bolsa" de ids que se baraja y se va vaciando (sin repetir) antes de
+// volver a barajar: da variedad real en vez de elegir al azar cada vez.
+function crearBolsa(ids){
+  let bolsa = shuffleArr(ids);
+  return function siguiente(evitar){
+    if(bolsa.length === 0) bolsa = shuffleArr(ids);
+    let id = bolsa.pop();
+    if(id === evitar && bolsa.length > 0){
+      const otro = bolsa.pop();
+      bolsa.unshift(id);
+      id = otro;
+    }
+    return id;
+  };
+}
+
+// Recetas de una categoría, acotadas a las más cercanas a la meta calórica
+// de esa comida (para respetar el objetivo) y con más peso a "alto volumen"
+// cuando el déficit es alto (más saciedad con menos calorías).
+function poolCategoria(categoriaReceta, metaKcal, priorizarVolumen){
+  const base = RECETAS.filter(r => r.categoria === categoriaReceta);
+  const ordenadas = [...base].sort((a,b) => Math.abs(a.kcal - metaKcal) - Math.abs(b.kcal - metaKcal));
+  const zonaN = Math.min(ordenadas.length, Math.max(10, Math.ceil(ordenadas.length * 0.6)));
+  const zona = ordenadas.slice(0, zonaN);
+  let ids = zona.map(r => r.id);
+  if(priorizarVolumen){
+    const volIds = zona.filter(r => r.vol).map(r => r.id);
+    ids = ids.concat(volIds, volIds); // más copias = más probabilidad dentro de la bolsa
+  }
+  return ids;
+}
+
+// Genera (o regenera) el plan de comidas fijo para `dias` días, a partir
+// del plan de macros vigente. Se llama al calcular el plan y en cada check-in.
+function generarPlanDias(dias){
+  dias = dias || 90;
+  if(!plan) return null;
+  const deficitAlto = objetivo === 'bajar' && intensidad >= 0.30;
+
+  const metaDesayuno = plan.calorias * MEAL_PCT.desayuno;
+  const metaAlmuerzo = plan.calorias * MEAL_PCT.almuerzo;
+  const metaCena = plan.calorias * MEAL_PCT.cena;
+  const metaMerienda = plan.calorias * MEAL_PCT.merienda;
+  const metaComida = (metaAlmuerzo + metaCena) / 2;
+
+  const bagDesayuno = crearBolsa(poolCategoria('desayuno', metaDesayuno, false));
+  const bagComida = crearBolsa(poolCategoria('comida', metaComida, deficitAlto));
+  const bagSnack = crearBolsa(poolCategoria('snack', metaMerienda, deficitAlto));
+
+  const resultado = [];
+  let prevDesayuno = null, prevCena = null, prevMerienda = null;
+  for(let d = 0; d < dias; d++){
+    const desayuno = bagDesayuno(prevDesayuno);
+    const almuerzo = bagComida(prevCena);
+    let cena = bagComida(almuerzo);
+    if(cena === almuerzo) cena = bagComida(cena); // evita el mismo plato dos veces el mismo día
+    const merienda = bagSnack(prevMerienda);
+    resultado.push({desayuno, almuerzo, cena, merienda});
+    prevDesayuno = desayuno; prevCena = cena; prevMerienda = merienda;
   }
 
-  const usados = new Set();
-  const desayuno = elegirReceta('desayuno', plan.calorias * DISTRIBUCION.desayuno, usados);
-  const comida1 = elegirReceta('comida', plan.calorias * 0.35, usados);
-  const comida2 = elegirReceta('comida', plan.calorias * 0.30, usados);
-  const snack = elegirReceta('snack', plan.calorias * DISTRIBUCION.snack, usados);
+  planDias = resultado;
+  planStart = hoyISO();
+  lsSet(LS.planDias, planDias);
+  lsSet(LS.planStart, planStart);
+  return planDias;
+}
 
-  const seleccion = [
-    {label:'Desayuno', r:desayuno},
-    {label:'Almuerzo', r:comida1},
-    {label:'Cena', r:comida2},
-    {label:'Snack', r:snack},
-  ];
+// Índice (0-89) del día del plan que corresponde a "hoy"
+function diaIndexActual(){
+  if(!planStart || !planDias) return 0;
+  const d = diasEntre(planStart, hoyISO());
+  return Math.max(0, Math.min(d, planDias.length - 1));
+}
 
-  const totalKcal = seleccion.reduce((s,x)=>s+x.r.kcal, 0);
-  const totalProt = seleccion.reduce((s,x)=>s+x.r.proteina, 0);
-
-  let html = `<div class="note" style="margin-bottom:14px;">Este menú suma aprox. <b>${totalKcal} kcal</b> y <b>${totalProt} g de proteína</b> (objetivo: ${plan.calorias} kcal, ${plan.proteina} g). Pulsa de nuevo para otra variante.</div>`;
-  html += '<div class="recipe-list menu-grid">';
-  seleccion.forEach(({label, r}) => { html += renderRecetaCard(r, label); });
-  html += '</div>';
-  cont.innerHTML = html;
+// ---------- Ajuste de porción por comida ----------
+// Las recetas tienen una porción fija; para acercarse mejor a la meta de
+// calorías de cada comida (sobre todo con superávit alto o déficit muy bajo),
+// se escala la porción completa (ingredientes y macros) dentro de un rango
+// razonable (0.6x–2.2x) en vez de dejar el hueco entre receta y meta.
+function metaKcalDeComida(meal){
+  return plan ? plan.calorias * MEAL_PCT[meal] : null;
+}
+function escalarIngrediente(i, factor){
+  if(typeof i === 'string') return i;
+  return {
+    ...i,
+    g: i.g != null ? Math.round(i.g * factor) : i.g,
+    kcal: Math.round((i.kcal || 0) * factor),
+    proteina: Math.round((i.proteina || 0) * factor),
+    carbos: Math.round((i.carbos || 0) * factor),
+    grasa: Math.round((i.grasa || 0) * factor)
+  };
+}
+// Devuelve la receta asignada a `meal` ajustada de porción a la meta de esa
+// comida. Determinista: misma receta + mismo plan de macros = mismo resultado,
+// así el resumen de "Terminar día" siempre cuadra con lo que se mostró.
+function recetaParaComida(meal, id){
+  const base = getReceta(id);
+  if(!base || !plan || !base.kcal) return base;
+  const meta = metaKcalDeComida(meal);
+  const factor = Math.max(0.6, Math.min(2.2, meta / base.kcal));
+  if(Math.abs(factor - 1) < 0.05) return base;
+  return {
+    ...base,
+    kcal: Math.round(base.kcal * factor),
+    proteina: Math.round(base.proteina * factor),
+    carbos: Math.round(base.carbos * factor),
+    grasa: Math.round(base.grasa * factor),
+    ingredientes: base.ingredientes.map(i => escalarIngrediente(i, factor))
+  };
 }
 
 // ---------- Render de tarjeta de receta ----------
@@ -2009,22 +2204,77 @@ const RECETA_TIPOS = [
   {ic:'fruta',    c:'orange', kw:['manzana','platano','pina','fresa','mora','fruta','frutos rojos']},
   {ic:'nuez',     c:'orange', kw:['nuez','nueces','semilla','almendra','tostados','galleta','mani','cacahuate']}
 ];
-function recetaThumb(r){
+function recetaTipoId(r){
   const n = normaliza(r.nombre + ' ' + (r.ingredientes && r.ingredientes[0] ? ingNombre(r.ingredientes[0]) : ''));
-  let hit = RECETA_TIPOS.find(t => t.kw.some(k => n.includes(k)));
-  if(!hit) hit = {ic:(r.categoria === 'snack' ? 'nuez' : r.categoria === 'desayuno' ? 'huevo' : 'plato'), c:'accent'};
+  const hit = RECETA_TIPOS.find(t => t.kw.some(k => n.includes(k)));
+  if(hit) return hit.ic;
+  return r.categoria === 'snack' ? 'nuez' : r.categoria === 'desayuno' ? 'huevo' : 'plato';
+}
+
+function recetaThumb(r){
+  const tipo = recetaTipoId(r);
+  const hit = RECETA_TIPOS.find(t => t.ic === tipo) || {c:'accent'};
   const C = {carb:'var(--carb)', prot:'var(--prot)', kcal:'var(--kcal)', veg:'var(--veg)', accent:'var(--accent)', orange:'var(--orange)'};
   const B = {carb:'var(--carb-bg)', prot:'var(--prot-bg)', kcal:'var(--kcal-bg)', veg:'var(--veg-bg)', accent:'var(--accent-light)', orange:'var(--orange-light)'};
   return `<div class="rc-thumb" style="--tc:${C[hit.c]};--tb:${B[hit.c]}">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${RECETA_GLYPH[hit.ic]}</svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${RECETA_GLYPH[tipo] || RECETA_GLYPH.plato}</svg>
   </div>`;
 }
 
-function renderRecetaCard(r, etiqueta){
-  const tagLabel = etiqueta || (r.categoria === 'desayuno' ? 'Desayuno' : r.categoria === 'comida' ? 'Comida' : 'Snack');
+// ============================================================
+// FOTOS DE PLATOS — representativas por "tipo" de receta.
+// Fuente: Wikimedia Commons (Special:FilePath), licencias abiertas
+// (CC0 / CC BY / CC BY-SA). Cada foto es ilustrativa del tipo de
+// plato, no una foto exacta de la receta. Ver créditos completos
+// en el recetario ("Créditos de las fotos de platos").
+// ============================================================
+const WM_FILEPATH = 'https://commons.wikimedia.org/wiki/Special:FilePath/';
+const TIPO_FOTO = {
+  huevo:    {file:'Omelette on a plate.jpg', artist:'Infrogmation of New Orleans', license:'CC BY 2.0', page:'https://commons.wikimedia.org/wiki/File:Omelette_on_a_plate.jpg'},
+  pollo:    {file:'Pesto Chicken and Grilled Zucchini.jpg', artist:'Infrogmation of New Orleans', license:'CC BY-SA 4.0', page:'https://commons.wikimedia.org/wiki/File:Pesto_Chicken_and_Grilled_Zucchini.jpg'},
+  pescado:  {file:'Liat Portal for Foodie Disorder - Grilled salmon with sweet potatoes.jpg', artist:'HaJunkiyada', license:'CC BY-SA 4.0', page:'https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Grilled_salmon_with_sweet_potatoes.jpg'},
+  carne:    {file:'Beef steak of the set of dinner.jpg', artist:'Geoffreyrabbit', license:'CC BY-SA 4.0', page:'https://commons.wikimedia.org/wiki/File:Beef_steak_of_the_set_of_dinner.jpg'},
+  batido:   {file:'Fresh fruit smoothie being poured into a glass.jpg', artist:'Shixart1985', license:'CC BY 2.0', page:'https://commons.wikimedia.org/wiki/File:Fresh_fruit_smoothie_being_poured_into_a_glass.jpg'},
+  lacteo:   {file:'Yogurt fruit bowl.jpg', artist:'Jumbocombo0811', license:'CC BY-SA 4.0', page:'https://commons.wikimedia.org/wiki/File:Yogurt_fruit_bowl.jpg'},
+  avena:    {file:'Banana Oatmeal Breakfast Bowl (44302857265).jpg', artist:'Ella Olsson', license:'CC BY 2.0', page:'https://commons.wikimedia.org/wiki/File:Banana_Oatmeal_Breakfast_Bowl_(44302857265).jpg'},
+  tofu:     {file:'Crispy Tofu - Stir Fry by CK 2025-04-06.jpg', artist:'Andy Li', license:'CC0', page:'https://commons.wikimedia.org/wiki/File:Crispy_Tofu_-_Stir_Fry_by_CK_2025-04-06.jpg'},
+  ensalada: {file:'Liat Portal for Foodie Disorder - Chopped vegetable salad preparation.jpg', artist:'HaJunkiyada', license:'CC BY-SA 4.0', page:'https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Chopped_vegetable_salad_preparation.jpg'},
+  legumbre: {file:'Liat Portal for Foodie Disorder - Cooked Lentils with Caramelized Onions.jpg', artist:'HaJunkiyada', license:'CC BY-SA 4.0', page:'https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Cooked_Lentils_with_Caramelized_Onions.jpg'},
+  wrap:     {file:'Mix Gyros (Chicken & Pork) Pitta Wrap - Montague Gyros 2025-12-06.jpg', artist:'Andy Li', license:'CC0', page:'https://commons.wikimedia.org/wiki/File:Mix_Gyros_(Chicken_%26_Pork)_Pitta_Wrap_-_Montague_Gyros_2025-12-06.jpg'},
+  sopa:     {file:'Traditional Vegetable Soup from Argentina.jpg', artist:'Horacio Cambeiro', license:'CC BY-SA 3.0', page:'https://commons.wikimedia.org/wiki/File:Traditional_Vegetable_Soup_from_Argentina.jpg'},
+  fruta:    {file:'Fruit Salad Or Fruit Bowl.jpg', artist:'Manjeshwari poet mysore', license:'CC BY-SA 4.0', page:'https://commons.wikimedia.org/wiki/File:Fruit_Salad_Or_Fruit_Bowl.jpg'},
+  nuez:     {file:'MixedNutsInGlassBowl.JPG', artist:'Simon Speed', license:'CC0', page:'https://commons.wikimedia.org/wiki/File:MixedNutsInGlassBowl.JPG'},
+  plato:    {file:'A Nigerian balanced diet.jpg', artist:'PhoToria', license:'CC BY-SA 4.0', page:'https://commons.wikimedia.org/wiki/File:A_Nigerian_balanced_diet.jpg'}
+};
+function fotoTipoInfo(r){ return TIPO_FOTO[recetaTipoId(r)] || TIPO_FOTO.plato; }
+function fotoTipoURL(info, width){ return WM_FILEPATH + encodeURIComponent(info.file) + '?width=' + (width || 480); }
+
+// Foto representativa + respaldo automático al glifo SVG si la imagen no carga (sin internet, CDN bloqueado, etc.)
+function recetaMediaHTML(r){
+  const info = fotoTipoInfo(r);
+  const url = fotoTipoURL(info);
+  return `<div class="rc-media">
+    <img class="rc-photo-img" src="${url}" alt="${r.nombre}" loading="lazy" decoding="async"
+         onerror="this.parentElement.classList.add('foto-error');">
+    <div class="rc-thumb-fallback">${recetaThumb(r)}</div>
+    <span class="rc-photo-tag">Foto ilustrativa</span>
+  </div>`;
+}
+
+function renderCreditosFotos(){
+  const panel = document.getElementById('credits-panel');
+  if(!panel) return;
+  panel.innerHTML = `<div class="note" style="margin:0 0 10px;">Las fotos de los platos son representativas del tipo de comida (no son fotos exactas de cada receta). Vienen de Wikimedia Commons con licencia abierta.</div>
+  <ul class="photo-credits" style="list-style:none;padding:0;margin:0;">
+    ${Object.values(TIPO_FOTO).map(info => `<li style="margin-bottom:4px;">${info.artist} — ${info.license} — <a href="${info.page}" target="_blank" rel="noopener">ver en Wikimedia Commons</a></li>`).join('')}
+  </ul>`;
+}
+
+function renderRecetaCard(r){
+  const tagLabel = r.categoria === 'desayuno' ? 'Desayuno' : r.categoria === 'comida' ? 'Almuerzo/Cena' : 'Snack';
   return `
     <div class="recipe-card" onclick="abrirReceta(${r.id})" tabindex="0" onkeydown="if(event.key==='Enter'){abrirReceta(${r.id});}">
-      ${recetaThumb(r)}
+      ${recetaMediaHTML(r)}
       <div class="rc-tags">${r.ia ? '<span class="tag tag-ia">✨ IA</span>' : ''}<span class="tag">${tagLabel}</span>${dietaTag(r)}${volTag(r)}</div>
       <h4>${r.nombre}</h4>
       <div class="rc-macros">
@@ -2034,19 +2284,20 @@ function renderRecetaCard(r, etiqueta){
         <span class="mc mc-fat"><b>${r.grasa}g</b> grasa</span>
       </div>
       <ul class="rc-ings">${r.ingredientes.map(i => `<li>${ingTexto(i)}</li>`).join('')}</ul>
-      <div class="rc-foot">
-        <button class="add-btn" onclick="event.stopPropagation(); agregarAMiDia(${r.id});">➕ Mi día</button>
-      </div>
     </div>`;
 }
 
-// Abre la receta completa en un modal (mantiene la cuadrícula de tarjetas pareja)
-function abrirReceta(id){
-  const r = getReceta(id);
+// Abre la receta completa en un modal (mantiene la cuadrícula de tarjetas pareja).
+// Si viene desde una tarjeta del plan del día, `meal` indica la comida para
+// mostrar la porción ajustada a esa meta (misma que se ve en la tarjeta).
+function abrirReceta(id, meal){
+  const r = meal ? recetaParaComida(meal, id) : getReceta(id);
   if(!r) return;
   const cat = r.categoria === 'desayuno' ? 'Desayuno' : r.categoria === 'comida' ? 'Comida' : 'Snack';
+  const notaPorcion = meal && r.kcal !== getReceta(id).kcal
+    ? `<div class="note" style="margin:10px 0 0;">Porción ajustada a tu meta de ${MEAL_LABELS[meal].toLowerCase()} (receta base: ${getReceta(id).kcal} kcal).</div>` : '';
   document.getElementById('receta-modal-body').innerHTML = `
-    ${recetaThumb(r)}
+    ${recetaMediaHTML(r)}
     <div class="rc-tags"><span class="tag">${cat}</span>${dietaTag(r)}${volTag(r)}</div>
     <h3 style="margin:8px 0 0;">${r.nombre}</h3>
     <div class="macros">
@@ -2056,11 +2307,11 @@ function abrirReceta(id){
       <span class="mc mc-fat"><b>${r.grasa}g</b> grasa</span>
     </div>
     ${r.vol ? '<div class="note" style="margin:10px 0 0;">🥗 <b>Alto volumen / bajo en calorías.</b> Porción abundante con muchos vegetales de bajo aporte calórico: llena el plato y sacia sin sumar muchas calorías. Útil si elegiste un déficit alto y sientes más hambre.</div>' : ''}
+    ${notaPorcion}
     <h5>Ingredientes <span class="ing-hint">— cantidad y aporte por porción</span></h5>
     <ul class="ing-list">${r.ingredientes.map(ingItemHTML).join('')}</ul>
     <h5>Preparación</h5>
-    <ol>${r.pasos.map(p=>`<li>${p}</li>`).join('')}</ol>
-    <button class="btn-primary" style="margin-top:8px;" onclick="agregarAMiDia(${r.id}); cerrarReceta();">➕ Agregar a mi día</button>`;
+    <ol>${r.pasos.map(p=>`<li>${p}</li>`).join('')}</ol>`;
   document.getElementById('receta-modal').classList.add('open');
 }
 
@@ -2168,7 +2419,7 @@ async function generarRecetaIA(){
     recetasIA.unshift(r);
     const quedan = (typeof data.restantes === 'number')
       ? ` Te quedan <b>${data.restantes}</b> hoy.` : '';
-    estado.innerHTML = `<div class="ia-msg ia-ok">✨ Receta creada.${quedan} Ábrela para ver la preparación o añádela a tu día.</div>`;
+    estado.innerHTML = `<div class="ia-msg ia-ok">✨ Receta creada.${quedan} Ábrela para ver la preparación.</div>`;
     cont.innerHTML = renderRecetaCard(r);
   }catch(e){
     estado.innerHTML = `<div class="ia-msg ia-error">No se pudo contactar el servicio de IA. Revisa tu conexión e inténtalo de nuevo.</div>`;
@@ -2275,7 +2526,7 @@ function renderBatch(){
       return `<li><b>${r.nombre}</b> <span style="color:var(--muted);">— ${cat} · ${r.proteina}g proteína</span></li>`;
     }).join('');
     return `<div class="batch-card">
-      <h4>${base.emoji} ${base.nombre}</h4>
+      <h4>${base.nombre}</h4>
       <div class="batch-meta">${recetas.length} recetas la usan · alcanza para ~${recetas.length} días de comidas</div>
       <ul>${items}</ul>
       <div class="batch-tip">👨‍🍳 <b>Prepara una vez:</b> ${base.tip}</div>
@@ -2286,30 +2537,12 @@ function renderBatch(){
 }
 
 // ============================================================
-// 5. MI DÍA — selección manual con resumen en tiempo real
+// 5. MI DÍA — plan fijo del día, marcar comidas y "Terminar día"
 // ============================================================
-function agregarAMiDia(id){
-  miDia.push(id);
-  lsSet(LS.miDia, miDia);
-  renderMiDia();
-  const r = getReceta(id);
-  toast(r ? `Agregado: ${r.nombre.length > 30 ? r.nombre.slice(0, 30) + '…' : r.nombre}` : 'Agregado a mi día');
-}
-
-function quitarDeMiDia(index){
-  miDia.splice(index, 1);
-  lsSet(LS.miDia, miDia);
-  renderMiDia();
-}
-
-function limpiarMiDia(){
-  miDia = [];
-  lsSet(LS.miDia, miDia);
-  renderMiDia();
-}
+const MEAL_ORDER = ['desayuno', 'almuerzo', 'cena', 'merienda'];
 
 // Anillo de progreso (SVG) para un macro de "mi día". `cvar` = variable de color del macro.
-function anillo(nombre, total, objetivo, unidad, cvar){
+function anillo(nombre, total, objetivo, unidad, cvar, hero){
   const R = 30, CIRC = 2 * Math.PI * R;
   const pct = objetivo ? total / objetivo : 0;
   const off = CIRC * (1 - Math.max(0, Math.min(pct, 1)));
@@ -2319,7 +2552,7 @@ function anillo(nombre, total, objetivo, unidad, cvar){
     ? `${Math.round(total)} / ${Math.round(objetivo)} ${unidad}`
     : `${Math.round(total)} ${unidad}`;
   const estilo = cvar ? ` style="--ring-c:var(${cvar});--ring-bgc:var(${cvar}-bg)"` : '';
-  return `<div class="ring ${over ? 'over' : ''}"${estilo}>
+  return `<div class="ring ${over ? 'over' : ''} ${hero ? 'hero-ring' : ''}"${estilo}>
     <svg viewBox="0 0 72 72" aria-hidden="true">
       <circle class="ring-bg" cx="36" cy="36" r="${R}"></circle>
       <circle class="ring-fg" cx="36" cy="36" r="${R}" style="stroke-dasharray:${CIRC.toFixed(1)};stroke-dashoffset:${off.toFixed(1)}"></circle>
@@ -2329,49 +2562,167 @@ function anillo(nombre, total, objetivo, unidad, cvar){
   </div>`;
 }
 
-function renderMiDia(){
+// Suma las macros de las comidas de hoy marcadas como "comidas"
+function totalesMarcados(diaPlan, marcado){
+  return MEAL_ORDER
+    .filter(m => marcado[m])
+    .map(m => recetaParaComida(m, diaPlan[m]))
+    .filter(Boolean)
+    .reduce((s,r)=>({
+      kcal:s.kcal+r.kcal, prot:s.prot+r.proteina, carbos:s.carbos+r.carbos, grasa:s.grasa+r.grasa
+    }), {kcal:0,prot:0,carbos:0,grasa:0});
+}
+
+function renderPlanMealCard(meal, id, marcadoComido, bloqueado){
+  const r = recetaParaComida(meal, id);
+  if(!r) return '';
+  return `<div class="plan-meal ${marcadoComido ? 'done' : ''}">
+    <div class="plan-meal-media">${recetaMediaHTML(r)}</div>
+    <div class="plan-meal-body">
+      <div class="plan-meal-top"><span class="tag">${MEAL_LABELS[meal]}</span>${dietaTag(r)}${volTag(r)}</div>
+      <h4 onclick="abrirReceta(${r.id}, '${meal}')">${r.nombre}</h4>
+      <div class="rc-macros">
+        <span class="mc mc-kcal"><b>${r.kcal}</b> kcal</span>
+        <span class="mc mc-prot"><b>${r.proteina}g</b> prot</span>
+        <span class="mc mc-carb"><b>${r.carbos}g</b> carb</span>
+        <span class="mc mc-fat"><b>${r.grasa}g</b> grasa</span>
+      </div>
+      <div class="plan-meal-actions">
+        <button class="btn-link" style="padding:0;" onclick="abrirReceta(${r.id}, '${meal}')">Ver receta</button>
+        <button class="check-btn ${marcadoComido ? 'on' : ''}" ${bloqueado ? 'disabled' : ''} onclick="toggleComida('${meal}')">
+          ${marcadoComido ? '✓ Comido' : '☐ Marcar comido'}
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function diffTxt(actual, objetivo, unidad){
+  const d = Math.round(actual - objetivo);
+  if(Math.abs(d) < 1) return 'justo en la meta';
+  return d > 0 ? `+${d}${unidad} sobre la meta` : `${Math.abs(d)}${unidad} bajo la meta`;
+}
+
+function renderResumenDia(t){
+  return `<div class="day-summary">
+    <h3 style="margin:0 0 4px;">Resumen del día</h3>
+    <p class="hint" style="margin:0;">Solo cuenta lo que marcaste como comido.</p>
+    <ul>
+      <li><span>Calorías</span><span><b>${t.kcal}</b> / ${t.objetivo.calorias} kcal · ${diffTxt(t.kcal, t.objetivo.calorias, ' kcal')}</span></li>
+      <li><span>Proteína</span><span><b>${t.proteina}</b> / ${t.objetivo.proteina} g · ${diffTxt(t.proteina, t.objetivo.proteina, ' g')}</span></li>
+      <li><span>Carbohidratos</span><span><b>${t.carbos}</b> / ${t.objetivo.carbos} g · ${diffTxt(t.carbos, t.objetivo.carbos, ' g')}</span></li>
+      <li><span>Grasa</span><span><b>${t.grasa}</b> / ${t.objetivo.grasa} g · ${diffTxt(t.grasa, t.objetivo.grasa, ' g')}</span></li>
+    </ul>
+  </div>`;
+}
+
+function toggleComida(meal){
+  const hoy = hoyISO();
+  if(diasTerminados[hoy]) return; // el día ya se terminó: queda de solo lectura
+  if(!comidasMarcadas[hoy]) comidasMarcadas[hoy] = {};
+  comidasMarcadas[hoy][meal] = !comidasMarcadas[hoy][meal];
+  lsSet(LS.comidas, comidasMarcadas);
+  renderPlanDia();
+}
+
+function terminarDia(){
+  const hoy = hoyISO();
+  if(diasTerminados[hoy] || !planDias) return;
+  const diaPlan = planDias[diaIndexActual()];
+  const marcado = comidasMarcadas[hoy] || {};
+  const pendientes = MEAL_ORDER.filter(m => !marcado[m]);
+  if(pendientes.length && !confirm(`Aún no marcaste ${pendientes.length} comida(s) como comida. ¿Terminar el día de todas formas?`)) return;
+
+  const tot = totalesMarcados(diaPlan, marcado);
+  diasTerminados[hoy] = {
+    fecha: hoy,
+    kcal: Math.round(tot.kcal), proteina: Math.round(tot.prot), carbos: Math.round(tot.carbos), grasa: Math.round(tot.grasa),
+    objetivo: {...plan},
+    meals: {...marcado}
+  };
+  lsSet(LS.diasTerminados, diasTerminados);
+  renderPlanDia();
+  renderHistorialDias();
+  toast('Día terminado. Resumen guardado.');
+}
+
+// Estado vacío diseñado (ícono de línea + mensaje corto) en vez de una pantalla en blanco
+function emptyStateHTML(mensaje, icono){
+  return `<div class="empty-state">${icono || catIcon('comida')}<p>${mensaje}</p></div>`;
+}
+
+function renderPlanDia(){
+  const cont = document.getElementById('plan-dia');
   const barsEl = document.getElementById('mi-dia-bars');
-  const listEl = document.getElementById('mi-dia-list');
+  if(!cont || !barsEl) return;
 
-  const recetas = miDia.map(getReceta).filter(Boolean);
-  const tot = recetas.reduce((s,r)=>({
-    kcal:s.kcal+r.kcal, prot:s.prot+r.proteina, carbos:s.carbos+r.carbos, grasa:s.grasa+r.grasa
-  }), {kcal:0,prot:0,carbos:0,grasa:0});
-
-  const obj = plan || null;
-  let barsHtml = '';
-  if(!obj){
-    barsHtml += `<div class="note" style="margin:0 0 12px;">Aún sin objetivo. Calcula tu plan para ver los porcentajes; por ahora ves los totales.</div>`;
+  if(!plan){
+    cont.innerHTML = emptyStateHTML('Aún no tienes un plan. Calcula tu plan en el <b>paso 1</b> y aquí aparecerá tu menú automático de 90 días.');
+    barsEl.innerHTML = '';
+    actualizarFab();
+    return;
   }
-  barsHtml += '<div class="rings">';
-  barsHtml += anillo('Calorías', tot.kcal, obj && obj.calorias, 'kcal', '--kcal');
-  barsHtml += anillo('Proteína', tot.prot, obj && obj.proteina, 'g', '--prot');
-  barsHtml += anillo('Carbos', tot.carbos, obj && obj.carbos, 'g', '--carb');
-  barsHtml += anillo('Grasa', tot.grasa, obj && obj.grasa, 'g', '--fat');
-  barsHtml += '</div>';
-  barsEl.innerHTML = barsHtml;
+  if(!planDias || !planStart) generarPlanDias();
 
-  if(recetas.length === 0){
-    listEl.innerHTML = `<p style="color:var(--muted);margin-top:14px;">Aún no has agregado recetas a tu día. Ve al recetario y pulsa <em>"➕ Mi día"</em> en una tarjeta.</p>`;
-  } else {
-    let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
-      <h3 style="margin:0;">${recetas.length} receta${recetas.length>1?'s':''} en tu día</h3>
-      <button class="rm-btn" onclick="limpiarMiDia()">Vaciar todo</button></div>`;
-    html += miDia.map((id, i) => {
-      const r = getReceta(id);
-      if(!r) return '';
-      return `<div class="miday-item">
-        <div><div>${r.nombre}</div><div class="mi-macros">${r.kcal} kcal · ${r.proteina}g prot · ${r.carbos}g carb · ${r.grasa}g grasa</div></div>
-        <button class="rm-btn" onclick="quitarDeMiDia(${i})">Quitar ✕</button>
-      </div>`;
-    }).join('');
-    listEl.innerHTML = html;
-  }
+  const hoy = hoyISO();
+  const idx = diaIndexActual();
+  const diaPlan = planDias[idx];
+  const terminado = diasTerminados[hoy];
+  const marcado = terminado ? terminado.meals : (comidasMarcadas[hoy] || {});
 
-  // FAB
+  let html = `<div class="note" style="margin-bottom:14px;">Día ${idx + 1} de 90 · objetivo ${plan.calorias} kcal y ${plan.proteina} g de proteína.</div>`;
+  html += '<div class="plan-meal-list">';
+  MEAL_ORDER.forEach(m => { html += renderPlanMealCard(m, diaPlan[m], !!marcado[m], !!terminado); });
+  html += '</div>';
+  html += terminado
+    ? renderResumenDia(terminado)
+    : `<button class="btn-primary" style="margin-top:14px;" onclick="terminarDia()"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9"/></svg>Terminar día</button>`;
+  cont.innerHTML = html;
+
+  const tot = terminado
+    ? {kcal:terminado.kcal, prot:terminado.proteina, carbos:terminado.carbos, grasa:terminado.grasa}
+    : totalesMarcados(diaPlan, marcado);
+  barsEl.innerHTML = '<div class="rings">'
+    + anillo('Calorías', tot.kcal, plan.calorias, 'kcal', '--kcal', true)
+    + anillo('Proteína', tot.prot, plan.proteina, 'g', '--prot')
+    + anillo('Carbos', tot.carbos, plan.carbos, 'g', '--carb')
+    + anillo('Grasa', tot.grasa, plan.grasa, 'g', '--fat')
+    + '</div>';
+
+  actualizarFab();
+}
+
+function actualizarFab(){
   const fab = document.getElementById('fab');
-  document.getElementById('fab-count').textContent = miDia.length;
-  fab.classList.toggle('show', miDia.length > 0);
+  const cntEl = document.getElementById('fab-count');
+  if(!fab || !cntEl) return;
+  const hoy = hoyISO();
+  if(!plan || !planDias || diasTerminados[hoy]){
+    fab.classList.remove('show');
+    return;
+  }
+  const marcado = comidasMarcadas[hoy] || {};
+  const pendientes = MEAL_ORDER.filter(m => !marcado[m]).length;
+  cntEl.textContent = pendientes;
+  fab.classList.toggle('show', pendientes > 0);
+}
+
+function renderHistorialDias(){
+  const el = document.getElementById('historial-dias');
+  if(!el) return;
+  const fechas = Object.keys(diasTerminados).sort((a,b) => b.localeCompare(a));
+  if(!fechas.length){
+    el.innerHTML = emptyStateHTML('Aún no terminas ningún día desde <b>Mi día</b>. Cuando lo hagas, el resumen aparece aquí.');
+    return;
+  }
+  el.innerHTML = fechas.map(f => {
+    const t = diasTerminados[f];
+    const fechaFmt = new Date(f + 'T00:00:00').toLocaleDateString('es-EC', {day:'numeric', month:'short', year:'numeric'});
+    return `<div class="miday-item" style="flex-direction:column;align-items:flex-start;gap:4px;">
+      <b>${fechaFmt}</b>
+      <span class="mi-macros">Kcal ${t.kcal}/${t.objetivo.calorias} (${diffTxt(t.kcal, t.objetivo.calorias, '')}) · Prot ${t.proteina}/${t.objetivo.proteina}g · Carb ${t.carbos}/${t.objetivo.carbos}g · Grasa ${t.grasa}/${t.objetivo.grasa}g</span>
+    </div>`;
+  }).join('');
 }
 
 // ============================================================
@@ -2395,7 +2746,7 @@ function renderCalendario(){
   }
   grid.innerHTML = html;
   const n = diasDone.size;
-  document.getElementById('dias-count').textContent = n;
+  animarNumero(document.getElementById('dias-count'), n, '');
   document.getElementById('dias-bar').style.width = (n/90*100) + '%';
 }
 
@@ -2423,13 +2774,18 @@ function rachaMaxima(){
 }
 
 function macrosDelDia(){
-  const recetas = miDia.map(getReceta).filter(Boolean);
-  if(recetas.length){
-    const t = recetas.reduce((s,r)=>({
-      kcal:s.kcal+r.kcal, prot:s.prot+r.proteina, carbos:s.carbos+r.carbos, grasa:s.grasa+r.grasa
-    }), {kcal:0,prot:0,carbos:0,grasa:0});
-    t.fuente = 'mi día';
-    return t;
+  const hoy = hoyISO();
+  if(diasTerminados[hoy]){
+    const t = diasTerminados[hoy];
+    return {kcal:t.kcal, prot:t.proteina, carbos:t.carbos, grasa:t.grasa, fuente:'mi día'};
+  }
+  if(planDias && planStart){
+    const marcado = comidasMarcadas[hoy] || {};
+    const algunaMarcada = MEAL_ORDER.some(m => marcado[m]);
+    if(algunaMarcada){
+      const t = totalesMarcados(planDias[diaIndexActual()], marcado);
+      return {kcal:Math.round(t.kcal), prot:Math.round(t.prot), carbos:Math.round(t.carbos), grasa:Math.round(t.grasa), fuente:'mi día'};
+    }
   }
   if(plan) return {kcal:plan.calorias, prot:plan.proteina, carbos:plan.carbos, grasa:plan.grasa, fuente:'plan objetivo'};
   return {kcal:0, prot:0, carbos:0, grasa:0, fuente:null};
@@ -2690,10 +3046,8 @@ function registrarCheckin(){
   pintarResultado(res, (res.objetivo === 'bajar' && res.limitado)
     ? 'Ajustamos tu meta calórica a un mínimo seguro para tu perfil.'
     : 'Plan recalculado con tu peso actual.');
-  const subtitulo = document.querySelector('#plan-dia .section-sub');
-  if(subtitulo) subtitulo.textContent = 'Generado según tu objetivo de ' + plan.calorias + ' kcal y ' + plan.proteina + ' g de proteína al día.';
-  generarMenu();
-  renderMiDia();
+  generarPlanDias();
+  renderPlanDia();
   document.getElementById('ci-peso').value = '';
 
   // Mensaje explicativo del ajuste
@@ -3215,11 +3569,11 @@ const TOUR_STEPS = [
    title:'1 · Tu plan',
    text:'Elige tu objetivo (bajar, subir o mantener), llena tus datos y pulsa <b>Calcular mi plan</b>. Se hace una sola vez.'},
   {tab:'midia', sel:'#panel-midia',
-   title:'2 · Tu menú del día',
-   text:'Pulsa <b>Generar menú del día</b> o agrega recetas. Los anillos te muestran cómo vas.'},
+   title:'2 · Tu día',
+   text:'Tu plan de comidas se genera solo y queda fijo. Marca <b>☐ Marcar comido</b> en cada plato y pulsa <b>Terminar día</b> para ver tu resumen.'},
   {tab:'recetario', sel:'#filtros',
-   title:'Recetas',
-   text:'Filtra y toca cualquier tarjeta para ver la receta. <b>➕ Mi día</b> la suma a tu día.'},
+   title:'Recetario de referencia',
+   text:'Se abre desde el botón <b>📖 Ver todas las recetas</b> en Mi día. Filtra y toca cualquier tarjeta para ver la receta completa.'},
   {tab:'progreso', sel:'#panel-progreso',
    title:'Tu avance',
    text:'Marca los días que cumpliste. El botón <b>?</b> abajo repite esta guía.'}
@@ -3322,19 +3676,20 @@ function endTour(){
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
-  setTab(isMobile() ? 'calculadora' : 'recetario');
+  setTab(isMobile() ? 'calculadora' : 'progreso');
   setIntensidad(intensidad);
   setObjetivo(objetivo);
   initFiltros();
   renderRecetario('todas');
   renderIngredientes();
-  renderMiDia();
+  renderPlanDia();
   renderCalendario();
   renderPesos();
   renderCheckin();
+  renderHistorialDias();
   renderMovimiento();
 
-  // Si ya había un plan guardado, restaurar resultados y menú
+  // Si ya había un plan guardado, restaurar resultados y plan de comidas
   if(plan){
     if(datos){
       document.getElementById('peso').value = datos.peso;
@@ -3349,10 +3704,7 @@ document.addEventListener('DOMContentLoaded', () => {
       {bmr:null, tdee:null, calorias:plan.calorias, proteina:plan.proteina, carbos:plan.carbos, grasa:plan.grasa},
       'Plan guardado. Se recalcula en cada check-in, o vuelve a calcular si tus datos cambian.'
     );
-    const subtitulo = document.querySelector('#plan-dia .section-sub');
-    if(subtitulo) subtitulo.textContent = 'Tu objetivo: ' + plan.calorias + ' kcal y ' + plan.proteina + ' g de proteína al día.';
-    generarMenu();
-    renderMiDia();
+    renderPlanDia();
     renderMovimiento();
   }
 
