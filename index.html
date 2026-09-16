@@ -66,28 +66,6 @@
     --danger:#ffb2b7;              /* "sobre el objetivo" */
     --warn:#ffba61;               /* avisos / "toca hacerlo" */
 
-    /* ===== Alias legados (para no tocar el JS que los usa) ===== */
-    --accent:var(--primary-bright);
-    --accent-dark:var(--primary);
-    --accent-light:var(--primary-soft);
-    --lime:var(--primary);
-    --lime-bright:var(--primary-bright);
-    --lime-edge:var(--primary);
-    --lime-ink:var(--on-primary);
-    --dark:var(--surface-lowest);
-    --dark-2:var(--container-high);
-    --dark-3:var(--container-highest);
-    --dark-ink:var(--ink);
-    --dark-muted:var(--ink-var);
-    --dark-border:var(--outline);
-    --bg:var(--surface);
-    --card:var(--container);
-    --ink-legacy:var(--ink);
-    --muted:var(--ink-var);
-    --border:var(--outline);
-    --orange:var(--danger);
-    --orange-light:var(--prot-bg);
-
     /* Objetivo / niveles de déficit */
     --goal-bajar:var(--primary-bright);   --goal-bajar-bg:var(--primary-soft);
     --goal-subir:var(--carb);             --goal-subir-bg:var(--carb-bg);
@@ -361,6 +339,7 @@
   .modal-bg.open{display:flex;}
   .modal-card{background:var(--container-high);border:1px solid var(--outline);border-radius:var(--radius);padding:var(--space-lg);max-width:420px;width:100%;
     text-align:center;box-shadow:var(--shadow-lg);position:relative;max-height:90vh;overflow-y:auto;color:var(--ink);}
+  .modal-card:focus{outline:none;}
   .modal-card.receta{max-width:520px;text-align:left;}
   .modal-x{position:absolute;right:10px;top:10px;border:none;background:var(--surface-lowest);color:var(--ink-var);
     width:30px;height:30px;border-radius:50%;font-weight:800;cursor:pointer;font-size:13px;transition:background .15s ease,color .15s ease;}
@@ -951,7 +930,7 @@
 
 <!-- MODAL: receta -->
 <div class="modal-bg" id="receta-modal" onclick="if(event.target===this)cerrarReceta()">
-  <div class="modal-card receta">
+  <div class="modal-card receta" role="dialog" aria-modal="true" aria-labelledby="receta-modal-title" tabindex="-1">
     <button class="modal-x" onclick="cerrarReceta()" aria-label="Cerrar">✕</button>
     <div id="receta-modal-body"></div>
   </div>
@@ -959,8 +938,8 @@
 
 <!-- MODAL: tarjeta de progreso para compartir -->
 <div class="modal-bg" id="share-modal" onclick="if(event.target===this)cerrarTarjeta()">
-  <div class="modal-card">
-    <h3>¡Día completado! 🎉</h3>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="share-modal-title" tabindex="-1">
+    <h3 id="share-modal-title">¡Día completado! 🎉</h3>
     <canvas id="share-canvas" width="1080" height="1080"></canvas>
     <div class="modal-actions">
       <button class="btn-secondary" onclick="cerrarTarjeta()">Cerrar</button>
@@ -2214,8 +2193,8 @@ function recetaTipoId(r){
 function recetaThumb(r){
   const tipo = recetaTipoId(r);
   const hit = RECETA_TIPOS.find(t => t.ic === tipo) || {c:'accent'};
-  const C = {carb:'var(--carb)', prot:'var(--prot)', kcal:'var(--kcal)', veg:'var(--veg)', accent:'var(--accent)', orange:'var(--orange)'};
-  const B = {carb:'var(--carb-bg)', prot:'var(--prot-bg)', kcal:'var(--kcal-bg)', veg:'var(--veg-bg)', accent:'var(--accent-light)', orange:'var(--orange-light)'};
+  const C = {carb:'var(--carb)', prot:'var(--prot)', kcal:'var(--kcal)', veg:'var(--veg)', accent:'var(--primary-bright)', orange:'var(--danger)'};
+  const B = {carb:'var(--carb-bg)', prot:'var(--prot-bg)', kcal:'var(--kcal-bg)', veg:'var(--veg-bg)', accent:'var(--primary-soft)', orange:'var(--prot-bg)'};
   return `<div class="rc-thumb" style="--tc:${C[hit.c]};--tb:${B[hit.c]}">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${RECETA_GLYPH[tipo] || RECETA_GLYPH.plato}</svg>
   </div>`;
@@ -2287,6 +2266,25 @@ function renderRecetaCard(r){
     </div>`;
 }
 
+// ---------- Modales: foco (entra al abrir, vuelve al elemento que lo abrió al cerrar) + Escape ----------
+let modalUltimoFoco = null;
+function abrirModal(id){
+  modalUltimoFoco = document.activeElement;
+  const modal = document.getElementById(id);
+  modal.classList.add('open');
+  modal.querySelector('.modal-card').focus();
+}
+function cerrarModal(id){
+  document.getElementById(id).classList.remove('open');
+  if(modalUltimoFoco && typeof modalUltimoFoco.focus === 'function') modalUltimoFoco.focus();
+  modalUltimoFoco = null;
+}
+document.addEventListener('keydown', (e) => {
+  if(e.key !== 'Escape') return;
+  if(document.getElementById('receta-modal').classList.contains('open')) cerrarReceta();
+  else if(document.getElementById('share-modal').classList.contains('open')) cerrarTarjeta();
+});
+
 // Abre la receta completa en un modal (mantiene la cuadrícula de tarjetas pareja).
 // Si viene desde una tarjeta del plan del día, `meal` indica la comida para
 // mostrar la porción ajustada a esa meta (misma que se ve en la tarjeta).
@@ -2299,7 +2297,7 @@ function abrirReceta(id, meal){
   document.getElementById('receta-modal-body').innerHTML = `
     ${recetaMediaHTML(r)}
     <div class="rc-tags"><span class="tag">${cat}</span>${dietaTag(r)}${volTag(r)}</div>
-    <h3 style="margin:8px 0 0;">${r.nombre}</h3>
+    <h3 id="receta-modal-title" style="margin:8px 0 0;">${r.nombre}</h3>
     <div class="macros">
       <span class="mc mc-kcal"><b>${r.kcal}</b> kcal</span>
       <span class="mc mc-prot"><b>${r.proteina}g</b> proteína</span>
@@ -2312,11 +2310,11 @@ function abrirReceta(id, meal){
     <ul class="ing-list">${r.ingredientes.map(ingItemHTML).join('')}</ul>
     <h5>Preparación</h5>
     <ol>${r.pasos.map(p=>`<li>${p}</li>`).join('')}</ol>`;
-  document.getElementById('receta-modal').classList.add('open');
+  abrirModal('receta-modal');
 }
 
 function cerrarReceta(){
-  document.getElementById('receta-modal').classList.remove('open');
+  cerrarModal('receta-modal');
 }
 
 // ============================================================
@@ -2523,7 +2521,7 @@ function renderBatch(){
   html += grupos.map(({base, recetas}) => {
     const items = recetas.map(r => {
       const cat = r.categoria === 'desayuno' ? 'Desayuno' : r.categoria === 'comida' ? 'Almuerzo/Cena' : 'Snack';
-      return `<li><b>${r.nombre}</b> <span style="color:var(--muted);">— ${cat} · ${r.proteina}g proteína</span></li>`;
+      return `<li><b>${r.nombre}</b> <span style="color:var(--ink-var);">— ${cat} · ${r.proteina}g proteína</span></li>`;
     }).join('');
     return `<div class="batch-card">
       <h4>${base.nombre}</h4>
@@ -2800,11 +2798,11 @@ function mostrarTarjetaProgreso(dia){
     fecha: new Date().toLocaleDateString('es-EC', {day:'numeric', month:'long', year:'numeric'})
   };
   dibujarTarjeta(data);
-  document.getElementById('share-modal').classList.add('open');
+  abrirModal('share-modal');
 }
 
 function cerrarTarjeta(){
-  document.getElementById('share-modal').classList.remove('open');
+  cerrarModal('share-modal');
 }
 
 function dibujarTarjeta(data){
@@ -2955,7 +2953,7 @@ function renderPesos(){
   const lista = document.getElementById('weight-list');
 
   if(pesos.length === 0){
-    chart.innerHTML = `<p style="color:var(--muted);margin:0;font-size:13px;">Aún no has registrado tu peso. Agrega tu peso de la semana 1 para empezar la gráfica.</p>`;
+    chart.innerHTML = `<p style="color:var(--ink-var);margin:0;font-size:13px;">Aún no has registrado tu peso. Agrega tu peso de la semana 1 para empezar la gráfica.</p>`;
     lista.innerHTML = '';
     return;
   }
@@ -3118,13 +3116,13 @@ function renderCheckin(){
   checkins.forEach((c,i) => puntos.push({etq:'C'+(i+1), peso:c.peso}));
 
   if(puntos.length < 1){
-    chartEl.innerHTML = `<p style="color:var(--muted);margin:0;font-size:13px;">Todavía no hay check-ins. Tu gráfica de progreso aparecerá aquí.</p>`;
+    chartEl.innerHTML = `<p style="color:var(--ink-var);margin:0;font-size:13px;">Todavía no hay check-ins. Tu gráfica de progreso aparecerá aquí.</p>`;
     listEl.innerHTML = '';
     return;
   }
 
   if(puntos.length === 1){
-    chartEl.innerHTML = `<p style="color:var(--muted);margin:0;font-size:13px;">Primer punto registrado: ${puntos[0].peso} kg. La línea de progreso aparece desde el segundo check-in.</p>`;
+    chartEl.innerHTML = `<p style="color:var(--ink-var);margin:0;font-size:13px;">Primer punto registrado: ${puntos[0].peso} kg. La línea de progreso aparece desde el segundo check-in.</p>`;
   } else {
     const W = 340, H = 170, pad = 36;
     const vals = puntos.map(p=>p.peso);
