@@ -2950,6 +2950,34 @@ function eliminarPeso(semana){
   renderPesos();
 }
 
+// Dibuja una gráfica de línea SVG (ejes + polilínea + puntos), compartida por
+// el peso semanal y el historial de check-ins — misma línea, distinto dominio
+// de posición X (semana fija 1–13 vs. índice de check-in) y tamaño de lienzo.
+// puntos: [{pos, val, etq}]. posMin/posMax fijan el dominio del eje X.
+function svgGrafica(puntos, {W, H, pad, rightPad, topPad, maxWidth, posMin, posMax}){
+  const vals = puntos.map(p => p.val);
+  let vMin = Math.min(...vals), vMax = Math.max(...vals);
+  if(vMin === vMax){ vMin -= 1; vMax += 1; }
+  const x = pos => pad + (pos - posMin) / (posMax - posMin) * (W - pad - rightPad);
+  const y = v => H - pad - (v - vMin) / (vMax - vMin) * (H - pad - topPad);
+
+  const pts = puntos.map(p => `${x(p.pos).toFixed(1)},${y(p.val).toFixed(1)}`).join(' ');
+  const circles = puntos.map(p => `<circle cx="${x(p.pos).toFixed(1)}" cy="${y(p.val).toFixed(1)}" r="3.5" fill="#4be277"/>`).join('');
+  const yLabels = `
+    <text x="4" y="${(y(vMax)+4).toFixed(1)}" font-size="10" fill="#9db0d0">${vMax.toFixed(1)}</text>
+    <text x="4" y="${(y(vMin)+4).toFixed(1)}" font-size="10" fill="#9db0d0">${vMin.toFixed(1)}</text>`;
+  const xLabels = puntos.map(p => `<text x="${x(p.pos).toFixed(1)}" y="${H-12}" font-size="10" fill="#9db0d0" text-anchor="middle">${p.etq}</text>`).join('');
+
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${maxWidth}px;display:block;">
+    <line x1="${pad}" y1="${H-pad}" x2="${W-4}" y2="${H-pad}" stroke="rgba(255,255,255,0.12)"/>
+    <line x1="${pad}" y1="12" x2="${pad}" y2="${H-pad}" stroke="rgba(255,255,255,0.12)"/>
+    ${yLabels}
+    <polyline points="${pts}" fill="none" stroke="#4be277" stroke-width="2.5" stroke-linejoin="round"/>
+    ${circles}
+    ${xLabels}
+  </svg>`;
+}
+
 function renderPesos(){
   const chart = document.getElementById('weight-chart');
   const lista = document.getElementById('weight-list');
@@ -2960,30 +2988,8 @@ function renderPesos(){
     return;
   }
 
-  const W = 320, H = 160, pad = 34;
-  const semMin = 1, semMax = 13;
-  const pesoVals = pesos.map(p=>p.peso);
-  let pMin = Math.min(...pesoVals), pMax = Math.max(...pesoVals);
-  if(pMin === pMax){ pMin -= 1; pMax += 1; }
-  const x = s => pad + (s - semMin) / (semMax - semMin) * (W - pad - 8);
-  const y = v => H - pad - (v - pMin) / (pMax - pMin) * (H - pad - 12);
-
-  const pts = pesos.map(p => `${x(p.semana).toFixed(1)},${y(p.peso).toFixed(1)}`).join(' ');
-  const circles = pesos.map(p => `<circle cx="${x(p.semana).toFixed(1)}" cy="${y(p.peso).toFixed(1)}" r="3.5" fill="#4be277"/>`).join('');
-  // etiquetas eje Y (min y max)
-  const yLabels = `
-    <text x="4" y="${(y(pMax)+4).toFixed(1)}" font-size="10" fill="#9db0d0">${pMax.toFixed(1)}</text>
-    <text x="4" y="${(y(pMin)+4).toFixed(1)}" font-size="10" fill="#9db0d0">${pMin.toFixed(1)}</text>`;
-  const xLabels = pesos.map(p => `<text x="${x(p.semana).toFixed(1)}" y="${H-12}" font-size="10" fill="#9db0d0" text-anchor="middle">S${p.semana}</text>`).join('');
-
-  chart.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:420px;display:block;">
-    <line x1="${pad}" y1="${H-pad}" x2="${W-4}" y2="${H-pad}" stroke="rgba(255,255,255,0.12)"/>
-    <line x1="${pad}" y1="12" x2="${pad}" y2="${H-pad}" stroke="rgba(255,255,255,0.12)"/>
-    ${yLabels}
-    <polyline points="${pts}" fill="none" stroke="#4be277" stroke-width="2.5" stroke-linejoin="round"/>
-    ${circles}
-    ${xLabels}
-  </svg>`;
+  const puntos = pesos.map(p => ({pos: p.semana, val: p.peso, etq: 'S' + p.semana}));
+  chart.innerHTML = svgGrafica(puntos, {W:320, H:160, pad:34, rightPad:8, topPad:12, maxWidth:420, posMin:1, posMax:13});
 
   const primero = pesos[0].peso, ultimo = pesos[pesos.length-1].peso;
   const dif = (ultimo - primero).toFixed(1);
@@ -3126,26 +3132,8 @@ function renderCheckin(){
   if(puntos.length === 1){
     chartEl.innerHTML = `<p style="color:var(--muted);margin:0;font-size:13px;">Primer punto registrado: ${puntos[0].peso} kg. La línea de progreso aparece desde el segundo check-in.</p>`;
   } else {
-    const W = 340, H = 170, pad = 36;
-    const vals = puntos.map(p=>p.peso);
-    let pMin = Math.min(...vals), pMax = Math.max(...vals);
-    if(pMin === pMax){ pMin -= 1; pMax += 1; }
-    const x = i => pad + i/(puntos.length-1) * (W - pad - 10);
-    const y = v => H - pad - (v - pMin)/(pMax - pMin) * (H - pad - 14);
-    const pts = puntos.map((p,i)=>`${x(i).toFixed(1)},${y(p.peso).toFixed(1)}`).join(' ');
-    const circles = puntos.map((p,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(p.peso).toFixed(1)}" r="3.5" fill="#4be277"/>`).join('');
-    const xLabels = puntos.map((p,i)=>`<text x="${x(i).toFixed(1)}" y="${H-12}" font-size="10" fill="#9db0d0" text-anchor="middle">${p.etq}</text>`).join('');
-    const yLabels = `
-      <text x="4" y="${(y(pMax)+4).toFixed(1)}" font-size="10" fill="#9db0d0">${pMax.toFixed(1)}</text>
-      <text x="4" y="${(y(pMin)+4).toFixed(1)}" font-size="10" fill="#9db0d0">${pMin.toFixed(1)}</text>`;
-    chartEl.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:440px;display:block;">
-      <line x1="${pad}" y1="${H-pad}" x2="${W-4}" y2="${H-pad}" stroke="rgba(255,255,255,0.12)"/>
-      <line x1="${pad}" y1="12" x2="${pad}" y2="${H-pad}" stroke="rgba(255,255,255,0.12)"/>
-      ${yLabels}
-      <polyline points="${pts}" fill="none" stroke="#4be277" stroke-width="2.5" stroke-linejoin="round"/>
-      ${circles}
-      ${xLabels}
-    </svg>`;
+    const puntosGrafica = puntos.map((p,i) => ({pos: i, val: p.peso, etq: p.etq}));
+    chartEl.innerHTML = svgGrafica(puntosGrafica, {W:340, H:170, pad:36, rightPad:10, topPad:14, maxWidth:440, posMin:0, posMax:puntos.length-1});
   }
 
   // --- Lista de check-ins ---
