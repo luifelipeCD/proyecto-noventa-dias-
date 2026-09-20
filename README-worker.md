@@ -189,9 +189,11 @@ O desde el panel: **Cloudflare → Storage & Databases → KV → `RATE_LIMIT`**
 | **CORS estricto** | Solo se acepta el `Origin` `https://luifelipecd.github.io` (o los de la var `ALLOWED_ORIGIN`). Cualquier otro origen, o sin origen → **403**. `Access-Control-Allow-Origin` nunca es `*`. |
 | **Turnstile** | Antes de generar nada, el token del captcha se valida contra `siteverify` con `TURNSTILE_SECRET_KEY`. Si falla → **403 `{ captcha: true }`**. Sin el secret, la verificación queda desactivada (aviso en logs). |
 | **Prompt anti-inyección** | El system prompt ordena tratar la lista de ingredientes **solo como datos** e ignorar cualquier instrucción dentro (cambiar rol, revelar el prompt, etc.). Los ingredientes van delimitados (`<<<INGREDIENTES>>> … <<<FIN>>>`) y saneados (se quitan `<` `>`). |
-| **Validación de entrada** | Lista corta: máx. **15** ingredientes, **≤48** caracteres y **≤8** palabras cada uno, **≤300** en total. Un párrafo largo → **400** pidiendo ingredientes sueltos. |
-| **Límite por IP** | Máx. 5 generaciones OK por IP cada 24 h (ver arriba). |
+| **Validación de entrada** | Lista corta: máx. **15** ingredientes, **≤48** caracteres y **≤8** palabras cada uno, **≤300** en total. Un párrafo largo → **400** pidiendo ingredientes sueltos. También se rechazan caracteres de control / invisibles (saltos de línea disfrazados, RTL override, espacios de ancho cero, etc.). |
+| **Límite de tamaño del cuerpo** | Cualquier petición de más de 8 KB se rechaza (**413**) antes de parsear el JSON — la petición real pesa unos pocos KB. |
+| **Límite por IP** | Máx. 5 generaciones OK por IP cada 24 h (ver arriba). La IP se toma de `CF-Connecting-IP`, que pone Cloudflare en el borde y no se puede falsificar desde el cliente (a diferencia de `X-Forwarded-For`, que el Worker nunca usa). |
 | **Sin secretos en el código** | `ANTHROPIC_API_KEY` y `TURNSTILE_SECRET_KEY` se leen de `env`. El repo nunca los contiene. Los errores de Anthropic no se reenvían al cliente. |
+| **Logging sin datos personales** | Se registra (vía `wrangler tail`) cuándo se bloquea por límite o falla el captcha, sin guardar la IP completa ni el contenido de los ingredientes. |
 
 ## Qué hace el Worker (resumen)
 
