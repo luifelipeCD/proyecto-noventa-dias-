@@ -1841,17 +1841,24 @@ RECETAS.forEach(r => {
   r.grasa = Math.round(t.grasa);
 });
 
+// Escapa texto no confiable (ingredientes escritos por el usuario, y nombre/
+// ingredientes/pasos que devuelve el generador de recetas con IA) antes de
+// insertarlo con innerHTML, para evitar XSS.
+function esc(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
 // ---------- Helpers para mostrar ingredientes ----------
 // Las recetas del recetario traen ingredientes estructurados { n, g, ... };
 // las generadas con IA los traen como texto libre. Estas funciones aceptan ambos.
 function ingNombre(i){ return typeof i === 'string' ? i : i.n; }
 function ingTexto(i){
-  if(typeof i === 'string') return i;
-  if(i.g == null) return i.n;
-  return (i.kcal === 0 && i.g <= 8) ? `${i.n} — al gusto` : `${i.n} — ${i.g} g`;
+  if(typeof i === 'string') return esc(i);
+  if(i.g == null) return esc(i.n);
+  return (i.kcal === 0 && i.g <= 8) ? `${esc(i.n)} — al gusto` : `${esc(i.n)} — ${i.g} g`;
 }
 function ingItemHTML(i){
-  if(typeof i === 'string') return `<li>${i}</li>`;
+  if(typeof i === 'string') return `<li>${esc(i)}</li>`;
   const hayMacros = i.kcal || i.proteina || i.carbos || i.grasa;
   const macros = hayMacros
     ? `<span class="ing-macros">${i.kcal} kcal · ${i.proteina} P · ${i.carbos} C · ${i.grasa} G</span>` : '';
@@ -2335,7 +2342,7 @@ function recetaMediaHTML(r){
   const info = fotoTipoInfo(r);
   const url = fotoTipoURL(info);
   return `<div class="rc-media">
-    <img class="rc-photo-img" src="${url}" alt="${r.nombre}" loading="lazy" decoding="async"
+    <img class="rc-photo-img" src="${url}" alt="${esc(r.nombre)}" loading="lazy" decoding="async"
          onerror="this.parentElement.classList.add('foto-error');">
     <div class="rc-thumb-fallback">${recetaThumb(r)}</div>
     <span class="rc-photo-tag">Foto ilustrativa</span>
@@ -2357,7 +2364,7 @@ function renderRecetaCard(r){
     <div class="recipe-card" onclick="abrirReceta(${r.id})" tabindex="0" onkeydown="if(event.key==='Enter'){abrirReceta(${r.id});}">
       ${recetaMediaHTML(r)}
       <div class="rc-tags">${r.ia ? '<span class="tag tag-ia">✨ IA</span>' : ''}<span class="tag">${tagLabel}</span>${dietaTag(r)}${volTag(r)}</div>
-      <h4>${r.nombre}</h4>
+      <h4>${esc(r.nombre)}</h4>
       <div class="rc-macros">
         <span class="mc mc-kcal"><b>${r.kcal}</b> kcal</span>
         <span class="mc mc-prot"><b>${r.proteina}g</b> prot</span>
@@ -2380,7 +2387,7 @@ function abrirReceta(id, meal){
   document.getElementById('receta-modal-body').innerHTML = `
     ${recetaMediaHTML(r)}
     <div class="rc-tags"><span class="tag">${cat}</span>${dietaTag(r)}${volTag(r)}</div>
-    <h3 style="margin:var(--space-xs) 0 0;">${r.nombre}</h3>
+    <h3 style="margin:var(--space-xs) 0 0;">${esc(r.nombre)}</h3>
     <div class="macros">
       <span class="mc mc-kcal"><b>${r.kcal}</b> kcal</span>
       <span class="mc mc-prot"><b>${r.proteina}g</b> proteína</span>
@@ -2392,7 +2399,7 @@ function abrirReceta(id, meal){
     <h5>Ingredientes <span class="ing-hint">— cantidad y aporte por porción</span></h5>
     <ul class="ing-list">${r.ingredientes.map(ingItemHTML).join('')}</ul>
     <h5>Preparación</h5>
-    <ol>${r.pasos.map(p=>`<li>${p}</li>`).join('')}</ol>`;
+    <ol>${r.pasos.map(p=>`<li>${esc(p)}</li>`).join('')}</ol>`;
   document.getElementById('receta-modal').classList.add('open');
 }
 
@@ -2407,7 +2414,7 @@ function renderIngredientes(){
   const chips = document.getElementById('ia-chips');
   if(!chips) return;
   const activos = favIng.map((ing, i) =>
-    `<span class="ia-chip on" onclick="quitarIngrediente(${i})" title="Quitar">${ing} <b>✕</b></span>`).join('');
+    `<span class="ia-chip on" onclick="quitarIngrediente(${i})" title="Quitar">${esc(ing)} <b>✕</b></span>`).join('');
   const sugeridos = IA_SUGERENCIAS
     .filter(s => !favIng.includes(s))
     .slice(0, 8)
@@ -2661,7 +2668,7 @@ function renderPlanMealCard(meal, id, marcadoComido, bloqueado){
     <div class="plan-meal-media">${recetaMediaHTML(r)}</div>
     <div class="plan-meal-body">
       <div class="plan-meal-top"><span class="tag">${MEAL_LABELS[meal]}</span>${dietaTag(r)}${volTag(r)}</div>
-      <h4 onclick="abrirReceta(${r.id}, '${meal}')">${r.nombre}</h4>
+      <h4 onclick="abrirReceta(${r.id}, '${meal}')">${esc(r.nombre)}</h4>
       <div class="rc-macros">
         <span class="mc mc-kcal"><b>${r.kcal}</b> kcal</span>
         <span class="mc mc-prot"><b>${r.proteina}g</b> prot</span>
