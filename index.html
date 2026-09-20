@@ -3,6 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- GitHub Pages no permite configurar cabeceras HTTP propias: la Content-Security-Policy y el
+     Referrer-Policy se declaran aquí como meta tags (lo máximo que se puede endurecer sin backend).
+     Nota: "frame-ancestors" y "X-Frame-Options"/"X-Content-Type-Options" NO tienen efecto si se
+     declaran por <meta> (los navegadores los ignoran fuera de una cabecera HTTP real), así que no
+     se incluyen aquí para no dar una falsa sensación de protección; si se necesita esa protección
+     anti-clickjacking habría que servir el sitio desde un host que permita cabeceras propias. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://commons.wikimedia.org; connect-src 'self' https://recetario-ia.recetario90.workers.dev; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'; manifest-src 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Transforma tu Cuerpo en 90 Días</title>
 <meta name="description" content="Calcula tus calorías y tu proteína según tu objetivo —bajar de peso, mantener o ganar músculo—, recibe un menú automático con más de 70 recetas altas en proteína y sigue tu avance durante 90 días. Todo funciona en tu navegador, sin cuenta.">
 <meta name="theme-color" content="#0b1326">
@@ -2354,7 +2362,7 @@ function renderCreditosFotos(){
   if(!panel) return;
   panel.innerHTML = `<div class="note" style="margin:0 0 var(--space-xs);">Las fotos de los platos son representativas del tipo de comida (no son fotos exactas de cada receta). Vienen de Wikimedia Commons con licencia abierta.</div>
   <ul class="photo-credits" style="list-style:none;padding:0;margin:0;">
-    ${Object.values(TIPO_FOTO).map(info => `<li style="margin-bottom:var(--space-2xs);">${info.artist} — ${info.license} — <a href="${info.page}" target="_blank" rel="noopener">ver en Wikimedia Commons</a></li>`).join('')}
+    ${Object.values(TIPO_FOTO).map(info => `<li style="margin-bottom:var(--space-2xs);">${info.artist} — ${info.license} — <a href="${info.page}" target="_blank" rel="noopener noreferrer">ver en Wikimedia Commons</a></li>`).join('')}
   </ul>`;
 }
 
