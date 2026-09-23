@@ -56,6 +56,19 @@ Se guardan en Cloudflare, no en el repo.
 |---|---|---|
 | `ANTHROPIC_API_KEY` | console.anthropic.com → API Keys (`sk-ant-api03-…`) | llamar al modelo |
 | `TURNSTILE_SECRET_KEY` | dash.cloudflare.com → Turnstile → tu widget → *Secret Key* (`0x4A…`) | validar el captcha |
+| `SESSION_SECRET` | cualquier cadena larga y aleatoria tuya (ej. `openssl rand -base64 32`) | firmar la sesión del login por correo |
+| `RESEND_API_KEY` | resend.com → API Keys | mandar el correo con el link de acceso |
+
+Guárdalos igual que los de arriba:
+
+```bash
+npx wrangler secret put SESSION_SECRET --config worker/wrangler.toml
+npx wrangler secret put RESEND_API_KEY --config worker/wrangler.toml
+```
+
+> Sin `SESSION_SECRET` el login queda roto (`/auth/verificar` y `/me` devuelven error 500).
+> Sin `RESEND_API_KEY` el login **no manda el correo**, pero no rompe nada más — ver la
+> sección "Cuentas de usuario (magic link)" más abajo para probarlo sin esa clave.
 
 > La **Site Key** de Turnstile (`0x4AAAAAAEr6xThiKA2d4tpi`) es pública y ya está en `index.html`.
 > En el panel de Turnstile, en *Allowed hostnames*, deja solo `luifelipecd.github.io`.
@@ -203,6 +216,77 @@ O desde el panel: **Cloudflare → Storage & Databases → KV → `RATE_LIMIT`**
   `proteina`, `carbos`, `grasa`, `ingredientes[]`, `pasos[]`), **solo JSON**.
 - Valida y normaliza la respuesta. Si algo falla → `{ "ok": false, "error": "mensaje claro" }`.
 - Cada respuesta OK trae `"restantes": N`.
+
+## Cuentas de usuario (magic link)
+
+Login sin contraseña: el usuario escribe su correo, recibe un link de un solo uso
+(caduca en 15 min) y al tocarlo entra. La sesión es un JWT firmado (HS256) que el
+frontend guarda en `localStorage` y manda como `Authorization: Bearer <token>` en cada
+llamada a `/me` (y, en la próxima fase, a los endpoints de Stripe).
+
+```
+navegador ──POST /auth/solicitar-link {email}──▶  Worker ──▶ D1 (guarda el hash del token)
+                                                      │
+                                                      └──▶ Resend (manda el correo con el link)
+
+navegador (clic en el link) ──GET /auth/verificar?token=..──▶  Worker ──▶ D1 (valida, crea la cuenta)
+                              ◀── { token: <sesión JWT>, email, subscription } ──┘
+
+navegador ──GET /me  (Authorization: Bearer <sesión>)──▶  Worker ──▶ D1 ──▶ { email, subscription }
+```
+
+### Base de datos (D1)
+
+Ya está creada (`recetario-ia-db`) y con el schema aplicado (ver `worker/schema.sql`).
+Si necesitas recrearla desde cero en otra cuenta de Cloudflare:
+
+```bash
+npx wrangler d1 create recetario-ia-db --config worker/wrangler.toml
+# pega el database_id que imprime en el [[d1_databases]] de worker/wrangler.toml
+npx wrangler d1 execute recetario-ia-db --local  --file=worker/schema.sql --config worker/wrangler.toml
+npx wrangler d1 execute recetario-ia-db --remote --file=worker/schema.sql --config worker/wrangler.toml
+```
+
+Ver las tablas o hacer consultas sueltas:
+
+```bash
+npx wrangler d1 execute recetario-ia-db --remote --command "SELECT id, email, subscription_status FROM users" --config worker/wrangler.toml
+```
+
+### Probar el login sin una cuenta de Resend
+
+Sin `RESEND_API_KEY`, `POST /auth/solicitar-link` no manda ningún correo, pero la
+respuesta trae un campo extra `dev_link` con el link completo (y también queda en los
+logs de `wrangler tail`) para poder probar el flujo completo en local:
+
+```bash
+curl -X POST http://localhost:8787/auth/solicitar-link \
+  -H "Content-Type: application/json" -H "Origin: http://localhost:8080" \
+  -d '{"email":"tu-correo-de-prueba@example.com"}'
+# → copia el valor de "dev_link" y ábrelo en el navegador (o cámbialo por curl a /auth/verificar)
+```
+
+> Ese campo `dev_link` **nunca aparece si `RESEND_API_KEY` está configurado** — no hay
+> forma de que esto se cuele como puerta trasera en producción.
+
+### Remitente del correo (Resend)
+
+Por defecto se manda desde `onboarding@resend.dev` (el dominio de pruebas de Resend),
+que **solo entrega a la cuenta dueña de la API key** — perfecto para probar, no sirve
+para usuarios reales. Para mandar a cualquier correo, verifica un dominio propio en
+Resend y define la variable (no es secreta, va en `[vars]` de `worker/wrangler.toml`):
+
+```toml
+[vars]
+RESEND_FROM = "Transforma tu Cuerpo <hola@tudominio.com>"
+```
+
+### Límite de solicitudes de login
+
+Máx. **8 solicitudes por IP** y **3 por correo** cada hora (mismo mecanismo de KV que
+el límite de recetas, con sus propias claves `rl:auth:ip:*` / `rl:auth:email:*`). Si se
+supera, el Worker responde igual que si todo hubiera salido bien — así nadie puede usar
+la respuesta para adivinar qué correos ya tienen cuenta.
 
 ## Coste
 
