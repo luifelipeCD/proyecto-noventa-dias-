@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Transforma tu Cuerpo en 90 Días</title>
 <meta name="description" content="Calcula tus calorías y tu proteína según tu objetivo —bajar de peso, mantener o ganar músculo—, recibe un menú automático con más de 70 recetas altas en proteína y sigue tu avance durante 90 días. Todo funciona en tu navegador, sin cuenta.">
-<meta name="theme-color" content="#0b1326">
+<meta name="theme-color" content="#f8f9fc">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232f6b4f'/><text x='50' y='71' font-size='54' text-anchor='middle' fill='white' font-family='Arial,Helvetica,sans-serif' font-weight='bold'>90</text></svg>">
 <!-- PWA: instalable en el celular + caché offline -->
 <link rel="manifest" href="manifest.json">
@@ -715,30 +715,58 @@
     .panel.active,.main-panel.active,.recipe-card,.plan-meal,.why-card{animation:none;}
   }
 </style>
+<link rel="stylesheet" href="redesign.css">
+<link rel="stylesheet" href="interface.css">
 </head>
 <body>
 <!-- BARRA SUPERIOR -->
 <header class="appbar">
   <div class="appbar-in">
-    <div class="brand"><span class="brand-badge">90</span> Transforma tu Cuerpo <span class="tagline">en 90 días</span></div>
+    <a class="brand" href="#" onclick="setTab('inicio');return false" aria-label="90 días, inicio"><span class="brand-badge">90<span>°</span></span><span class="brand-name">noventa<span class="tagline">BIENESTAR, A TU RITMO</span></span></a>
+    <div class="header-context">TU ESPACIO PERSONAL <span>/</span> <b id="page-label">Progreso</b></div>
+    <div class="header-status"><span></span> Guardado local <button class="profile-button" onclick="setTab('calculadora')" aria-label="Abrir mi plan"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></svg></button></div>
   </div>
 </header>
 
 <!-- PESTAÑAS (celular) -->
-<nav class="tabbar" id="tabbar">
+<nav class="tabbar" id="tabbar" aria-label="Navegación principal">
+  <div class="nav-caption">MI ESPACIO</div>
+  <button class="tab-btn" data-tab="inicio" onclick="setTab('inicio')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>Inicio</button>
   <button class="tab-btn active" data-tab="calculadora" onclick="setTab('calculadora')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1Z"/><rect x="5" y="6" width="14" height="15" rx="2"/><path d="M9 12h6M9 16h6"/></svg>Mi plan</button>
-  <button class="tab-btn" data-tab="midia" onclick="setTab('midia')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v6a2.2 2.2 0 0 0 4.4 0V3"/><path d="M8.2 11v10"/><path d="M17 3c-1.6 0-2.8 2-2.8 5s1.2 4.6 2.8 4.6"/><path d="M17 3v18"/></svg>Mi día</button>
+  <button class="tab-btn" data-tab="midia" onclick="setTab('midia')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v6a2.2 2.2 0 0 0 4.4 0V3"/><path d="M8.2 11v10"/><path d="M17 3c-1.6 0-2.8 2-2.8 5s1.2 4.6 2.8 4.6"/><path d="M17 3v18"/></svg>Comidas</button>
   <button class="tab-btn" data-tab="progreso" onclick="setTab('progreso')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8.5 15l2.5 2.5 4.5-5"/></svg>Progreso</button>
-  <button class="tab-btn" data-tab="movimiento" onclick="setTab('movimiento')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2-7 4 14 2-7h6"/></svg>Movimiento</button>
+  <button class="tab-btn" data-tab="movimiento" onclick="setTab('movimiento')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2-7 4 14 2-7h6"/></svg>Rutina</button>
+  <button class="tab-btn" data-tab="recetario" onclick="setTab('recetario')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v16M3 4c3-1 6-1 9 1 3-2 6-2 9-1v15c-3-1-6-1-9 1-3-2-6-2-9-1Z"/></svg>Recetario</button>
+  <button class="tab-btn mobile-more" id="more-button" onclick="toggleMore()" aria-expanded="false" aria-controls="more-menu"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>Más</button>
+  <div class="nav-note"><span class="nav-note-symbol" aria-hidden="true">✦</span><strong>Tu ritmo también cuenta.</strong><p>Un pequeño paso hoy vale más que un plan perfecto para mañana.</p><button onclick="startTour(0)">Ver guía de uso <span aria-hidden="true">→</span></button><button onclick="openHelp()">Preguntas frecuentes <span aria-hidden="true">↗</span></button></div>
+  <div class="nav-footer">90 días. Un nuevo comienzo.</div>
 </nav>
+<div class="more-menu" id="more-menu" hidden><span class="eyebrow">TAMBIÉN EN TU APP</span><button onclick="setTab('calculadora')">Mi plan <span>Datos y objetivos →</span></button><button onclick="setTab('recetario')">Recetario <span>Recetas e inspiración →</span></button><button onclick="openHelp()">Ayuda <span>Preguntas frecuentes →</span></button></div>
+
+<div class="workspace-intro">
+  <div><span class="eyebrow" id="intro-date">TU ESPACIO DE BIENESTAR</span><h1 id="page-title">Un buen día empieza contigo.</h1><p id="page-subtitle">Lo que necesitas para cuidarte hoy, sin complicaciones.</p></div>
+  <button class="intro-badge" onclick="setTab('calculadora')">Mi plan <span aria-hidden="true">↗</span></button>
+</div>
 
 <div class="app">
+  <section class="panel" data-panel="inicio" id="panel-inicio">
+    <div class="start-banner" id="start-banner"><div><span class="eyebrow">TU PRIMER PASO</span><h2>Un plan que empieza por ti.</h2><p>Elige tu objetivo y conoce tus metas. Nosotros organizamos el menú.</p></div><button class="btn-primary" onclick="setTab('calculadora')">Crear mi plan <span aria-hidden="true">→</span></button></div>
+    <div class="dashboard-grid">
+      <article class="energy-card"><div class="card-topline"><span>Tu energía de hoy</span><span class="live-pill">NUTRICIÓN</span></div><div class="energy-main"><div><span class="energy-caption" id="energy-caption">Por registrar</span><strong id="home-energy">—</strong><span class="energy-unit">kcal restantes</span><p id="home-consumed">Crea tu plan para ver tus metas.</p></div><div class="energy-orbit" id="energy-orbit"><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m13 2-9 12h7l-1 8 10-13h-8Z"/></svg><span id="home-energy-pct">0%</span></div></div></div><div class="energy-macros"><div><span>Meta diaria</span><strong id="overview-kcal">— <small>kcal</small></strong></div><div><span>Proteína objetivo</span><strong id="overview-protein">— <small>g</small></strong></div></div><button class="energy-link" onclick="setTab(plan ? 'midia' : 'calculadora')" id="hero-cta">Crear mi plan <span>→</span></button></article>
+      <article class="today-card"><div class="section-heading"><div><span class="eyebrow">UN PASO A LA VEZ</span><h2>Tu día, en simple</h2></div><span id="home-task-count" class="soft-badge">0 / 3</span></div><div id="home-tasks"></div><div class="gentle-note"><span aria-hidden="true">✦</span> No hace falta hacerlo perfecto. Sigue a tu ritmo.</div></article>
+      <article class="training-card"><div class="card-topline"><span class="eyebrow">MOMENTO DE MOVERTE</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M7 7v10M3 9v6m14-8v10m4-8v6M7 12h10"/></svg></div><h2 id="home-workout">Tu rutina de hoy</h2><p id="home-workout-note">Consulta los ejercicios de tu semana.</p><button class="text-action" onclick="setTab('movimiento')">Ver mi rutina <span>↗</span></button></article>
+      <article class="journey-card"><div class="section-heading"><div><span class="eyebrow">CADA DÍA SUMA</span><h2>Tu recorrido</h2></div><button class="icon-button" onclick="setTab('progreso')" aria-label="Ver progreso completo">↗</button></div><strong id="overview-days">0 <small>/ 90 días</small></strong><div class="journey-track"><span id="home-progress-bar"></span></div><div class="journey-bottom"><span id="overview-percent">0% del camino</span><span id="home-streak">Mejor racha: 0 días</span></div></article>
+    </div>
+    <div class="section-heading home-menu-heading"><div><span class="eyebrow">ALIMENTA TU DÍA</span><h2>En tu menú de hoy</h2></div><button class="text-action" onclick="setTab('midia')">Ver comidas <span>→</span></button></div>
+    <div class="home-meals" id="home-meals"></div>
+  </section>
   <aside class="app-side">
 
     <!-- 1 · CALCULADORA -->
     <section class="panel side-panel" data-panel="calculadora" id="panel-calculadora">
-      <h2><span class="step-n">1</span> Tu plan</h2>
-      <p class="hint">Se calcula una vez y se guarda solo en tu navegador.</p>
+      <div class="plan-shell"><aside class="plan-guide"><span class="eyebrow">HECHO PARA TI</span><h2>El primer paso<br>es conocerte.</h2><p>Unos pocos datos para organizar tu alimentación de los próximos 90 días.</p><ol class="wizard-steps" aria-label="Pasos de configuración"><li data-wizard-indicator="1" class="current"><span>1</span><div>Tu objetivo<small>¿Qué quieres conseguir?</small></div></li><li data-wizard-indicator="2"><span>2</span><div>Sobre ti<small>Tu punto de partida</small></div></li><li data-wizard-indicator="3"><span>3</span><div>Tu ritmo<small>Actividad y preferencias</small></div></li></ol><div class="privacy-note">◈ Tus datos se quedan en este navegador.<br>Sin cuenta. Sin suscripción.</div></aside>
+      <div class="plan-workspace"><div id="wizard-editor"><div class="wizard-topline"><span id="wizard-step-label">PASO 1 DE 3</span><span>Tu plan personal</span></div>
+      <div class="wizard-page" data-wizard-page="1"><h2>¿Qué te gustaría lograr?</h2><p class="hint">Elige un objetivo. Puedes cambiarlo más adelante.</p>
       <div class="field">
         <label>¿Cuál es tu objetivo?</label>
         <div class="goal-toggle" id="goal-toggle">
@@ -757,10 +785,11 @@
         </div>
         <div class="note" id="goal-explain" hidden></div>
       </div>
+      </div><div class="wizard-page" data-wizard-page="2" hidden><h2>Cuéntanos un poco de ti.</h2><p class="hint">Usamos estos datos para estimar tus necesidades.</p>
       <div class="grid2">
         <div class="field">
           <label for="peso">Peso (kg)</label>
-          <input type="number" id="peso" placeholder="78" min="30" max="300">
+          <input type="number" id="peso" placeholder="78" min="30" max="300" step="0.1">
         </div>
         <div class="field">
           <label for="altura">Estatura (cm)</label>
@@ -778,6 +807,7 @@
           </div>
         </div>
       </div>
+      </div><div class="wizard-page" data-wizard-page="3" hidden><h2>Encuentra tu ritmo.</h2><p class="hint">Elige el nivel de actividad que mejor represente tu semana.</p>
       <div class="field">
         <label for="actividad">Nivel de actividad</label>
         <select id="actividad">
@@ -805,8 +835,11 @@
           </button>
         </div>
       </div>
-      <button class="btn-primary" onclick="calcular()">Calcular mi plan</button>
+      </div><p id="wizard-error" class="form-error" role="alert" hidden></p>
+      <div class="wizard-actions"><button class="btn-secondary" id="wizard-back" onclick="goWizard(wizardStep-1)" hidden>← Atrás</button><button class="btn-primary" id="wizard-next" onclick="goWizard(wizardStep+1)">Continuar →</button><button class="btn-primary" id="wizard-submit" onclick="finishPlan()" hidden>Calcular mi plan →</button></div>
+      </div>
       <div id="resultado">
+        <div class="plan-success"><span aria-hidden="true">✓</span><div><span class="eyebrow">TU PUNTO DE PARTIDA</span><h2>Tu plan está listo.</h2><p>Estas son tus metas diarias. El menú ya está organizado para ti.</p></div></div>
         <div class="result-grid">
           <div class="stat m-kcal"><div class="num count-up" id="r-bmr">--</div><div class="label">TMB basal</div></div>
           <div class="stat m-kcal"><div class="num count-up" id="r-tdee">--</div><div class="label">Gasto diario</div></div>
@@ -816,17 +849,20 @@
           <div class="stat m-fat"><div class="num count-up" id="r-fat">--</div><div class="label">Grasa g/día</div></div>
         </div>
         <div class="note" id="r-note"></div>
+        <div class="result-actions"><button class="btn-primary" onclick="setTab('midia')">Ver mis comidas →</button><button class="btn-secondary" onclick="editPlan()">Editar mis datos</button></div>
       </div>
+      </div></div>
     </section>
 
     <!-- 2 · MI DÍA / PLAN DE COMIDAS -->
     <section class="panel side-panel" data-panel="midia" id="panel-midia">
-      <h2><span class="step-n">2</span> Tu día</h2>
-      <p class="hint">Tu plan de comidas se genera solo al calcular tu plan y no cambia: marca cada comida cuando te la comas.</p>
+      <div class="meal-layout"><div class="meal-content"><div class="section-heading"><div><span class="eyebrow">A DISFRUTAR</span><h2>Tus comidas de hoy</h2></div><button class="btn-secondary" onclick="setTab('recetario')">Explorar recetas ↗</button></div>
+      <p class="hint">Abre un plato para ver la preparación. Márcalo después de comer.</p>
       <div id="plan-dia"><p class="section-sub" style="margin-top:10px;">Calcula tu plan (paso 1) para generar tu menú de 90 días.</p></div>
-      <h3>Tu progreso de hoy</h3>
+      </div><aside class="meal-summary"><span class="eyebrow">LO QUE LLEVAS HOY</span><h3>Tu balance diario</h3>
       <div id="mi-dia-bars"></div>
       <button class="btn-secondary" style="width:100%;margin-top:14px;" onclick="setTab('recetario')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v17H6.5A2.5 2.5 0 0 0 4 22Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v17h5.5a2.5 2.5 0 0 1 2.5 2Z"/></svg>Ver todas las recetas</button>
+      </aside></div>
     </section>
 
   </aside>
@@ -839,12 +875,10 @@
 
     <!-- RECETARIO: referencia de recetas, ya no es una pestaña independiente (ver setTab) -->
     <section class="panel main-panel" data-panel="recetario" id="panel-recetario">
-      <button class="btn-link" style="padding-left:0;" onclick="setTab('midia')">← Volver a Mi día</button>
-      <h2>Recetario</h2>
-      <p class="hint">+70 recetas altas en proteína, de referencia. Tu plan de comidas ya se genera solo en <b>Mi día</b>.</p>
+      <div class="recipe-toolbar"><div><h2>Ideas que dan ganas.</h2><p class="hint">72 recetas para explorar. Tu menú personal está en Comidas.</p></div><button class="btn-secondary" onclick="toggleRecipeAI()" id="ai-toggle" aria-expanded="false" aria-controls="ai-details">✦ Crear con IA</button></div>
 
       <!-- Generador de recetas con IA -->
-      <div class="ia-box">
+      <details class="ia-disclosure" id="ai-details"><summary>Tu cocina con IA <span>Elige ingredientes y crea una receta</span></summary><div class="ia-box">
         <h3>Tus ingredientes favoritos</h3>
         <p class="section-sub">Elige o escribe ingredientes que te gusten y la IA arma una receta alta en proteína.</p>
         <div class="ia-input-row">
@@ -861,10 +895,12 @@
         <button class="btn-primary" id="ia-generar" type="button" onclick="generarRecetaIA()">Generar receta con IA</button>
         <div id="ia-estado"></div>
         <div id="ia-resultado"></div>
-      </div>
+      </div></details>
 
+      <div class="recipe-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg><input type="search" id="recipe-search" aria-label="Buscar recetas por nombre o ingrediente" placeholder="¿Qué te apetece? Busca un plato o ingrediente…" oninput="filterRecipeSearch()"><span id="recipe-count" aria-live="polite">72 recetas</span></div>
       <div class="filters" id="filtros"></div>
       <div id="lista-recetas" class="recipe-list"></div>
+      <p id="recipe-empty" class="empty-state" hidden>No encontramos recetas con esa búsqueda. Prueba otro ingrediente.</p>
       <details class="more" id="batch-more" ontoggle="if(this.open)renderBatch()">
         <summary>Cocina por lote — prepara 1 vez, come varios días</summary>
         <div class="more-body" id="batch-panel"></div>
@@ -877,14 +913,17 @@
 
     <!-- PROGRESO -->
     <section class="panel main-panel active" data-panel="progreso" id="panel-progreso">
-      <h2>Progreso 90 días</h2>
+      <div class="progress-layout"><div class="progress-calendar">
+      <span class="eyebrow">CONSTRUYE TU CONSTANCIA</span><h2>Tu mapa de progreso</h2>
       <p class="hint">Marca cada día que cumpliste tu plan. Se guarda en tu navegador.</p>
       <div class="tracker-stat"><span class="big" id="dias-count">0</span><span>de 90 días completados</span></div>
       <div class="bar-track"><div class="bar-fill" id="dias-bar"></div></div>
       <div class="cal-grid" id="cal-grid"></div>
       <button class="btn-link" onclick="resetTracker()">Reiniciar calendario</button>
 
-      <h3>Peso semanal</h3>
+      <div class="calendar-legend"><span><i></i> Por completar</span><span><i class="complete"></i> Día completado</span></div>
+      </div><div class="progress-weight">
+      <span class="eyebrow">MÁS ALLÁ DE UN NÚMERO</span><h3>Peso semanal</h3>
       <div class="weight-form">
         <div class="field"><label for="w-semana">Semana (1-13)</label><input type="number" id="w-semana" min="1" max="13" placeholder="1"></div>
         <div class="field"><label for="w-peso">Peso (kg)</label><input type="number" id="w-peso" min="30" max="300" step="0.1" placeholder="77.5"></div>
@@ -908,6 +947,7 @@
         </div>
       </details>
 
+      </div></div>
       <h3>Historial de días de comida</h3>
       <p class="hint">Resumen de cada día que terminaste desde <b>Mi día</b>: lo comido contra tu meta.</p>
       <div id="historial-dias"></div>
@@ -951,7 +991,7 @@
 
 <!-- MODAL: receta -->
 <div class="modal-bg" id="receta-modal" onclick="if(event.target===this)cerrarReceta()">
-  <div class="modal-card receta">
+  <div class="modal-card receta" role="dialog" aria-modal="true" aria-label="Detalle de receta" tabindex="-1">
     <button class="modal-x" onclick="cerrarReceta()" aria-label="Cerrar">✕</button>
     <div id="receta-modal-body"></div>
   </div>
@@ -959,7 +999,7 @@
 
 <!-- MODAL: tarjeta de progreso para compartir -->
 <div class="modal-bg" id="share-modal" onclick="if(event.target===this)cerrarTarjeta()">
-  <div class="modal-card">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-label="Tarjeta de progreso" tabindex="-1">
     <h3>¡Día completado! 🎉</h3>
     <canvas id="share-canvas" width="1080" height="1080"></canvas>
     <div class="modal-actions">
@@ -969,6 +1009,7 @@
   </div>
 </div>
 
+<details class="help-center" id="help-center"><summary>¿Necesitas ayuda? <span>Guía y preguntas frecuentes +</span></summary><div class="help-center-content"><button class="btn-secondary" onclick="startTour(0)">Recorrer la guía interactiva ↗</button>
 <!-- POR QUÉ FUNCIONA -->
 <section class="band why">
   <div class="band-in">
@@ -1039,6 +1080,7 @@
   </div>
 </section>
 
+</div></details>
 <footer>
   <div><strong>Transforma tu Cuerpo en 90 Días</strong> — hecho para acompañarte en tu proceso.</div>
   <p class="disclaimer">Material educativo; no reemplaza la consulta con un médico o nutricionista. Los cálculos de calorías y proteína son estimaciones generales.</p>
@@ -1959,6 +2001,8 @@ function animarNumero(el, valor, sufijo){
 
 // Pinta los 6 cuadros de resultado + nota (con animación de conteo)
 function pintarResultado(res, nota){
+  updateOverview();
+  document.getElementById('wizard-editor').hidden = true;
   animarNumero(document.getElementById('r-bmr'), res.bmr, ' kcal');
   animarNumero(document.getElementById('r-tdee'), res.tdee, ' kcal');
   animarNumero(document.getElementById('r-target'), res.calorias, ' kcal');
@@ -2273,7 +2317,7 @@ function renderCreditosFotos(){
 function renderRecetaCard(r){
   const tagLabel = r.categoria === 'desayuno' ? 'Desayuno' : r.categoria === 'comida' ? 'Almuerzo/Cena' : 'Snack';
   return `
-    <div class="recipe-card" onclick="abrirReceta(${r.id})" tabindex="0" onkeydown="if(event.key==='Enter'){abrirReceta(${r.id});}">
+    <div class="recipe-card" role="button" onclick="abrirReceta(${r.id})" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();abrirReceta(${r.id});}">
       ${recetaMediaHTML(r)}
       <div class="rc-tags">${r.ia ? '<span class="tag tag-ia">✨ IA</span>' : ''}<span class="tag">${tagLabel}</span>${dietaTag(r)}${volTag(r)}</div>
       <h4>${r.nombre}</h4>
@@ -2448,6 +2492,7 @@ function renderRecetario(filtro){
     recetas = RECETAS.filter(r => r.dieta === 'vegetariana' || r.dieta === 'vegana');
   }
   cont.innerHTML = recetas.map(r => renderRecetaCard(r)).join('');
+  filterRecipeSearch();
 }
 
 function initFiltros(){
@@ -2732,6 +2777,7 @@ let diasDone = new Set(lsGet(LS.dias, []));
 let pesos = lsGet(LS.pesos, []); // [{semana, peso}]
 
 function renderCalendario(){
+  updateOverview();
   const grid = document.getElementById('cal-grid');
   let html = '';
   for(let w = 0; w < 13; w++){
@@ -2739,7 +2785,7 @@ function renderCalendario(){
     for(let i = 1; i <= 7; i++){
       const d = w * 7 + i;
       if(d > 90) break;
-      semana += `<div class="cal-day ${diasDone.has(d)?'done':''}" onclick="toggleDia(${d})">${d}</div>`;
+      semana += `<button type="button" class="cal-day ${diasDone.has(d)?'done':''}" aria-label="Día ${d}" aria-pressed="${diasDone.has(d)}" onclick="toggleDia(${d})">${d}</button>`;
     }
     semana += '</div>';
     html += semana;
@@ -2950,34 +2996,6 @@ function eliminarPeso(semana){
   renderPesos();
 }
 
-// Dibuja una gráfica de línea SVG (ejes + polilínea + puntos), compartida por
-// el peso semanal y el historial de check-ins — misma línea, distinto dominio
-// de posición X (semana fija 1–13 vs. índice de check-in) y tamaño de lienzo.
-// puntos: [{pos, val, etq}]. posMin/posMax fijan el dominio del eje X.
-function svgGrafica(puntos, {W, H, pad, rightPad, topPad, maxWidth, posMin, posMax}){
-  const vals = puntos.map(p => p.val);
-  let vMin = Math.min(...vals), vMax = Math.max(...vals);
-  if(vMin === vMax){ vMin -= 1; vMax += 1; }
-  const x = pos => pad + (pos - posMin) / (posMax - posMin) * (W - pad - rightPad);
-  const y = v => H - pad - (v - vMin) / (vMax - vMin) * (H - pad - topPad);
-
-  const pts = puntos.map(p => `${x(p.pos).toFixed(1)},${y(p.val).toFixed(1)}`).join(' ');
-  const circles = puntos.map(p => `<circle cx="${x(p.pos).toFixed(1)}" cy="${y(p.val).toFixed(1)}" r="3.5" fill="#4be277"/>`).join('');
-  const yLabels = `
-    <text x="4" y="${(y(vMax)+4).toFixed(1)}" font-size="10" fill="#9db0d0">${vMax.toFixed(1)}</text>
-    <text x="4" y="${(y(vMin)+4).toFixed(1)}" font-size="10" fill="#9db0d0">${vMin.toFixed(1)}</text>`;
-  const xLabels = puntos.map(p => `<text x="${x(p.pos).toFixed(1)}" y="${H-12}" font-size="10" fill="#9db0d0" text-anchor="middle">${p.etq}</text>`).join('');
-
-  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${maxWidth}px;display:block;">
-    <line x1="${pad}" y1="${H-pad}" x2="${W-4}" y2="${H-pad}" stroke="rgba(255,255,255,0.12)"/>
-    <line x1="${pad}" y1="12" x2="${pad}" y2="${H-pad}" stroke="rgba(255,255,255,0.12)"/>
-    ${yLabels}
-    <polyline points="${pts}" fill="none" stroke="#4be277" stroke-width="2.5" stroke-linejoin="round"/>
-    ${circles}
-    ${xLabels}
-  </svg>`;
-}
-
 function renderPesos(){
   const chart = document.getElementById('weight-chart');
   const lista = document.getElementById('weight-list');
@@ -2988,8 +3006,30 @@ function renderPesos(){
     return;
   }
 
-  const puntos = pesos.map(p => ({pos: p.semana, val: p.peso, etq: 'S' + p.semana}));
-  chart.innerHTML = svgGrafica(puntos, {W:320, H:160, pad:34, rightPad:8, topPad:12, maxWidth:420, posMin:1, posMax:13});
+  const W = 320, H = 160, pad = 34;
+  const semMin = 1, semMax = 13;
+  const pesoVals = pesos.map(p=>p.peso);
+  let pMin = Math.min(...pesoVals), pMax = Math.max(...pesoVals);
+  if(pMin === pMax){ pMin -= 1; pMax += 1; }
+  const x = s => pad + (s - semMin) / (semMax - semMin) * (W - pad - 8);
+  const y = v => H - pad - (v - pMin) / (pMax - pMin) * (H - pad - 12);
+
+  const pts = pesos.map(p => `${x(p.semana).toFixed(1)},${y(p.peso).toFixed(1)}`).join(' ');
+  const circles = pesos.map(p => `<circle cx="${x(p.semana).toFixed(1)}" cy="${y(p.peso).toFixed(1)}" r="3.5" fill="#4be277"/>`).join('');
+  // etiquetas eje Y (min y max)
+  const yLabels = `
+    <text x="4" y="${(y(pMax)+4).toFixed(1)}" font-size="10" fill="#9db0d0">${pMax.toFixed(1)}</text>
+    <text x="4" y="${(y(pMin)+4).toFixed(1)}" font-size="10" fill="#9db0d0">${pMin.toFixed(1)}</text>`;
+  const xLabels = pesos.map(p => `<text x="${x(p.semana).toFixed(1)}" y="${H-12}" font-size="10" fill="#9db0d0" text-anchor="middle">S${p.semana}</text>`).join('');
+
+  chart.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:420px;display:block;">
+    <line x1="${pad}" y1="${H-pad}" x2="${W-4}" y2="${H-pad}" stroke="rgba(255,255,255,0.12)"/>
+    <line x1="${pad}" y1="12" x2="${pad}" y2="${H-pad}" stroke="rgba(255,255,255,0.12)"/>
+    ${yLabels}
+    <polyline points="${pts}" fill="none" stroke="#4be277" stroke-width="2.5" stroke-linejoin="round"/>
+    ${circles}
+    ${xLabels}
+  </svg>`;
 
   const primero = pesos[0].peso, ultimo = pesos[pesos.length-1].peso;
   const dif = (ultimo - primero).toFixed(1);
@@ -3132,8 +3172,26 @@ function renderCheckin(){
   if(puntos.length === 1){
     chartEl.innerHTML = `<p style="color:var(--muted);margin:0;font-size:13px;">Primer punto registrado: ${puntos[0].peso} kg. La línea de progreso aparece desde el segundo check-in.</p>`;
   } else {
-    const puntosGrafica = puntos.map((p,i) => ({pos: i, val: p.peso, etq: p.etq}));
-    chartEl.innerHTML = svgGrafica(puntosGrafica, {W:340, H:170, pad:36, rightPad:10, topPad:14, maxWidth:440, posMin:0, posMax:puntos.length-1});
+    const W = 340, H = 170, pad = 36;
+    const vals = puntos.map(p=>p.peso);
+    let pMin = Math.min(...vals), pMax = Math.max(...vals);
+    if(pMin === pMax){ pMin -= 1; pMax += 1; }
+    const x = i => pad + i/(puntos.length-1) * (W - pad - 10);
+    const y = v => H - pad - (v - pMin)/(pMax - pMin) * (H - pad - 14);
+    const pts = puntos.map((p,i)=>`${x(i).toFixed(1)},${y(p.peso).toFixed(1)}`).join(' ');
+    const circles = puntos.map((p,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(p.peso).toFixed(1)}" r="3.5" fill="#4be277"/>`).join('');
+    const xLabels = puntos.map((p,i)=>`<text x="${x(i).toFixed(1)}" y="${H-12}" font-size="10" fill="#9db0d0" text-anchor="middle">${p.etq}</text>`).join('');
+    const yLabels = `
+      <text x="4" y="${(y(pMax)+4).toFixed(1)}" font-size="10" fill="#9db0d0">${pMax.toFixed(1)}</text>
+      <text x="4" y="${(y(pMin)+4).toFixed(1)}" font-size="10" fill="#9db0d0">${pMin.toFixed(1)}</text>`;
+    chartEl.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:440px;display:block;">
+      <line x1="${pad}" y1="${H-pad}" x2="${W-4}" y2="${H-pad}" stroke="rgba(255,255,255,0.12)"/>
+      <line x1="${pad}" y1="12" x2="${pad}" y2="${H-pad}" stroke="rgba(255,255,255,0.12)"/>
+      ${yLabels}
+      <polyline points="${pts}" fill="none" stroke="#4be277" stroke-width="2.5" stroke-linejoin="round"/>
+      ${circles}
+      ${xLabels}
+    </svg>`;
   }
 
   // --- Lista de check-ins ---
@@ -3522,20 +3580,150 @@ function isMobile(){ return window.matchMedia('(max-width: 980px)').matches; }
 
 function setTab(name){
   const el = document.querySelector('.panel[data-panel="' + name + '"]');
-  const isMain = !!(el && el.classList.contains('main-panel'));
-  // Resalta la pestaña (celular) siempre
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
-  if(isMobile()){
-    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.dataset.panel === name));
-    window.scrollTo({top:0, behavior:'smooth'});
-  } else if(isMain){
-    // Escritorio: cambia la vista de la columna principal
-    document.querySelectorAll('.main-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === name));
-    document.querySelectorAll('.main-nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
-  } else if(el){
-    // Escritorio + panel lateral (calculadora / mi día): siempre visible, sólo desplaza
-    el.scrollIntoView({behavior:'smooth', block:'nearest'});
+  if(!el) return;
+  document.body.dataset.view = name;
+  toggleMore(false);
+  document.querySelectorAll('.tab-btn, .main-nav button').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === name);
+    if(b.dataset.tab === name) b.setAttribute('aria-current','page');
+    else b.removeAttribute('aria-current');
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p === el));
+  document.getElementById('more-button').classList.toggle('active',['calculadora','recetario'].includes(name));
+  const titles = {
+    inicio:['Inicio','Un buen día empieza contigo.','Lo que necesitas para cuidarte hoy, sin complicaciones.'],
+    calculadora:['Mi plan','Tu plan, a tu medida.','Un punto de partida para tus próximos 90 días.'],
+    midia:['Comidas','Comer bien. Sentirte bien.','Tu menú está organizado. Tú solo ve paso a paso.'],
+    progreso:['Progreso','Mira todo lo que vas sumando.','Registra tus avances. Cada pequeño paso cuenta.'],
+    movimiento:['Rutina','Dale movimiento a tu día.','Tu entrenamiento y tus pasos, en un mismo lugar.'],
+    recetario:['Recetario','Algo rico. Algo para ti.','Menos dudas al cocinar. Más ideas para disfrutar.']
+  };
+  const copy = titles[name];
+  document.getElementById('page-label').textContent = copy[0];
+  document.getElementById('page-title').textContent = copy[1];
+  document.getElementById('page-subtitle').textContent = copy[2];
+  if(name === 'inicio') renderHome();
+  window.scrollTo({top:0, behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+}
+
+// Presentation only: these cards reflect the existing stored plan and calendar.
+function updateOverview(){
+  const n = diasDone.size;
+  document.getElementById('overview-days').innerHTML = n + ' <small>/ 90 días</small>';
+  document.getElementById('overview-percent').textContent = Math.round(n / 90 * 100) + '% del camino';
+  document.getElementById('overview-kcal').innerHTML = (plan ? plan.calorias.toLocaleString('es') : '—') + ' <small>kcal</small>';
+  document.getElementById('overview-protein').innerHTML = (plan ? plan.proteina : '—') + ' <small>g</small>';
+  document.getElementById('hero-cta').innerHTML = (plan ? 'Ver mis comidas' : 'Crear mi plan') + ' <span aria-hidden="true">↗</span>';
+  renderHome();
+}
+
+// New presentation flows. The original nutrition and storage logic is unchanged.
+let wizardStep = 1;
+function toggleMore(force){
+  const menu = document.getElementById('more-menu');
+  const open = typeof force === 'boolean' ? force : menu.hidden;
+  menu.hidden = !open;
+  document.getElementById('more-button').setAttribute('aria-expanded', String(open));
+  if(open) menu.querySelector('button').focus();
+}
+function openHelp(){
+  toggleMore(false);
+  const help = document.getElementById('help-center');
+  help.open = true;
+  help.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function validWizardData(){
+  let message = '', focus = null;
+  for(const [id,label] of [['peso','tu peso'],['altura','tu estatura'],['edad','tu edad']]){
+    const field = document.getElementById(id);
+    if(!field.value || !field.checkValidity()){
+      message = 'Revisa ' + label + ': ingresa un valor entre ' + field.min + ' y ' + field.max + '.';
+      focus = field; break;
+    }
   }
+  if(!message && !genero){message = 'Selecciona tu sexo para completar la estimación.';focus=document.getElementById('btn-hombre');}
+  const error = document.getElementById('wizard-error');
+  error.textContent = message;error.hidden = !message;
+  if(focus) focus.focus();
+  return !message;
+}
+function goWizard(step){
+  if(step>2 && !validWizardData()) return;
+  wizardStep = Math.max(1,Math.min(3,step));
+  document.querySelectorAll('[data-wizard-page]').forEach(el => el.hidden=Number(el.dataset.wizardPage)!==wizardStep);
+  document.querySelectorAll('[data-wizard-indicator]').forEach(el => {
+    el.classList.toggle('current',Number(el.dataset.wizardIndicator)===wizardStep);
+    el.classList.toggle('complete',Number(el.dataset.wizardIndicator)<wizardStep);
+  });
+  document.getElementById('wizard-step-label').textContent = 'PASO ' + wizardStep + ' DE 3';
+  document.getElementById('wizard-back').hidden = wizardStep===1;
+  document.getElementById('wizard-next').hidden = wizardStep===3;
+  document.getElementById('wizard-submit').hidden = wizardStep!==3;
+  document.getElementById('wizard-error').hidden = true;
+}
+function finishPlan(){
+  if(!validWizardData()){goWizard(2);validWizardData();return;}
+  calcular();
+  document.getElementById('resultado').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function editPlan(){
+  document.getElementById('wizard-editor').hidden = false;
+  document.getElementById('resultado').style.display='none';
+  goWizard(1);
+}
+function toggleRecipeAI(){
+  const box=document.getElementById('ai-details');box.open=!box.open;
+}
+function filterRecipeSearch(){
+  const input=document.getElementById('recipe-search');
+  if(!input) return;
+  const query=normaliza(input.value.trim());
+  let count=0;
+  document.querySelectorAll('#lista-recetas .recipe-card').forEach(card=>{
+    const match=!query || normaliza(card.textContent).includes(query);
+    card.hidden=!match;if(match) count++;
+  });
+  document.getElementById('recipe-count').textContent=count+' receta'+(count===1?'':'s');
+  document.getElementById('recipe-empty').hidden=count>0;
+}
+function renderHome(){
+  const today=hoyISO();
+  const finished=diasTerminados[today];
+  const marks=(finished ? finished.meals : comidasMarcadas[today]) || {};
+  const eaten=MEAL_ORDER.filter(m=>marks[m]).length;
+  const routine=RUTINA_SEMANAL[new Date().getDay()];
+  const workoutDone=lsGet(LS.mov,[]).includes(today);
+  const totals=plan && planDias ? totalesMarcados(planDias[diaIndexActual()],marks) : {kcal:0};
+  const consumed=finished ? finished.kcal : Math.round(totals.kcal);
+  const remaining=plan ? plan.calorias-consumed : 0;
+  const percent=plan ? Math.min(100,Math.round(consumed/plan.calorias*100)) : 0;
+  document.getElementById('start-banner').hidden=!!plan;
+  document.getElementById('home-energy').textContent=plan ? Math.abs(remaining).toLocaleString('es') : '—';
+  document.querySelector('.energy-unit').textContent=remaining<0 ? 'kcal sobre la meta' : 'kcal restantes';
+  document.getElementById('energy-caption').textContent=finished ? 'Día registrado' : 'Tu balance';
+  document.getElementById('home-consumed').textContent=plan ? consumed.toLocaleString('es')+' kcal registradas de '+plan.calorias.toLocaleString('es') : 'Tus metas aparecerán al crear tu plan.';
+  document.getElementById('energy-orbit').style.setProperty('--energy-progress',percent+'%');
+  document.getElementById('home-energy-pct').textContent=percent+'%';
+  document.getElementById('home-progress-bar').style.width=(diasDone.size/90*100)+'%';
+  document.getElementById('home-streak').textContent='Mejor racha: '+rachaMaxima()+' días';
+  document.getElementById('home-workout').textContent=routine.descanso ? 'Hoy, un respiro.' : routine.grupo;
+  document.getElementById('home-workout-note').textContent=routine.descanso ? 'Descanso o cardio suave. Recuperarte también es parte del proceso.' : routine.ejercicios.length+' ejercicios · '+(workoutDone ? 'Rutina registrada' : 'Consulta las series y la técnica');
+  const tasks=[
+    {done:!!plan,n:'Tu plan personal',desc:plan?'Objetivos listos para acompañarte':'Define tu punto de partida',tab:'calculadora'},
+    {done:!!finished,n:'Disfruta tus comidas',desc:finished?'Día cerrado y guardado':eaten+' de 4 comidas registradas',tab:'midia'},
+    {done:workoutDone,n:routine.descanso?'Date un momento de descanso':'Activa tu cuerpo',desc:workoutDone?'Sesión registrada':routine.descanso?'Descanso o movimiento suave':'Tu rutina está lista',tab:'movimiento'}
+  ];
+  document.getElementById('home-task-count').textContent=tasks.filter(t=>t.done).length+' / 3';
+  document.getElementById('home-tasks').innerHTML=tasks.map((t,i)=>`<button class="today-task ${t.done?'is-done':''}" onclick="setTab('${t.tab}')"><span class="task-check">${t.done?'✓':i+1}</span><span><strong>${t.n}</strong><small>${t.desc}</small></span><span class="task-arrow" aria-hidden="true">↗</span></button>`).join('');
+  const meals=document.getElementById('home-meals');
+  if(!plan || !planDias){
+    meals.innerHTML='<div class="home-empty"><span aria-hidden="true">◌</span><div><h3>Aquí empieza tu menú.</h3><p>Crea tu plan y encontrarás tus cuatro comidas de hoy.</p></div><button class="btn-secondary" onclick="setTab(\'calculadora\')">Empezar →</button></div>';return;
+  }
+  const day=planDias[diaIndexActual()];
+  meals.innerHTML=MEAL_ORDER.map(m=>{
+    const r=recetaParaComida(m,day[m]);
+    return `<button class="home-meal ${marks[m]?'is-done':''}" onclick="abrirReceta(${day[m]},'${m}')">${recetaMediaHTML(r)}<span class="home-meal-type">${MEAL_LABELS[m]} <span>${marks[m]?'✓ Comido':'↗'}</span></span><strong>${r.nombre}</strong><span class="home-meal-meta">${r.kcal} kcal <i>·</i> ${r.proteina} g proteína</span></button>`;
+  }).join('');
 }
 
 let toastT;
@@ -3555,16 +3743,16 @@ const TOUR_KEY = 'rp90_tour_done';
 const TOUR_STEPS = [
   {tab:'calculadora', sel:'#panel-calculadora',
    title:'1 · Tu plan',
-   text:'Elige tu objetivo (bajar, subir o mantener), llena tus datos y pulsa <b>Calcular mi plan</b>. Se hace una sola vez.'},
+   text:'Sigue los tres pasos: objetivo, datos y ritmo. Si ya tienes un plan, puedes cambiarlo con <b>Editar mis datos</b>.'},
   {tab:'midia', sel:'#panel-midia',
    title:'2 · Tu día',
    text:'Tu plan de comidas se genera solo y queda fijo. Marca <b>☐ Marcar comido</b> en cada plato y pulsa <b>Terminar día</b> para ver tu resumen.'},
   {tab:'recetario', sel:'#filtros',
    title:'Recetario de referencia',
-   text:'Se abre desde el botón <b>📖 Ver todas las recetas</b> en Mi día. Filtra y toca cualquier tarjeta para ver la receta completa.'},
+   text:'Busca un plato o ingrediente, usa los filtros y abre una tarjeta para ver la receta. <b>Crear con IA</b> despliega el generador.'},
   {tab:'progreso', sel:'#panel-progreso',
    title:'Tu avance',
-   text:'Marca los días que cumpliste. El botón <b>?</b> abajo repite esta guía.'}
+   text:'Marca los días que cumpliste y registra tu peso. Puedes repetir esta guía desde <b>Ayuda</b> o las preguntas frecuentes.'}
 ];
 let tourIdx = 0;
 let tourTarget = null;
@@ -3606,7 +3794,7 @@ function showTourStep(){
   setTimeout(() => {
     const target = document.querySelector(step.sel);
     tourTarget = target;
-    const cont = target && target.closest('.app-side, .app-main');
+    const cont = target && target.closest('.panel');
     if(cont) cont.classList.add('tour-lift');
     document.getElementById('tour-progress').textContent = `Paso ${tourIdx + 1} de ${TOUR_STEPS.length}`;
     document.getElementById('tour-title').innerHTML = step.title;
@@ -3664,7 +3852,36 @@ function endTour(){
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
-  setTab(isMobile() ? 'calculadora' : 'progreso');
+  setTab('inicio');
+  document.getElementById('intro-date').textContent = new Date().toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('ai-details').addEventListener('toggle',function(){document.getElementById('ai-toggle').setAttribute('aria-expanded',String(this.open));});
+  const focusOrigins = new WeakMap();
+  document.querySelectorAll('.modal-bg').forEach(modal=>{
+    let wasOpen = false;
+    new MutationObserver(()=>{
+      const open = modal.classList.contains('open');
+      if(open && !wasOpen){focusOrigins.set(modal,document.activeElement);modal.querySelector('button, [tabindex]').focus();}
+      if(!open && wasOpen){const origin=focusOrigins.get(modal);if(origin && origin.isConnected)origin.focus();}
+      wasOpen=open;
+      document.body.classList.toggle('dialog-open',!!document.querySelector('.modal-bg.open'));
+    }).observe(modal,{attributes:true,attributeFilter:['class']});
+  });
+  document.addEventListener('keydown',event=>{
+    if(event.key==='Escape'){
+      if(!document.getElementById('more-menu').hidden)document.getElementById('more-button').focus();
+      toggleMore(false);cerrarReceta();cerrarTarjeta();
+      if(document.body.classList.contains('tour-active'))endTour();
+    }
+    if(event.key==='Tab'){
+      const modal=document.querySelector('.modal-bg.open');
+      if(!modal)return;
+      const items=Array.from(modal.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),[tabindex="0"]'));
+      const first=items[0],last=items[items.length-1];
+      if(event.shiftKey && document.activeElement===first){event.preventDefault();last.focus();}
+      else if(!event.shiftKey && document.activeElement===last){event.preventDefault();first.focus();}
+    }
+  });
+  document.addEventListener('click',event=>{if(!event.target.closest('#more-menu,#more-button'))toggleMore(false);});
   setIntensidad(intensidad);
   setObjetivo(objetivo);
   initFiltros();
@@ -3701,10 +3918,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if(document.body.classList.contains('tour-active')) positionTourTip(tourTarget);
   });
 
-  // Guía interactiva la primera vez que se entra
-  try{
-    if(!localStorage.getItem(TOUR_KEY)) setTimeout(() => startTour(0), 800);
-  }catch(e){}
+  // The guide remains available on demand; it no longer interrupts first entry.
+  updateOverview();
 });
 </script>
 
