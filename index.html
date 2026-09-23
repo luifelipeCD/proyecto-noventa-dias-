@@ -3,6 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- GitHub Pages no permite configurar cabeceras HTTP propias: la Content-Security-Policy y el
+     Referrer-Policy se declaran aquí como meta tags (lo máximo que se puede endurecer sin backend).
+     Nota: "frame-ancestors" y "X-Frame-Options"/"X-Content-Type-Options" NO tienen efecto si se
+     declaran por <meta> (los navegadores los ignoran fuera de una cabecera HTTP real), así que no
+     se incluyen aquí para no dar una falsa sensación de protección; si se necesita esa protección
+     anti-clickjacking habría que servir el sitio desde un host que permita cabeceras propias. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://commons.wikimedia.org https://cdn.jsdelivr.net; connect-src 'self' https://recetario-ia.recetario90.workers.dev; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'; manifest-src 'self'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Transforma tu Cuerpo en 90 Días</title>
 <meta name="description" content="Calcula tus calorías y tu proteína según tu objetivo —bajar de peso, mantener o ganar músculo—, recibe un menú automático con más de 70 recetas altas en proteína y sigue tu avance durante 90 días. Todo funciona en tu navegador, sin cuenta.">
 <meta name="theme-color" content="#0b1326">
@@ -97,8 +105,11 @@
     --cat-comida:var(--prot);
     --cat-snack:var(--veg);
 
-    --shadow:0 10px 30px -10px rgba(0,0,0,0.5);
-    --shadow-lg:0 24px 60px -12px rgba(0,0,0,0.6);
+    /* Sombras con tinte tonal (navy oscuro de la propia superficie, no negro puro) */
+    --shadow:0 10px 30px -10px rgba(3,7,18,0.55);
+    --shadow-lg:0 24px 60px -12px rgba(3,7,18,0.65);
+    /* Glow ambiental verde: firma visual para todo lo "activo/seleccionado" */
+    --glow-primary:0 0 0 1px rgba(75,226,119,0.1), 0 6px 20px -8px rgba(34,197,94,0.45);
     --radius:16px;
 
     --font-body:'Plus Jakarta Sans','Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
@@ -106,14 +117,15 @@
     /* Fuente display: solo para los números "hero" (kcal restantes, contador de días) */
     --font-display:'Sora',var(--font-body);
 
-    /* ===== Espaciado — grilla de 8pt (con medio paso de 4px) ===== */
-    --space-2xs:4px;
-    --space-xs:8px;
-    --space-sm:12px;
-    --space-md:16px;
-    --space-lg:24px;
-    --space-xl:32px;
-    --space-2xl:48px;
+    /* ===== Espaciado — grilla de 8pt "Kinetic Vitality" (en rem) ===== */
+    --space-2xs:0.25rem;  /* 4px */
+    --space-xs:0.5rem;    /* 8px */
+    --space-sm:0.75rem;   /* 12px */
+    --space-md:1rem;      /* 16px */
+    --space-lg:1.25rem;   /* 20px */
+    --space-xl:1.5rem;    /* 24px */
+    --space-2xl:2rem;     /* 32px */
+    --space-3xl:2.5rem;   /* 40px */
   }
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth;background:var(--surface);}
@@ -122,6 +134,7 @@
     font-family:var(--font-body);
     line-height:1.5;
     -webkit-font-smoothing:antialiased;
+    font-variant-numeric:tabular-nums; /* las cifras no saltan de ancho al actualizarse */
   }
   h1,h2,h3,h4,h5{color:var(--ink);font-family:var(--font-head);
     font-weight:700;letter-spacing:-0.015em;line-height:1.15;}
@@ -132,35 +145,52 @@
   /* ---------- BARRA SUPERIOR ---------- */
   .appbar{background:rgba(10,17,32,0.82);color:var(--ink);border-bottom:1px solid var(--outline-soft);
     backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
-  .appbar-in{max-width:1280px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;gap:12px;}
-  .brand{display:flex;align-items:center;gap:10px;font-family:var(--font-head);font-weight:700;
+  .appbar-in{max-width:1280px;margin:0 auto;padding:var(--space-sm) var(--space-md);display:flex;align-items:center;gap:var(--space-sm);}
+  .brand{display:flex;align-items:center;gap:var(--space-xs);font-family:var(--font-head);font-weight:700;
     font-size:19px;letter-spacing:-0.015em;color:var(--ink);}
   .brand-badge{background:var(--primary);color:var(--on-primary);border-radius:11px;width:30px;height:30px;
     display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;}
   .brand .tagline{opacity:.9;font-size:12px;font-weight:500;letter-spacing:0;color:var(--ink-var);}
 
   /* ---------- PESTANAS (celular) ---------- */
-  .tabbar{position:sticky;top:0;z-index:38;display:flex;gap:6px;padding:8px 10px;background:rgba(10,17,32,0.9);
-    overflow-x:auto;border-bottom:1px solid var(--outline-soft);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
-  .tab-btn{flex:1 0 auto;white-space:nowrap;padding:9px 15px;border-radius:999px;border:1px solid var(--outline-soft);
-    background:var(--container);color:var(--ink-var);font-size:12.5px;font-weight:600;cursor:pointer;
-    transition:background .15s ease,border-color .15s ease,color .15s ease;}
-  .tab-btn.active{background:var(--primary-soft);border-color:var(--primary-line);color:var(--primary-bright);}
+  .tabbar-wrap{position:sticky;top:0;z-index:38;}
+  .tabbar{display:flex;gap:var(--space-2xs);padding:var(--space-xs) var(--space-xs);background:rgba(10,17,32,0.9);
+    overflow-x:auto;border-bottom:1px solid var(--outline-soft);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    scrollbar-width:none;}
+  .tabbar::-webkit-scrollbar{display:none;}
+  .tab-btn{flex:1 0 auto;white-space:nowrap;padding:var(--space-xs) var(--space-xs);border-radius:999px;border:1px solid var(--outline-soft);
+    background:var(--container);color:var(--ink-var);font-size:11.5px;font-weight:600;cursor:pointer;
+    transition:background .15s ease,border-color .15s ease,color .15s ease,transform .1s ease;}
+  .tab-btn.active{background:var(--primary-soft);border-color:var(--primary-line);color:var(--primary-bright);box-shadow:var(--glow-primary);}
+  .tab-btn:active{transform:scale(0.96);}
+  .tab-btn .ui-icon{width:14px;height:14px;margin-right:var(--space-2xs);}
+  .tab-label-short{display:none;}
+  @media (max-width:400px){
+    .tab-label-full{display:none;}
+    .tab-label-short{display:inline;}
+  }
+  /* Degradado en los bordes: solo se muestra si de verdad hay más pestañas fuera de vista */
+  .tabbar-fade{position:absolute;top:0;bottom:1px;width:26px;pointer-events:none;opacity:0;
+    transition:opacity .15s ease;z-index:2;}
+  .tabbar-fade-l{left:0;background:linear-gradient(to right, rgba(10,17,32,0.95), transparent);}
+  .tabbar-fade-r{right:0;background:linear-gradient(to left, rgba(10,17,32,0.95), transparent);}
+  .tabbar-wrap.show-left .tabbar-fade-l{opacity:1;}
+  .tabbar-wrap.show-right .tabbar-fade-r{opacity:1;}
 
   /* ---------- LAYOUT ---------- */
-  .app{max-width:1280px;margin:0 auto;padding:16px 18px 72px;}
+  .app{max-width:1280px;margin:0 auto;padding:var(--space-md) var(--space-md) calc(var(--space-3xl) + var(--space-2xl));}
   .panel{background:var(--container);border:1px solid var(--outline-soft);border-radius:var(--radius);
-    box-shadow:var(--shadow);padding:20px;}
-  .panel > h2{margin:0 0 4px;font-size:22px;letter-spacing:-0.015em;font-weight:700;color:var(--ink);}
+    box-shadow:var(--shadow);padding:var(--space-lg);}
+  .panel > h2{margin:0 0 var(--space-2xs);font-size:22px;letter-spacing:-0.015em;font-weight:700;color:var(--ink);}
   .panel h3{font-size:11px;margin:var(--space-lg) 0 var(--space-xs);text-transform:uppercase;letter-spacing:0.07em;font-weight:700;color:var(--ink-var);}
-  .hint{color:var(--ink-var);font-size:13px;margin:0 0 14px;}
-  .section-sub{color:var(--ink-var);font-size:13px;margin:0 0 10px;}
+  .hint{color:var(--ink-var);font-size:13px;margin:0 0 var(--space-sm);}
+  .section-sub{color:var(--ink-var);font-size:13px;margin:0 0 var(--space-xs);}
 
   @media (min-width:981px){
-    .tabbar{display:none;}
-    .app{display:grid;grid-template-columns:360px minmax(0,1fr);gap:20px;align-items:start;}
-    .app-side{display:flex;flex-direction:column;gap:18px;position:sticky;top:14px;
-      max-height:calc(100vh - 28px);overflow-y:auto;overflow-x:hidden;padding-right:4px;}
+    .tabbar-wrap{display:none;}
+    .app{display:grid;grid-template-columns:360px minmax(0,1fr);gap:var(--space-lg);align-items:start;}
+    .app-side{display:flex;flex-direction:column;gap:var(--space-md);position:sticky;top:14px;
+      max-height:calc(100vh - 28px);overflow-y:auto;overflow-x:hidden;padding-right:var(--space-2xs);}
     .app-main{min-width:0;}
     .main-nav{display:flex;}
     .side-panel{display:block;}
@@ -168,74 +198,83 @@
     .main-panel.active{display:block;}
   }
   @media (max-width:980px){
-    .app-side > .panel{margin-bottom:16px;}
+    .app-side > .panel{margin-bottom:var(--space-md);}
     .main-nav{display:none;}
     .panel{display:none;}
     .panel.active{display:block;}
   }
 
   /* ---------- FORMULARIO ---------- */
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-sm);}
   @media (max-width:400px){.grid2{grid-template-columns:1fr;}}
-  label{display:block;font-size:10px;font-weight:700;color:var(--ink-var);margin-bottom:5px;
+  label{display:block;font-size:10px;font-weight:700;color:var(--ink-var);margin-bottom:var(--space-2xs);
     text-transform:uppercase;letter-spacing:0.05em;}
-  input[type=number],select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--outline);
+  input[type=number],select{width:100%;padding:var(--space-sm);border-radius:12px;border:1px solid var(--outline);
     font-size:14px;background:var(--surface-lowest);color:var(--ink);font-family:var(--font-body);}
   input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft);}
   select option{background:var(--surface-low);color:var(--ink);}
-  .field{margin-bottom:12px;}
-  .gender-toggle{display:flex;gap:8px;}
-  .gender-toggle button{flex:1;padding:12px;border-radius:12px;border:1px solid var(--outline);
+  .field{margin-bottom:var(--space-sm);}
+  .gender-toggle{display:flex;gap:var(--space-xs);}
+  .gender-toggle button{flex:1;padding:var(--space-sm);border-radius:12px;border:1px solid var(--outline);
     background:var(--surface-lowest);cursor:pointer;font-size:13px;font-weight:600;color:var(--ink-var);
-    transition:background .15s ease,border-color .15s ease,color .15s ease;}
+    transition:background .15s ease,border-color .15s ease,color .15s ease,transform .1s ease;}
   .gender-toggle button.active{background:var(--primary);border-color:var(--primary);color:var(--on-primary);}
+  .gender-toggle button:active{transform:scale(0.97);}
   /* Selector de objetivo (primer paso de la calculadora) */
-  .goal-toggle{display:flex;flex-direction:column;gap:8px;}
+  .goal-toggle{display:flex;flex-direction:column;gap:var(--space-xs);}
   .goal-opt{display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-2xs);text-align:left;
     padding:var(--space-sm);border:1px solid var(--outline);border-radius:12px;background:var(--surface-lowest);cursor:pointer;
-    transition:border-color .15s ease,background .15s ease,box-shadow .15s ease;font-family:inherit;}
+    transition:border-color .15s ease,background .15s ease,box-shadow .15s ease,transform .1s ease;font-family:inherit;}
+  .goal-opt:active{transform:scale(0.98);}
   .goal-opt:hover{border-color:var(--primary-line);}
-  .goal-opt.active{border-color:var(--primary-line);background:var(--container-high);box-shadow:inset 3px 0 0 var(--primary);}
+  .goal-opt.active{border-color:var(--primary-line);background:var(--container-high);box-shadow:inset 3px 0 0 var(--primary), var(--glow-primary);}
   .goal-opt .goal-t{font-weight:700;font-size:13px;color:var(--ink);}
   .goal-opt .goal-d{font-size:11.5px;color:var(--ink-var);line-height:1.4;}
   .goal-opt.active .goal-t{color:var(--primary-bright);}
   /* Badges de objetivo con color propio */
-  .goal-opt[data-goal="bajar"].active{border-color:var(--goal-bajar);background:var(--goal-bajar-bg);box-shadow:inset 3px 0 0 var(--goal-bajar);}
+  .goal-opt[data-goal="bajar"].active{border-color:var(--goal-bajar);background:var(--goal-bajar-bg);
+    box-shadow:inset 3px 0 0 var(--goal-bajar), 0 6px 20px -10px color-mix(in srgb, var(--goal-bajar) 50%, transparent);}
   .goal-opt[data-goal="bajar"].active .goal-t{color:var(--goal-bajar);}
-  .goal-opt[data-goal="subir"].active{border-color:var(--goal-subir);background:var(--goal-subir-bg);box-shadow:inset 3px 0 0 var(--goal-subir);}
+  .goal-opt[data-goal="subir"].active{border-color:var(--goal-subir);background:var(--goal-subir-bg);
+    box-shadow:inset 3px 0 0 var(--goal-subir), 0 6px 20px -10px color-mix(in srgb, var(--goal-subir) 50%, transparent);}
   .goal-opt[data-goal="subir"].active .goal-t{color:var(--goal-subir);}
-  .goal-opt[data-goal="mantener"].active{border-color:var(--goal-manten);background:var(--goal-manten-bg);box-shadow:inset 3px 0 0 var(--goal-manten);}
+  .goal-opt[data-goal="mantener"].active{border-color:var(--goal-manten);background:var(--goal-manten-bg);
+    box-shadow:inset 3px 0 0 var(--goal-manten), 0 6px 20px -10px color-mix(in srgb, var(--goal-manten) 50%, transparent);}
   .goal-opt[data-goal="mantener"].active .goal-t{color:var(--goal-manten);}
-  #goal-explain{margin-top:10px;}
+  #goal-explain{margin-top:var(--space-xs);}
   /* Niveles de déficit: lima = suave, ámbar = medio, rosa = agresivo */
   .def-opt .goal-t{font-size:12.5px;}
-  .def-bajo.active{border-color:var(--goal-bajar);background:var(--goal-bajar-bg);box-shadow:inset 3px 0 0 var(--goal-bajar);}
+  .def-bajo.active{border-color:var(--goal-bajar);background:var(--goal-bajar-bg);
+    box-shadow:inset 3px 0 0 var(--goal-bajar), 0 6px 20px -10px color-mix(in srgb, var(--goal-bajar) 50%, transparent);}
   .def-bajo.active .goal-t{color:var(--goal-bajar);}
-  .def-medio.active{border-color:var(--goal-subir);background:var(--goal-subir-bg);box-shadow:inset 3px 0 0 var(--goal-subir);}
+  .def-medio.active{border-color:var(--goal-subir);background:var(--goal-subir-bg);
+    box-shadow:inset 3px 0 0 var(--goal-subir), 0 6px 20px -10px color-mix(in srgb, var(--goal-subir) 50%, transparent);}
   .def-medio.active .goal-t{color:var(--goal-subir);}
-  .def-alto.active{border-color:var(--danger);background:var(--prot-bg);box-shadow:inset 3px 0 0 var(--danger);}
+  .def-alto.active{border-color:var(--danger);background:var(--prot-bg);
+    box-shadow:inset 3px 0 0 var(--danger), 0 6px 20px -10px color-mix(in srgb, var(--danger) 50%, transparent);}
   .def-alto.active .goal-t{color:var(--danger);}
   .def-opt:hover{border-color:var(--primary-line);}
 
-  .btn-primary{margin-top:8px;width:100%;padding:14px 20px;border:none;border-radius:999px;background:var(--primary);
+  .btn-primary{margin-top:var(--space-xs);width:100%;padding:var(--space-sm) var(--space-lg);border:none;border-radius:999px;background:var(--primary);
     color:var(--on-primary);font-family:var(--font-head);font-size:15px;font-weight:700;letter-spacing:0.005em;
     cursor:pointer;box-shadow:0 10px 26px -8px rgba(34,197,94,0.5);
     transition:transform .12s ease,background .15s ease,box-shadow .15s ease;}
   .btn-primary:hover{background:var(--primary-bright);}
   .btn-primary:active{transform:scale(0.97);}
-  .btn-secondary{padding:11px 18px;border-radius:999px;border:1px solid var(--outline);background:var(--container-high);
-    color:var(--ink);font-weight:600;font-size:13px;cursor:pointer;transition:background .15s ease,border-color .15s ease;}
+  .btn-secondary{padding:var(--space-sm) var(--space-md);border-radius:999px;border:1px solid var(--outline);background:var(--container-high);
+    color:var(--ink);font-weight:600;font-size:13px;cursor:pointer;transition:background .15s ease,border-color .15s ease,transform .1s ease;}
+  .btn-secondary:active{transform:scale(0.97);}
   .btn-secondary:hover{background:var(--container-highest);border-color:var(--primary-line);}
   .btn-link{background:none;border:none;color:var(--ink-var);font-size:12px;font-weight:600;cursor:pointer;
-    text-decoration:underline;padding:8px 2px;}
+    text-decoration:underline;padding:var(--space-xs) var(--space-2xs);}
 
   /* ---------- RESULTADO ---------- */
-  #resultado{display:none;margin-top:16px;}
-  .result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
-  .stat{background:var(--surface-lowest);border-radius:12px;padding:12px 6px;text-align:center;
+  #resultado{display:none;margin-top:var(--space-md);}
+  .result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-xs);margin-bottom:var(--space-xs);}
+  .stat{background:var(--surface-lowest);border-radius:12px;padding:var(--space-sm) var(--space-2xs);text-align:center;
     border-bottom:2px solid transparent;}
   .stat .num{font-size:18px;color:var(--ink);}
-  .stat .label{font-size:10px;color:var(--ink-var);margin-top:3px;line-height:1.25;}
+  .stat .label{font-size:10px;color:var(--ink-var);margin-top:var(--space-2xs);line-height:1.25;}
   .stat.m-kcal{background:var(--kcal-bg);border-color:var(--kcal);} .stat.m-kcal .num{color:var(--kcal);}
   .stat.m-prot{background:var(--prot-bg);border-color:var(--prot);} .stat.m-prot .num{color:var(--prot);}
   .stat.m-carb{background:var(--carb-bg);border-color:var(--carb);} .stat.m-carb .num{color:var(--carb);}
@@ -243,7 +282,7 @@
   /* Anillo de progreso para "Kcal objetivo" (si el navegador soporta :has) */
   .result-grid:has(#r-target) .stat:has(#r-target){
     order:-1;grid-column:1 / -1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:2px;aspect-ratio:1;width:190px;max-width:100%;margin:2px auto 10px;border-radius:999px;border-bottom:none;
+    gap:var(--space-2xs);aspect-ratio:1;width:190px;max-width:100%;margin:var(--space-2xs) auto var(--space-xs);border-radius:999px;border-bottom:none;
     background:
       radial-gradient(closest-side, var(--container) 78%, transparent 79% 100%),
       conic-gradient(from 180deg, var(--primary) 0turn, var(--primary-bright) 0.82turn, var(--surface-bright) 0.82turn 1turn);
@@ -255,7 +294,7 @@
     border-radius:12px;padding:var(--space-sm);margin-top:var(--space-xs);}
 
   /* ---------- ANILLOS DE PROGRESO ---------- */
-  .rings{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+  .rings{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-xs);}
   @media (max-width:460px){.rings{grid-template-columns:repeat(2,1fr);}}
   .ring{position:relative;text-align:center;}
   .ring svg{width:100%;max-width:78px;height:auto;display:block;margin:0 auto;}
@@ -266,45 +305,50 @@
   .ring-mid{position:absolute;left:0;right:0;top:0;height:78px;display:flex;align-items:center;justify-content:center;
     font-size:15px;color:var(--ink);}
   @media (max-width:460px){.ring-mid{height:auto;top:22%;}}
-  .ring-cap{font-size:11px;font-weight:700;color:var(--ink);margin-top:2px;line-height:1.2;}
+  .ring-cap{font-size:11px;font-weight:700;color:var(--ink);margin-top:var(--space-2xs);line-height:1.2;}
   .ring-cap span{display:block;font-weight:400;color:var(--ink-var);font-size:10px;}
-  .midia-actions{margin:14px 0 4px;}
+  .midia-actions{margin:var(--space-sm) 0 var(--space-2xs);}
 
   /* ---------- MI DIA: lista ---------- */
-  .miday-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;
-    border:1px solid var(--outline-soft);background:var(--surface-lowest);border-radius:12px;margin-bottom:7px;font-size:13px;color:var(--ink);}
+  .miday-item{display:flex;justify-content:space-between;align-items:center;gap:var(--space-xs);padding:var(--space-xs) var(--space-sm);
+    border:1px solid var(--outline-soft);background:var(--surface-lowest);border-radius:12px;margin-bottom:var(--space-xs);font-size:13px;color:var(--ink);}
   .mi-macros{font-size:11px;color:var(--ink-var);}
   .rm-btn{border:none;background:var(--prot-bg);color:var(--prot);font-weight:700;border-radius:999px;
-    padding:5px 11px;cursor:pointer;font-size:11px;flex-shrink:0;transition:background .15s ease,color .15s ease;}
+    padding:var(--space-2xs) var(--space-sm);cursor:pointer;font-size:11px;flex-shrink:0;transition:background .15s ease,color .15s ease,transform .1s ease;}
+  .rm-btn:active{transform:scale(0.95);}
   .rm-btn:hover{background:var(--prot);color:var(--surface);}
 
   /* ---------- PLAN DE COMIDAS DEL DÍA (Mi día) ---------- */
-  .plan-meal-list{display:flex;flex-direction:column;gap:12px;margin-top:4px;}
-  .plan-meal{display:flex;gap:12px;background:var(--surface-lowest);border:1px solid var(--outline-soft);
-    border-radius:var(--radius);padding:12px;transition:border-color .15s ease,background .15s ease;}
+  .plan-meal-list{display:flex;flex-direction:column;gap:var(--space-sm);margin-top:var(--space-2xs);}
+  .plan-meal{display:flex;gap:var(--space-sm);background:var(--surface-lowest);border:1px solid var(--outline-soft);
+    border-radius:var(--radius);padding:var(--space-sm);transition:border-color .15s ease,background .15s ease;}
   .plan-meal.done{border-color:var(--primary-line);background:var(--primary-soft);}
   .plan-meal-media{width:96px;flex-shrink:0;}
   .plan-meal-body{min-width:0;flex:1;}
-  .plan-meal-top{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:6px;}
-  .plan-meal-body h4{margin:0 0 6px;font-size:14px;line-height:1.3;color:var(--ink);font-family:var(--font-head);
+  .plan-meal-top{display:flex;gap:var(--space-2xs);flex-wrap:wrap;align-items:center;margin-bottom:var(--space-2xs);}
+  .plan-meal-body h4{margin:0 0 var(--space-2xs);font-size:14px;line-height:1.3;color:var(--ink);font-family:var(--font-head);
     font-weight:700;letter-spacing:-0.01em;cursor:pointer;}
   .plan-meal-body h4:hover{color:var(--primary-bright);}
-  .plan-meal-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;flex-wrap:wrap;}
+  .plan-meal-actions{display:flex;align-items:center;justify-content:space-between;gap:var(--space-xs);margin-top:var(--space-xs);flex-wrap:wrap;}
   .check-btn{border:1px solid var(--outline);background:var(--container-high);color:var(--ink-var);font-weight:700;
     border-radius:999px;padding:var(--space-xs) var(--space-sm);cursor:pointer;font-size:12px;flex-shrink:0;
-    transition:background .15s ease,border-color .15s ease,color .15s ease;}
-  .check-btn.on{background:var(--primary);border-color:var(--primary);color:var(--on-primary);}
+    transition:background .15s ease,border-color .15s ease,color .15s ease,transform .1s ease;}
+  .check-btn.on{background:var(--primary);border-color:var(--primary);color:var(--on-primary);box-shadow:var(--glow-primary);
+    animation:checkPop .3s cubic-bezier(.34,1.56,.64,1);}
+  @keyframes checkPop{0%{transform:scale(0.85);}55%{transform:scale(1.1);}100%{transform:scale(1);}}
+  @media (prefers-reduced-motion:reduce){.check-btn.on{animation:none;}}
+  .check-btn:active{transform:scale(0.93);}
   .check-btn:disabled{opacity:.6;cursor:default;}
   @media (max-width:360px){.plan-meal{flex-direction:column;} .plan-meal-media{width:100%;}}
 
-  .day-summary{margin-top:16px;background:var(--container-high);border:1px solid var(--primary-line);
-    border-radius:var(--radius);padding:14px 16px;}
-  .day-summary ul{list-style:none;padding:0;margin:8px 0 0;}
-  .day-summary li{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--outline-soft);font-size:12.5px;}
+  .day-summary{margin-top:var(--space-md);background:var(--container-high);border:1px solid var(--primary-line);
+    border-radius:var(--radius);padding:var(--space-sm) var(--space-md);}
+  .day-summary ul{list-style:none;padding:0;margin:var(--space-xs) 0 0;}
+  .day-summary li{display:flex;justify-content:space-between;gap:var(--space-xs);padding:var(--space-2xs) 0;border-bottom:1px solid var(--outline-soft);font-size:12.5px;}
   .day-summary li:last-child{border-bottom:none;}
 
   /* ---------- FOTO DE PLATO (Wikimedia Commons, representativa por tipo) ---------- */
-  .rc-media{position:relative;border-radius:12px;overflow:hidden;margin-bottom:10px;background:var(--surface-lowest);}
+  .rc-media{position:relative;border-radius:12px;overflow:hidden;margin-bottom:var(--space-xs);background:var(--surface-lowest);}
   .rc-photo-img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;}
   .rc-media .rc-thumb-fallback{display:none;}
   .rc-media.foto-error .rc-photo-img{display:none;}
@@ -312,94 +356,102 @@
   .rc-media.foto-error{background:none;}
   .rc-media .rc-thumb-fallback .rc-thumb{margin:0;width:100%;}
   .rc-photo-tag{position:absolute;left:6px;bottom:6px;font-size:8.5px;font-weight:800;text-transform:uppercase;
-    letter-spacing:.4px;color:#fff;background:rgba(4,7,14,0.55);padding:2px 7px;border-radius:999px;
+    letter-spacing:.4px;color:#fff;background:rgba(4,7,14,0.55);padding:var(--space-2xs) var(--space-xs);border-radius:999px;
     backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
   .plan-meal-media .rc-media{margin-bottom:0;}
   .photo-credits{font-size:11px;color:var(--ink-var);line-height:1.7;}
   .photo-credits a{color:var(--ink-var);font-weight:500;text-decoration:underline;}
 
   /* ---------- FILTROS ---------- */
-  .filters{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
-  .filter-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;
+  .filters{display:flex;gap:var(--space-2xs);margin-bottom:var(--space-sm);flex-wrap:wrap;}
+  .filter-btn{display:inline-flex;align-items:center;gap:var(--space-2xs);padding:var(--space-xs) var(--space-sm);border-radius:999px;
     border:1px solid var(--outline-soft);background:var(--container);color:var(--ink-var);font-size:12.5px;font-weight:600;
-    cursor:pointer;transition:border-color .15s ease,background .15s ease,color .15s ease;}
+    cursor:pointer;transition:border-color .15s ease,background .15s ease,color .15s ease,transform .1s ease;}
+  .filter-btn:active{transform:scale(0.96);}
   .filter-btn:hover{border-color:var(--primary-line);}
-  .filter-btn.active{background:var(--primary-soft);border-color:var(--primary-line);color:var(--primary-bright);}
+  .filter-btn.active{background:var(--primary-soft);border-color:var(--primary-line);color:var(--primary-bright);box-shadow:var(--glow-primary);}
   .filter-btn .cat-icon{width:15px;height:15px;}
   .filter-btn.active .cat-icon{color:var(--primary-bright);}
   .filter-btn:hover .cat-icon{animation:cat-pop .5s ease both;}
 
   /* ---------- RECETARIO EN CUADRICULA ---------- */
-  .recipe-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .recipe-list{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-sm);}
   @media (max-width:1180px){.recipe-list{grid-template-columns:repeat(2,1fr);}}
   @media (max-width:620px){.recipe-list{grid-template-columns:1fr;}}
   .recipe-card{display:flex;flex-direction:column;height:100%;background:var(--container);border:1px solid var(--outline-soft);
-    border-radius:var(--radius);padding:15px;cursor:pointer;transition:box-shadow .15s ease,transform .15s ease,border-color .15s ease;}
+    border-radius:var(--radius);padding:var(--space-md);cursor:pointer;transition:box-shadow .15s ease,transform .15s ease,border-color .15s ease;}
   .recipe-card:hover{box-shadow:var(--shadow);transform:translateY(-3px);border-color:var(--primary-line);}
-  .rc-tags{margin-bottom:8px;display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
-  .recipe-card h4{margin:0 0 8px;font-size:15px;line-height:1.25;color:var(--ink);font-family:var(--font-head);
+  .rc-tags{margin-bottom:var(--space-xs);display:flex;gap:var(--space-2xs);flex-wrap:wrap;align-items:center;}
+  .recipe-card h4{margin:0 0 var(--space-xs);font-size:15px;line-height:1.25;color:var(--ink);font-family:var(--font-head);
     font-weight:700;letter-spacing:-0.01em;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em;}
-  .rc-macros{display:grid;grid-template-columns:1fr 1fr;gap:4px 8px;font-size:11.5px;color:var(--ink-var);margin-bottom:10px;}
-  .rc-macros .mc{display:flex;align-items:center;gap:4px;}
+  .rc-macros{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2xs) var(--space-xs);font-size:11.5px;color:var(--ink-var);margin-bottom:var(--space-xs);}
+  .rc-macros .mc{display:flex;align-items:center;gap:var(--space-2xs);}
   .rc-macros .mc::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--mc-c,var(--ink-var));flex-shrink:0;}
   .rc-macros .mc b{color:var(--mc-c,var(--ink));}
   .mc-kcal{--mc-c:var(--kcal);} .mc-prot{--mc-c:var(--prot);}
   .mc-carb{--mc-c:var(--carb);} .mc-fat{--mc-c:var(--fat);}
-  .rc-ings{margin:0 0 10px;padding-left:16px;font-size:11.5px;color:var(--ink-var);line-height:1.5;}
-  .rc-ings li{margin:1px 0;}
+  .rc-ings{margin:0 0 var(--space-xs);padding-left:var(--space-md);font-size:11.5px;color:var(--ink-var);line-height:1.5;}
+  .rc-ings li{margin:var(--space-2xs) 0;}
 
   /* ---------- ETIQUETAS ---------- */
   .tag{display:inline-block;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;
-    color:var(--primary-bright);background:var(--primary-soft);padding:3px 9px;border-radius:999px;}
+    color:var(--primary-bright);background:var(--primary-soft);padding:var(--space-2xs) var(--space-xs);border-radius:999px;}
   .tag.veg{color:var(--surface);background:var(--veg);}
   .tag.vegan{color:var(--surface);background:var(--vegan);}
   .tag.vol{color:var(--on-primary);background:var(--primary);}
 
   /* ---------- MODALES ---------- */
-  .modal-bg{position:fixed;inset:0;background:rgba(4,7,14,0.72);z-index:120;display:none;
-    align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);}
-  .modal-bg.open{display:flex;}
+  .modal-bg{position:fixed;inset:0;background:rgba(4,7,14,0.72);z-index:120;display:flex;
+    align-items:center;justify-content:center;padding:var(--space-md);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+    opacity:0;visibility:hidden;pointer-events:none;transition:opacity .2s ease,visibility .2s ease;}
+  .modal-bg.open{opacity:1;visibility:visible;pointer-events:auto;}
+  .modal-bg .modal-card{transform:scale(0.96) translateY(8px);opacity:0;
+    transition:transform .22s cubic-bezier(.22,.61,.36,1),opacity .2s ease;}
+  .modal-bg.open .modal-card{transform:scale(1) translateY(0);opacity:1;}
+  @media (prefers-reduced-motion:reduce){
+    .modal-bg,.modal-bg .modal-card{transition:none;}
+  }
   .modal-card{background:var(--container-high);border:1px solid var(--outline);border-radius:var(--radius);padding:var(--space-lg);max-width:420px;width:100%;
     text-align:center;box-shadow:var(--shadow-lg);position:relative;max-height:90vh;overflow-y:auto;color:var(--ink);}
   .modal-card.receta{max-width:520px;text-align:left;}
   .modal-x{position:absolute;right:10px;top:10px;border:none;background:var(--surface-lowest);color:var(--ink-var);
     width:30px;height:30px;border-radius:50%;font-weight:800;cursor:pointer;font-size:13px;transition:background .15s ease,color .15s ease;}
   .modal-x:hover{background:var(--primary);color:var(--on-primary);}
-  .modal-card h3{margin:0 0 10px;font-size:18px;letter-spacing:-0.01em;color:var(--ink);}
-  .modal-card h5{margin:12px 0 5px;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--ink-var);}
-  .modal-card ul,.modal-card ol{margin:0;padding-left:18px;font-size:13.5px;color:var(--ink-var);}
-  .modal-card .macros{display:flex;gap:8px 12px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-var);margin:10px 0;}
-  .modal-card .macros .mc{display:flex;align-items:center;gap:5px;}
+  .modal-card h3{margin:0 0 var(--space-xs);font-size:18px;letter-spacing:-0.01em;color:var(--ink);}
+  .modal-card h5{margin:var(--space-sm) 0 var(--space-2xs);font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--ink-var);}
+  .modal-card ul,.modal-card ol{margin:0;padding-left:var(--space-md);font-size:13.5px;color:var(--ink-var);}
+  .modal-card .macros{display:flex;gap:var(--space-xs) var(--space-sm);flex-wrap:wrap;font-size:12.5px;color:var(--ink-var);margin:var(--space-xs) 0;}
+  .modal-card .macros .mc{display:flex;align-items:center;gap:var(--space-2xs);}
   .modal-card .macros .mc::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--mc-c,var(--ink-var));}
   .modal-card .macros .mc b{color:var(--mc-c,var(--ink));}
   .modal-card .macros b{color:var(--ink);}
   .ing-hint{font-weight:400;color:var(--ink-var);font-size:11.5px;}
-  .modal-card ul.ing-list{list-style:none;padding:0;margin:8px 0;}
-  .modal-card ul.ing-list li{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
-    padding:6px 0;border-bottom:1px solid var(--outline-soft);font-size:12.5px;}
+  .modal-card ul.ing-list{list-style:none;padding:0;margin:var(--space-xs) 0;}
+  .modal-card ul.ing-list li{display:flex;justify-content:space-between;gap:var(--space-xs);flex-wrap:wrap;
+    padding:var(--space-2xs) 0;border-bottom:1px solid var(--outline-soft);font-size:12.5px;}
   .modal-card ul.ing-list li:last-child{border-bottom:none;}
   .ing-name{color:var(--ink);}
   .ing-macros{color:var(--ink-var);font-size:11.5px;white-space:nowrap;}
-  .modal-head{display:flex;align-items:flex-start;gap:12px;}
-  .modal-head .cat-icon{width:40px;height:40px;flex-shrink:0;margin-top:2px;}
+  .modal-head{display:flex;align-items:flex-start;gap:var(--space-sm);}
+  .modal-head .cat-icon{width:40px;height:40px;flex-shrink:0;margin-top:var(--space-2xs);}
   .modal-head h3{margin:0;}
   .modal-card canvas{width:100%;max-width:360px;border-radius:12px;border:1px solid var(--outline);}
-  .modal-actions{display:flex;gap:10px;margin-top:14px;}
+  .modal-actions{display:flex;gap:var(--space-xs);margin-top:var(--space-sm);}
   .modal-actions button{flex:1;}
 
   /* ---------- TRACKER 90 DIAS ---------- */
-  .bar-track{height:12px;border-radius:999px;background:rgba(255,255,255,0.08);overflow:hidden;margin-top:6px;}
+  .bar-track{height:12px;border-radius:999px;background:rgba(255,255,255,0.08);overflow:hidden;margin-top:var(--space-2xs);}
   .bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--primary),var(--primary-bright));transition:width .35s ease;width:0;}
   .bar-fill.over{background:var(--danger);}
-  .cal-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin:10px 0;}
+  .cal-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:var(--space-2xs);margin:var(--space-xs) 0;}
   @media (max-width:520px){.cal-grid{grid-template-columns:repeat(6,1fr);}}
   .cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border:1px solid var(--outline-soft);
     border-radius:8px;font-size:11px;font-weight:700;color:var(--ink-var);background:var(--surface-lowest);cursor:pointer;user-select:none;}
   .cal-day.done{background:var(--primary);border-color:var(--primary);color:var(--on-primary);}
 
   /* Calendario de 90 días: compacto, agrupado por semanas de 7 */
-  #cal-grid{display:flex;flex-wrap:wrap;gap:8px 10px;margin:10px 0;}
-  #cal-grid .cal-week{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;
+  #cal-grid{display:flex;flex-wrap:wrap;gap:var(--space-xs) var(--space-xs);margin:var(--space-xs) 0;}
+  #cal-grid .cal-week{display:grid;grid-template-columns:repeat(7,1fr);gap:var(--space-2xs);
     flex:0 0 auto;width:calc((100% - 4 * 10px) / 5);}
   @media (max-width:920px){#cal-grid .cal-week{width:calc((100% - 2 * 10px) / 3);}}
   @media (max-width:560px){#cal-grid .cal-week{width:calc((100% - 10px) / 2);}}
@@ -407,33 +459,34 @@
     border:1px solid var(--outline-soft);border-radius:5px;font-size:9.5px;font-weight:700;line-height:1;
     color:var(--ink-var);background:var(--surface-lowest);cursor:pointer;user-select:none;}
   #cal-grid .cal-day.done{background:var(--primary);border-color:var(--primary);color:var(--on-primary);}
-  .tracker-stat{display:flex;align-items:baseline;gap:8px;}
+  .tracker-stat{display:flex;align-items:baseline;gap:var(--space-xs);}
   .tracker-stat .big{font-size:30px;font-weight:800;color:var(--ink);
     font-family:var(--font-display);letter-spacing:-0.04em;}
-  .weight-form{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-top:8px;}
+  .weight-form{display:flex;gap:var(--space-xs);flex-wrap:wrap;align-items:flex-end;margin-top:var(--space-xs);}
   .weight-form .field{margin-bottom:0;flex:1;min-width:88px;}
-  .chart-box{margin-top:12px;border:1px solid var(--outline-soft);border-radius:12px;padding:10px;background:var(--surface-lowest);overflow-x:auto;}
-  .weight-list,.checkin-list{list-style:none;padding:0;margin:10px 0 0;font-size:12.5px;color:var(--ink-var);}
-  .weight-list li,.checkin-list li{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--outline-soft);}
-  .checkin-due{background:var(--carb-bg);border:1px solid rgba(255,186,97,0.3);border-radius:12px;padding:10px 12px;
-    margin-bottom:12px;font-size:12.5px;color:var(--carb);}
-  .checkin-ok{background:var(--primary-soft);border:1px solid var(--primary-line);border-radius:12px;padding:10px 12px;
-    margin-bottom:12px;font-size:12.5px;color:var(--primary-bright);}
-  .adjust-msg{background:var(--container-high);border-left:3px solid var(--primary);border-radius:12px;padding:12px 14px;
-    margin-top:12px;font-size:12.5px;color:var(--ink-var);}
+  .chart-box{margin-top:var(--space-sm);border:1px solid var(--outline-soft);border-radius:12px;padding:var(--space-xs);background:var(--surface-lowest);overflow-x:auto;}
+  .weight-list,.checkin-list{list-style:none;padding:0;margin:var(--space-xs) 0 0;font-size:12.5px;color:var(--ink-var);}
+  .weight-list li,.checkin-list li{display:flex;justify-content:space-between;gap:var(--space-xs);padding:var(--space-2xs) 0;border-bottom:1px solid var(--outline-soft);}
+  .checkin-due{background:var(--carb-bg);border:1px solid rgba(255,186,97,0.3);border-radius:12px;padding:var(--space-xs) var(--space-sm);
+    margin-bottom:var(--space-sm);font-size:12.5px;color:var(--carb);}
+  .checkin-ok{background:var(--primary-soft);border:1px solid var(--primary-line);border-radius:12px;padding:var(--space-xs) var(--space-sm);
+    margin-bottom:var(--space-sm);font-size:12.5px;color:var(--primary-bright);}
+  .adjust-msg{background:var(--container-high);border-left:3px solid var(--primary);border-radius:12px;padding:var(--space-sm) var(--space-sm);
+    margin-top:var(--space-sm);font-size:12.5px;color:var(--ink-var);}
 
   /* ---------- BATCH COOKING ---------- */
   .batch-card{background:var(--container);border:1px solid var(--outline-soft);border-left:3px solid var(--primary);
-    border-radius:12px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);}
-  .batch-card h4{margin:0 0 4px;font-size:14px;letter-spacing:-0.01em;color:var(--ink);}
-  .batch-meta{font-size:12px;color:var(--ink-var);margin-bottom:8px;}
-  .batch-card ul{margin:0;padding-left:16px;font-size:12.5px;color:var(--ink-var);}
-  .batch-tip{margin-top:8px;font-size:12px;color:var(--ink-var);background:var(--surface-lowest);border-radius:10px;padding:8px 10px;}
+    border-radius:12px;padding:var(--space-sm) var(--space-md);margin-bottom:var(--space-xs);box-shadow:var(--shadow);}
+  .batch-card h4{margin:0 0 var(--space-2xs);font-size:14px;letter-spacing:-0.01em;color:var(--ink);}
+  .batch-meta{font-size:12px;color:var(--ink-var);margin-bottom:var(--space-xs);}
+  .batch-card ul{margin:0;padding-left:var(--space-md);font-size:12.5px;color:var(--ink-var);}
+  .batch-tip{margin-top:var(--space-xs);font-size:12px;color:var(--ink-var);background:var(--surface-lowest);border-radius:10px;padding:var(--space-xs) var(--space-xs);}
 
   /* ---------- BOTONES FLOTANTES ---------- */
   .fab{position:fixed;right:var(--space-sm);bottom:var(--space-sm);z-index:50;background:var(--primary);color:var(--on-primary);border:none;
     border-radius:999px;padding:var(--space-sm) var(--space-lg);font-size:13px;font-weight:800;cursor:pointer;letter-spacing:0.01em;
-    box-shadow:0 14px 32px -6px rgba(34,197,94,0.55);display:none;}
+    box-shadow:0 14px 32px -6px rgba(34,197,94,0.55);display:none;transition:transform .1s ease;}
+  .fab:active{transform:scale(0.96);}
   .fab.show{display:block;}
   .help-fab{position:fixed;left:var(--space-sm);bottom:var(--space-sm);z-index:50;width:44px;height:44px;border-radius:50%;
     border:1px solid var(--outline);background:var(--container-high);color:var(--primary-bright);font-size:20px;font-weight:800;cursor:pointer;
@@ -442,7 +495,7 @@
 
   /* ---------- AVISO (toast) ---------- */
   .toast{position:fixed;left:50%;bottom:72px;transform:translateX(-50%) translateY(10px);background:var(--container-highest);
-    color:var(--ink);border:1px solid var(--outline);padding:10px 18px;border-radius:999px;font-size:13px;font-weight:600;z-index:130;opacity:0;
+    color:var(--ink);border:1px solid var(--outline);padding:var(--space-xs) var(--space-md);border-radius:999px;font-size:13px;font-weight:600;z-index:130;opacity:0;
     transition:opacity .2s ease,transform .2s ease;pointer-events:none;max-width:88vw;text-align:center;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
@@ -453,11 +506,11 @@
   .tour-spot{position:relative;z-index:1;border-radius:12px;
     box-shadow:0 0 0 3px var(--primary), 0 0 0 8px rgba(75,226,119,0.25);}
   .tour-tip{position:fixed;z-index:1001;display:none;max-width:300px;width:calc(100vw - 32px);
-    background:var(--container-high);border:1px solid var(--outline);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:16px;color:var(--ink);}
+    background:var(--container-high);border:1px solid var(--outline);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:var(--space-md);color:var(--ink);}
   .tour-progress{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--primary-bright);}
-  .tour-tip h4{margin:4px 0 6px;font-size:16px;letter-spacing:-0.01em;color:var(--ink);}
-  .tour-tip p{margin:0 0 12px;font-size:13px;color:var(--ink-var);}
-  .tour-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .tour-tip h4{margin:var(--space-2xs) 0 var(--space-2xs);font-size:16px;letter-spacing:-0.01em;color:var(--ink);}
+  .tour-tip p{margin:0 0 var(--space-sm);font-size:13px;color:var(--ink-var);}
+  .tour-actions{display:flex;align-items:center;justify-content:space-between;gap:var(--space-xs);}
 
   /* ---------- ICONOS DE CATEGORÍA (SVG interactivos) ---------- */
   .cat-icon{width:26px;height:26px;flex-shrink:0;color:var(--ink-var);
@@ -485,18 +538,18 @@
 
   /* ---------- BANDAS: "por qué funciona" y FAQ ---------- */
   .band{border-top:1px solid var(--outline-soft);}
-  .band-in{max-width:1180px;margin:0 auto;padding:52px 18px;}
-  .band h2{font-size:28px;margin:0 0 6px;letter-spacing:-0.02em;font-weight:800;color:var(--ink);}
-  .band-sub{color:var(--ink-var);font-size:14px;margin:0 0 26px;max-width:620px;}
+  .band-in{max-width:1180px;margin:0 auto;padding:var(--space-3xl) var(--space-md);}
+  .band h2{font-size:28px;margin:0 0 var(--space-2xs);letter-spacing:-0.02em;font-weight:800;color:var(--ink);}
+  .band-sub{color:var(--ink-var);font-size:14px;margin:0 0 var(--space-xl);max-width:620px;}
 
   .why{background:var(--surface-lowest);border-top:none;}
   .why h2{color:var(--ink);}
   .why .band-sub{color:var(--ink-var);}
-  .why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+  .why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--space-sm);}
   @media (max-width:900px){.why-grid{grid-template-columns:repeat(2,1fr);}}
   @media (max-width:560px){.why-grid{grid-template-columns:1fr;}}
-  .why-card{display:flex;gap:12px;align-items:flex-start;background:var(--container);border:1px solid var(--outline-soft);
-    border-radius:var(--radius);padding:18px;box-shadow:none;}
+  .why-card{display:flex;gap:var(--space-sm);align-items:flex-start;background:var(--container);border:1px solid var(--outline-soft);
+    border-radius:var(--radius);padding:var(--space-md);box-shadow:none;}
   .why-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;
     background:var(--primary-soft);color:var(--primary-bright);}
   .why-ic svg{width:21px;height:21px;}
@@ -506,16 +559,16 @@
 
   .faq{background:var(--surface);}
   .faq-list{max-width:760px;}
-  .faq-list details{border:1px solid var(--outline-soft);border-radius:12px;background:var(--container);margin-bottom:10px;overflow:hidden;}
-  .faq-list summary{list-style:none;cursor:pointer;padding:15px 16px;font-family:var(--font-head);font-weight:700;
-    font-size:15px;letter-spacing:-0.01em;color:var(--ink);display:flex;justify-content:space-between;align-items:center;gap:14px;}
+  .faq-list details{border:1px solid var(--outline-soft);border-radius:12px;background:var(--container);margin-bottom:var(--space-xs);overflow:hidden;}
+  .faq-list summary{list-style:none;cursor:pointer;padding:var(--space-md) var(--space-md);font-family:var(--font-head);font-weight:700;
+    font-size:15px;letter-spacing:-0.01em;color:var(--ink);display:flex;justify-content:space-between;align-items:center;gap:var(--space-sm);}
   .faq-list summary::-webkit-details-marker{display:none;}
   .faq-list summary::after{content:'';width:9px;height:9px;flex-shrink:0;
     border-right:2px solid var(--ink-var);border-bottom:2px solid var(--ink-var);
     transform:rotate(45deg);transition:transform .2s ease;}
   .faq-list details[open] summary::after{transform:rotate(225deg);}
   .faq-list details[open] summary{border-bottom:1px solid var(--outline-soft);}
-  .faq-list details p{margin:0;padding:14px 16px;font-size:13.5px;color:var(--ink-var);line-height:1.6;}
+  .faq-list details p{margin:0;padding:var(--space-sm) var(--space-md);font-size:13.5px;color:var(--ink-var);line-height:1.6;}
   @media (prefers-reduced-motion:no-preference){
     .faq-list details[open] p{animation:faq-in .22s ease;}
     @keyframes faq-in{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
@@ -524,34 +577,35 @@
   /* ---------- FLUJO: número de paso ---------- */
   .step-n{display:inline-flex;align-items:center;justify-content:center;width:23px;height:23px;border-radius:50%;
     background:var(--primary);color:var(--on-primary);font-family:var(--font-head);font-weight:800;font-size:13px;
-    margin-right:8px;vertical-align:2px;}
+    margin-right:var(--space-xs);vertical-align:2px;}
 
   /* ---------- NAV DEL ÁREA PRINCIPAL (escritorio) ---------- */
-  .main-nav{display:none;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
-  .main-nav button{padding:9px 16px;border-radius:999px;border:1px solid var(--outline-soft);background:var(--container);
+  .main-nav{display:none;gap:var(--space-2xs);margin-bottom:var(--space-sm);flex-wrap:wrap;}
+  .main-nav button{padding:var(--space-xs) var(--space-md);border-radius:999px;border:1px solid var(--outline-soft);background:var(--container);
     color:var(--ink-var);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body);
-    transition:border-color .15s ease,background .15s ease,color .15s ease;}
+    transition:border-color .15s ease,background .15s ease,color .15s ease,transform .1s ease;}
+  .main-nav button:active{transform:scale(0.97);}
   .main-nav button:hover{border-color:var(--primary-line);}
-  .main-nav button.active{background:var(--primary-soft);border-color:var(--primary-line);color:var(--primary-bright);}
+  .main-nav button.active{background:var(--primary-soft);border-color:var(--primary-line);color:var(--primary-bright);box-shadow:var(--glow-primary);}
 
   /* ---------- "VER MÁS" (secciones opcionales colapsables) ---------- */
-  details.more{border:1px solid var(--outline-soft);border-radius:12px;background:var(--surface-lowest);margin-top:14px;}
-  details.more > summary{cursor:pointer;list-style:none;padding:10px 12px;font-size:12.5px;font-weight:700;color:var(--ink-var);}
+  details.more{border:1px solid var(--outline-soft);border-radius:12px;background:var(--surface-lowest);margin-top:var(--space-sm);}
+  details.more > summary{cursor:pointer;list-style:none;padding:var(--space-xs) var(--space-sm);font-size:12.5px;font-weight:700;color:var(--ink-var);}
   details.more > summary::-webkit-details-marker{display:none;}
-  details.more > summary::before{content:'+';font-weight:800;margin-right:7px;color:var(--primary-bright);}
+  details.more > summary::before{content:'+';font-weight:800;margin-right:var(--space-xs);color:var(--primary-bright);}
   details.more[open] > summary::before{content:'\2013';}
   details.more > summary:hover{color:var(--ink);}
   details.more[open] > summary{border-bottom:1px solid var(--outline-soft);}
-  details.more .more-body{padding:12px;}
+  details.more .more-body{padding:var(--space-sm);}
   details.more.due > summary::after{content:' \00b7 toca hacerlo';color:var(--warn);font-weight:700;}
   [hidden]{display:none !important;}
 
   /* ---------- ILUSTRACIÓN DE RECETA ---------- */
-  .rc-thumb{height:76px;display:flex;align-items:center;justify-content:center;border-radius:12px;margin-bottom:10px;
+  .rc-thumb{height:76px;display:flex;align-items:center;justify-content:center;border-radius:12px;margin-bottom:var(--space-xs);
     background:var(--tb,var(--primary-soft));color:var(--tc,var(--primary-bright));}
   .rc-thumb svg{width:40px;height:40px;transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
   .recipe-card:hover .rc-thumb svg,.recipe-card:focus-visible .rc-thumb svg{transform:scale(1.12) rotate(-4deg);}
-  .modal-card .rc-thumb{height:104px;margin-bottom:12px;}
+  .modal-card .rc-thumb{height:104px;margin-bottom:var(--space-sm);}
   .modal-card .rc-thumb svg{width:54px;height:54px;}
   @media (prefers-reduced-motion:reduce){
     .rc-thumb svg{transition:none;}
@@ -559,40 +613,41 @@
   }
 
   /* ---------- MOVIMIENTO DIARIO ---------- */
-  .move-steps{background:var(--primary-soft);border:1px solid var(--primary-line);border-radius:12px;padding:14px 16px;margin-bottom:6px;}
+  .move-steps{background:var(--primary-soft);border:1px solid var(--primary-line);border-radius:12px;padding:var(--space-sm) var(--space-md);margin-bottom:var(--space-2xs);}
   .move-steps-label{display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--primary-bright);}
-  .move-steps-num{display:block;font-family:var(--font-head);font-weight:800;font-size:24px;color:var(--ink);margin:2px 0;letter-spacing:-0.02em;}
+  .move-steps-num{display:block;font-family:var(--font-head);font-weight:800;font-size:24px;color:var(--ink);margin:var(--space-2xs) 0;letter-spacing:-0.02em;}
   .move-steps-hint{display:block;font-size:12px;color:var(--ink-var);}
   #move-today-btn.done{background:var(--container-high);color:var(--primary-bright);box-shadow:none;border:1px solid var(--primary-line);}
-  .move-count{font-size:12.5px;color:var(--ink-var);margin-top:10px;}
+  .move-count{font-size:12.5px;color:var(--ink-var);margin-top:var(--space-xs);}
   .move-count b{color:var(--ink);}
-  .move-grid{grid-template-columns:repeat(7,1fr);margin-top:8px;}
+  .move-grid{grid-template-columns:repeat(7,1fr);margin-top:var(--space-xs);}
 
   /* Conversor de pasos a calorías */
-  .steps-conv{display:flex;flex-direction:column;gap:8px;margin-bottom:6px;}
+  .steps-conv{display:flex;flex-direction:column;gap:var(--space-xs);margin-bottom:var(--space-2xs);}
   .steps-conv input{max-width:220px;}
   .steps-out{font-size:12.5px;color:var(--ink-var);min-height:1.2em;line-height:1.5;}
   .steps-out b{font-family:var(--font-head);font-weight:800;font-size:19px;color:var(--primary-bright);letter-spacing:-0.02em;}
 
   /* Selector de día de la rutina */
-  .day-tabs{display:flex;gap:5px;margin:0 0 12px;flex-wrap:wrap;}
-  .day-tab{flex:1 1 auto;min-width:36px;padding:9px 4px;border-radius:10px;border:1px solid var(--outline-soft);
+  .day-tabs{display:flex;gap:var(--space-2xs);margin:0 0 var(--space-sm);flex-wrap:wrap;}
+  .day-tab{flex:1 1 auto;min-width:36px;padding:var(--space-xs) var(--space-2xs);border-radius:10px;border:1px solid var(--outline-soft);
     background:var(--surface-lowest);color:var(--ink-var);font-weight:800;font-size:12px;cursor:pointer;text-align:center;
-    transition:background .15s ease,border-color .15s ease,color .15s ease;}
+    transition:background .15s ease,border-color .15s ease,color .15s ease,transform .1s ease;}
   .day-tab:hover{border-color:var(--primary-line);}
-  .day-tab.active{background:var(--primary);border-color:var(--primary);color:var(--on-primary);}
+  .day-tab.active{background:var(--primary);border-color:var(--primary);color:var(--on-primary);box-shadow:var(--glow-primary);}
+  .day-tab:active{transform:scale(0.94);}
   .day-tab.rest{opacity:.6;}
   .day-tab.rest.active{background:var(--container-highest);border-color:var(--outline);color:var(--primary-bright);opacity:1;}
 
   .rutina-head{font-family:var(--font-head);font-weight:800;letter-spacing:-0.015em;
-    font-size:16px;color:var(--ink);margin:0 0 10px;}
+    font-size:16px;color:var(--ink);margin:0 0 var(--space-xs);}
   .rutina-head small{display:block;font-family:var(--font-body);font-weight:500;letter-spacing:0;
-    font-size:12px;color:var(--ink-var);margin-top:2px;}
+    font-size:12px;color:var(--ink-var);margin-top:var(--space-2xs);}
 
   /* Tarjeta de ejercicio (expandible) */
-  .ex-card{border:1px solid var(--outline-soft);border-radius:12px;background:var(--container);margin-bottom:8px;overflow:hidden;}
+  .ex-card{border:1px solid var(--outline-soft);border-radius:12px;background:var(--container);margin-bottom:var(--space-xs);overflow:hidden;}
   .ex-card > summary{list-style:none;cursor:pointer;padding:var(--space-sm);display:flex;align-items:center;
-    justify-content:space-between;gap:10px;}
+    justify-content:space-between;gap:var(--space-xs);}
   .ex-card > summary::-webkit-details-marker{display:none;}
   .ex-card > summary::after{content:'';width:8px;height:8px;flex-shrink:0;border-right:2px solid var(--ink-var);
     border-bottom:2px solid var(--ink-var);transform:rotate(45deg);transition:transform .2s ease;}
@@ -601,68 +656,68 @@
   .ex-sum-name{font-weight:700;font-size:13.5px;color:var(--ink);line-height:1.3;}
   .ex-sum-series{font-size:11.5px;font-weight:800;color:var(--primary-bright);white-space:nowrap;}
   .ex-body{padding:var(--space-sm);}
-  .ex-fig{width:100%;max-width:220px;height:auto;display:block;margin:0 auto 12px;color:var(--primary-bright);
-    background:var(--surface-lowest);border:1px solid var(--outline-soft);border-radius:12px;padding:10px;}
+  .ex-fig{width:100%;max-width:220px;height:auto;display:block;margin:0 auto var(--space-sm);color:var(--primary-bright);
+    background:var(--surface-lowest);border:1px solid var(--outline-soft);border-radius:12px;padding:var(--space-xs);}
   /* Fotos reales de la postura correcta (inicio / fin) */
-  .ex-photos{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 auto 12px;max-width:360px;}
+  .ex-photos{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-xs);margin:0 auto var(--space-sm);max-width:360px;}
   .ex-photos figure{margin:0;}
   .ex-photos img{width:100%;aspect-ratio:4 / 3;object-fit:cover;border-radius:12px;
     border:1px solid var(--outline-soft);background:var(--surface-lowest);display:block;}
   .ex-photos figcaption{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;
-    color:var(--ink-var);text-align:center;margin-top:5px;}
+    color:var(--ink-var);text-align:center;margin-top:var(--space-2xs);}
   @media (max-width:360px){.ex-photos{grid-template-columns:1fr;max-width:220px;}}
   .ex-meta{font-size:12.5px;color:var(--ink-var);line-height:1.7;}
   .ex-meta b{color:var(--ink);}
-  .ex-kcal{margin-top:8px;background:var(--primary-soft);border:1px solid var(--primary-line);border-radius:10px;padding:8px 10px;}
+  .ex-kcal{margin-top:var(--space-xs);background:var(--primary-soft);border:1px solid var(--primary-line);border-radius:10px;padding:var(--space-xs) var(--space-xs);}
   .ex-kcal .n{font-family:var(--font-head);font-weight:800;font-size:15px;color:var(--primary-bright);letter-spacing:-0.02em;}
-  .ex-kcal .aprox{display:block;font-size:11px;color:var(--ink-var);margin-top:2px;}
-  .day-total{margin-top:12px;background:var(--container-high);color:var(--ink);border:1px solid var(--outline-soft);border-radius:12px;padding:12px 14px;
-    display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .ex-kcal .aprox{display:block;font-size:11px;color:var(--ink-var);margin-top:var(--space-2xs);}
+  .day-total{margin-top:var(--space-sm);background:var(--container-high);color:var(--ink);border:1px solid var(--outline-soft);border-radius:12px;padding:var(--space-sm) var(--space-sm);
+    display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-xs);flex-wrap:wrap;}
   .day-total .n{font-family:var(--font-head);font-weight:800;font-size:22px;color:var(--primary-bright);letter-spacing:-0.02em;}
   .rest-day{background:var(--container-high);color:var(--ink);border:1px solid var(--outline-soft);border-radius:12px;padding:var(--space-lg) var(--space-md);text-align:center;}
   .rest-day .big{font-family:var(--font-head);font-weight:800;letter-spacing:-0.015em;
-    font-size:18px;color:var(--primary-bright);display:block;margin-bottom:5px;}
+    font-size:18px;color:var(--primary-bright);display:block;margin-bottom:var(--space-2xs);}
   .rest-day p{margin:0;font-size:12.5px;color:var(--ink-var);line-height:1.55;}
   .move-need-weight{font-size:12px;color:var(--ink-var);background:var(--surface-lowest);border:1px solid var(--outline-soft);
-    border-radius:10px;padding:8px 10px;margin-bottom:8px;}
+    border-radius:10px;padding:var(--space-xs) var(--space-xs);margin-bottom:var(--space-xs);}
 
   /* ---------- GENERADOR DE RECETAS CON IA ---------- */
-  .ia-box{border:1px solid var(--outline-soft);border-radius:var(--radius);padding:16px;margin-bottom:16px;
+  .ia-box{border:1px solid var(--outline-soft);border-radius:var(--radius);padding:var(--space-md);margin-bottom:var(--space-md);
     background:var(--container);}
-  .ia-box > h3{margin:0 0 4px;font-size:15px;letter-spacing:-0.01em;color:var(--ink);}
-  .ia-box .section-sub{margin-bottom:10px;}
-  .ia-input-row{display:flex;gap:8px;margin-bottom:10px;}
+  .ia-box > h3{margin:0 0 var(--space-2xs);font-size:15px;letter-spacing:-0.01em;color:var(--ink);}
+  .ia-box .section-sub{margin-bottom:var(--space-xs);}
+  .ia-input-row{display:flex;gap:var(--space-xs);margin-bottom:var(--space-xs);}
   .ia-input-row input{flex:1;min-width:0;}
-  .ia-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
-  .ia-chip{font-size:12px;font-weight:600;border-radius:999px;padding:6px 11px;cursor:pointer;user-select:none;
+  .ia-chips{display:flex;flex-wrap:wrap;gap:var(--space-2xs);margin-bottom:var(--space-sm);}
+  .ia-chip{font-size:12px;font-weight:600;border-radius:999px;padding:var(--space-2xs) var(--space-sm);cursor:pointer;user-select:none;
     border:1px solid var(--outline-soft);background:var(--surface-lowest);color:var(--ink-var);}
   .ia-chip:hover{border-color:var(--primary-line);}
   .ia-chip.on{background:var(--primary);border-color:var(--primary);color:var(--on-primary);}
   .ia-chip.on b{font-weight:800;opacity:.7;}
   .ia-box #ia-generar{margin-top:0;}
-  .ia-turnstile{margin-bottom:10px;}
+  .ia-turnstile{margin-bottom:var(--space-xs);}
   .ia-turnstile:empty{margin:0;}
   .tag.tag-ia{background:var(--carb-bg);color:var(--carb);}
-  .ia-msg{font-size:12.5px;border-radius:10px;padding:10px 12px;margin-top:10px;
+  .ia-msg{font-size:12.5px;border-radius:10px;padding:var(--space-xs) var(--space-sm);margin-top:var(--space-xs);
     background:var(--primary-soft);color:var(--primary-bright);}
   .ia-msg.ia-error{background:var(--prot-bg);color:var(--prot);}
   .ia-msg.ia-ok{background:var(--primary-soft);color:var(--primary-bright);}
   .ia-msg.ia-limit{background:var(--carb-bg);color:var(--carb);font-weight:600;}
-  .ia-msg code{background:rgba(255,255,255,0.08);border-radius:4px;padding:1px 5px;font-size:11.5px;}
-  .ia-loading::after{content:'';display:inline-block;width:9px;height:9px;margin-left:7px;vertical-align:-1px;
+  .ia-msg code{background:rgba(255,255,255,0.08);border-radius:4px;padding:var(--space-2xs) var(--space-2xs);font-size:11.5px;}
+  .ia-loading::after{content:'';display:inline-block;width:9px;height:9px;margin-left:var(--space-xs);vertical-align:-1px;
     border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:ia-spin .7s linear infinite;}
   @keyframes ia-spin{to{transform:rotate(360deg);}}
   @media (prefers-reduced-motion:reduce){.ia-loading::after{animation:none;}}
-  #ia-resultado:not(:empty){margin-top:14px;max-width:320px;}
+  #ia-resultado:not(:empty){margin-top:var(--space-sm);max-width:320px;}
 
   /* ---------- PIE ---------- */
-  footer{background:var(--surface-lowest);color:var(--ink-var);text-align:center;padding:28px 18px;font-size:12px;
+  footer{background:var(--surface-lowest);color:var(--ink-var);text-align:center;padding:var(--space-xl) var(--space-md);font-size:12px;
     border-top:1px solid var(--outline-soft);}
   footer strong{color:var(--primary-bright);}
-  .disclaimer{max-width:640px;margin:8px auto 0;opacity:0.85;}
+  .disclaimer{max-width:640px;margin:var(--space-xs) auto 0;opacity:0.85;}
 
   /* ---------- ICONOS DE LÍNEA (nav/selectores) — reemplazan emojis de UI ---------- */
-  .ui-icon{width:16px;height:16px;flex-shrink:0;vertical-align:-3px;margin-right:5px;color:currentColor;}
+  .ui-icon{width:16px;height:16px;flex-shrink:0;vertical-align:-3px;margin-right:var(--space-2xs);color:currentColor;}
   .goal-opt .ui-icon,.def-opt .ui-icon{width:15px;height:15px;vertical-align:-2.5px;}
   .fab .ui-icon,.btn-secondary .ui-icon{width:15px;height:15px;vertical-align:-2.5px;}
 
@@ -682,6 +737,19 @@
   @media (max-width:460px){
     .rings .ring.hero-ring .ring-mid{height:auto;top:26%;}
   }
+
+  /* Tarjeta hero genérica: para el número/elemento más importante de cada
+     pantalla (ej. días completados en Progreso), mismo lenguaje visual
+     que el anillo hero — degradado radial + halo verde ambiental sutil. */
+  .hero-card{
+    background:radial-gradient(circle at 30% 20%, var(--primary-soft), transparent 70%);
+    border:1px solid var(--primary-line);
+    border-radius:var(--radius);
+    padding:var(--space-lg) var(--space-md);
+    margin-bottom:var(--space-md);
+    box-shadow:0 0 0 1px rgba(75,226,119,0.05), 0 12px 32px -16px rgba(34,197,94,0.35);
+  }
+  .hero-card .tracker-stat{margin-bottom:var(--space-xs);}
 
   /* ---------- ESTADO VACÍO ---------- */
   .empty-state{text-align:center;padding:var(--space-xl) var(--space-md);color:var(--ink-var);}
@@ -725,12 +793,16 @@
 </header>
 
 <!-- PESTAÑAS (celular) -->
+<div class="tabbar-wrap" id="tabbar-wrap">
 <nav class="tabbar" id="tabbar">
-  <button class="tab-btn active" data-tab="calculadora" onclick="setTab('calculadora')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1Z"/><rect x="5" y="6" width="14" height="15" rx="2"/><path d="M9 12h6M9 16h6"/></svg>Mi plan</button>
-  <button class="tab-btn" data-tab="midia" onclick="setTab('midia')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v6a2.2 2.2 0 0 0 4.4 0V3"/><path d="M8.2 11v10"/><path d="M17 3c-1.6 0-2.8 2-2.8 5s1.2 4.6 2.8 4.6"/><path d="M17 3v18"/></svg>Mi día</button>
-  <button class="tab-btn" data-tab="progreso" onclick="setTab('progreso')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8.5 15l2.5 2.5 4.5-5"/></svg>Progreso</button>
-  <button class="tab-btn" data-tab="movimiento" onclick="setTab('movimiento')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2-7 4 14 2-7h6"/></svg>Movimiento</button>
+  <button class="tab-btn active" data-tab="calculadora" onclick="setTab('calculadora')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1Z"/><rect x="5" y="6" width="14" height="15" rx="2"/><path d="M9 12h6M9 16h6"/></svg><span class="tab-label-full">Mi plan</span><span class="tab-label-short">Mi plan</span></button>
+  <button class="tab-btn" data-tab="midia" onclick="setTab('midia')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v6a2.2 2.2 0 0 0 4.4 0V3"/><path d="M8.2 11v10"/><path d="M17 3c-1.6 0-2.8 2-2.8 5s1.2 4.6 2.8 4.6"/><path d="M17 3v18"/></svg><span class="tab-label-full">Mi día</span><span class="tab-label-short">Mi día</span></button>
+  <button class="tab-btn" data-tab="progreso" onclick="setTab('progreso')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8.5 15l2.5 2.5 4.5-5"/></svg><span class="tab-label-full">Progreso</span><span class="tab-label-short">Progreso</span></button>
+  <button class="tab-btn" data-tab="movimiento" onclick="setTab('movimiento')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2-7 4 14 2-7h6"/></svg><span class="tab-label-full">Movimiento</span><span class="tab-label-short">Movim.</span></button>
 </nav>
+<div class="tabbar-fade tabbar-fade-l" aria-hidden="true"></div>
+<div class="tabbar-fade tabbar-fade-r" aria-hidden="true"></div>
+</div>
 
 <div class="app">
   <aside class="app-side">
@@ -823,10 +895,10 @@
     <section class="panel side-panel" data-panel="midia" id="panel-midia">
       <h2><span class="step-n">2</span> Tu día</h2>
       <p class="hint">Tu plan de comidas se genera solo al calcular tu plan y no cambia: marca cada comida cuando te la comas.</p>
-      <div id="plan-dia"><p class="section-sub" style="margin-top:10px;">Calcula tu plan (paso 1) para generar tu menú de 90 días.</p></div>
+      <div id="plan-dia"><p class="section-sub" style="margin-top:var(--space-xs);">Calcula tu plan (paso 1) para generar tu menú de 90 días.</p></div>
       <h3>Tu progreso de hoy</h3>
       <div id="mi-dia-bars"></div>
-      <button class="btn-secondary" style="width:100%;margin-top:14px;" onclick="setTab('recetario')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v17H6.5A2.5 2.5 0 0 0 4 22Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v17h5.5a2.5 2.5 0 0 1 2.5 2Z"/></svg>Ver todas las recetas</button>
+      <button class="btn-secondary" style="width:100%;margin-top:var(--space-sm);" onclick="setTab('recetario')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v17H6.5A2.5 2.5 0 0 0 4 22Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v17h5.5a2.5 2.5 0 0 1 2.5 2Z"/></svg>Ver todas las recetas</button>
     </section>
 
   </aside>
@@ -879,8 +951,10 @@
     <section class="panel main-panel active" data-panel="progreso" id="panel-progreso">
       <h2>Progreso 90 días</h2>
       <p class="hint">Marca cada día que cumpliste tu plan. Se guarda en tu navegador.</p>
-      <div class="tracker-stat"><span class="big" id="dias-count">0</span><span>de 90 días completados</span></div>
-      <div class="bar-track"><div class="bar-fill" id="dias-bar"></div></div>
+      <div class="hero-card">
+        <div class="tracker-stat"><span class="big" id="dias-count">0</span><span>de 90 días completados</span></div>
+        <div class="bar-track"><div class="bar-fill" id="dias-bar"></div></div>
+      </div>
       <div class="cal-grid" id="cal-grid"></div>
       <button class="btn-link" onclick="resetTracker()">Reiniciar calendario</button>
 
@@ -1775,17 +1849,24 @@ RECETAS.forEach(r => {
   r.grasa = Math.round(t.grasa);
 });
 
+// Escapa texto no confiable (ingredientes escritos por el usuario, y nombre/
+// ingredientes/pasos que devuelve el generador de recetas con IA) antes de
+// insertarlo con innerHTML, para evitar XSS.
+function esc(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
 // ---------- Helpers para mostrar ingredientes ----------
 // Las recetas del recetario traen ingredientes estructurados { n, g, ... };
 // las generadas con IA los traen como texto libre. Estas funciones aceptan ambos.
 function ingNombre(i){ return typeof i === 'string' ? i : i.n; }
 function ingTexto(i){
-  if(typeof i === 'string') return i;
-  if(i.g == null) return i.n;
-  return (i.kcal === 0 && i.g <= 8) ? `${i.n} — al gusto` : `${i.n} — ${i.g} g`;
+  if(typeof i === 'string') return esc(i);
+  if(i.g == null) return esc(i.n);
+  return (i.kcal === 0 && i.g <= 8) ? `${esc(i.n)} — al gusto` : `${esc(i.n)} — ${i.g} g`;
 }
 function ingItemHTML(i){
-  if(typeof i === 'string') return `<li>${i}</li>`;
+  if(typeof i === 'string') return `<li>${esc(i)}</li>`;
   const hayMacros = i.kcal || i.proteina || i.carbos || i.grasa;
   const macros = hayMacros
     ? `<span class="ing-macros">${i.kcal} kcal · ${i.proteina} P · ${i.carbos} C · ${i.grasa} G</span>` : '';
@@ -1922,8 +2003,11 @@ function computePlan(d){
   // Proteína: 2.0 g/kg de peso corporal
   const proteinaG = Math.round(peso * 2.0);
   const proteinaKcal = proteinaG * 4;
-  // Grasa: ~25% de las calorías objetivo
-  const grasaG = Math.round((target * 0.25) / 9);
+  // Grasa: ~25% de las calorías objetivo, pero nunca más de lo que queda
+  // después de la proteína (casos extremos: peso muy alto + déficit muy agresivo,
+  // donde 2 g/kg de proteína por sí solo ya se acerca al objetivo calórico).
+  const grasaGDeseada = Math.round((target * 0.25) / 9);
+  const grasaG = Math.max(0, Math.min(grasaGDeseada, Math.round((target - proteinaKcal) / 9)));
   // Carbohidratos: el resto
   const carbosG = Math.round(Math.max(target - proteinaKcal - grasaG*9, 0) / 4);
 
@@ -1995,6 +2079,18 @@ function calcular(){
 
   if(!nuevosDatos.peso || !nuevosDatos.altura || !nuevosDatos.edad || !genero){
     alert('Por favor completa peso, estatura, edad y selecciona tu sexo antes de calcular.');
+    return;
+  }
+  if(nuevosDatos.peso < 30 || nuevosDatos.peso > 300){
+    alert('Ingresa un peso válido en kg (entre 30 y 300).');
+    return;
+  }
+  if(nuevosDatos.altura < 120 || nuevosDatos.altura > 230){
+    alert('Ingresa una estatura válida en cm (entre 120 y 230).');
+    return;
+  }
+  if(nuevosDatos.edad < 14 || nuevosDatos.edad > 90){
+    alert('Ingresa una edad válida en años (entre 14 y 90).');
     return;
   }
 
@@ -2233,11 +2329,11 @@ const TIPO_FOTO = {
   huevo:    {file:'Omelette on a plate.jpg', artist:'Infrogmation of New Orleans', license:'CC BY 2.0', page:'https://commons.wikimedia.org/wiki/File:Omelette_on_a_plate.jpg'},
   pollo:    {file:'Pesto Chicken and Grilled Zucchini.jpg', artist:'Infrogmation of New Orleans', license:'CC BY-SA 4.0', page:'https://commons.wikimedia.org/wiki/File:Pesto_Chicken_and_Grilled_Zucchini.jpg'},
   pescado:  {file:'Liat Portal for Foodie Disorder - Grilled salmon with sweet potatoes.jpg', artist:'HaJunkiyada', license:'CC BY-SA 4.0', page:'https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Grilled_salmon_with_sweet_potatoes.jpg'},
-  carne:    {file:'Beef steak of the set of dinner.jpg', artist:'Geoffreyrabbit', license:'CC BY-SA 4.0', page:'https://commons.wikimedia.org/wiki/File:Beef_steak_of_the_set_of_dinner.jpg'},
+  carne:    {file:'Ribeye Steak on Sizzling Plate.jpg', artist:'Ceeseven', license:'CC BY-SA 4.0', page:'https://commons.wikimedia.org/wiki/File:Ribeye_Steak_on_Sizzling_Plate.jpg'},
   batido:   {file:'Fresh fruit smoothie being poured into a glass.jpg', artist:'Shixart1985', license:'CC BY 2.0', page:'https://commons.wikimedia.org/wiki/File:Fresh_fruit_smoothie_being_poured_into_a_glass.jpg'},
   lacteo:   {file:'Yogurt fruit bowl.jpg', artist:'Jumbocombo0811', license:'CC BY-SA 4.0', page:'https://commons.wikimedia.org/wiki/File:Yogurt_fruit_bowl.jpg'},
   avena:    {file:'Banana Oatmeal Breakfast Bowl (44302857265).jpg', artist:'Ella Olsson', license:'CC BY 2.0', page:'https://commons.wikimedia.org/wiki/File:Banana_Oatmeal_Breakfast_Bowl_(44302857265).jpg'},
-  tofu:     {file:'Crispy Tofu - Stir Fry by CK 2025-04-06.jpg', artist:'Andy Li', license:'CC0', page:'https://commons.wikimedia.org/wiki/File:Crispy_Tofu_-_Stir_Fry_by_CK_2025-04-06.jpg'},
+  tofu:     {file:'Salt and Pepper Tofu - close-up - Little Beijing AUD15.80 (4713832191).jpg', artist:'Alpha from Melbourne, Australia', license:'CC BY-SA 2.0', page:'https://commons.wikimedia.org/wiki/File:Salt_and_Pepper_Tofu_-_close-up_-_Little_Beijing_AUD15.80_(4713832191).jpg'},
   ensalada: {file:'Liat Portal for Foodie Disorder - Chopped vegetable salad preparation.jpg', artist:'HaJunkiyada', license:'CC BY-SA 4.0', page:'https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Chopped_vegetable_salad_preparation.jpg'},
   legumbre: {file:'Liat Portal for Foodie Disorder - Cooked Lentils with Caramelized Onions.jpg', artist:'HaJunkiyada', license:'CC BY-SA 4.0', page:'https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Cooked_Lentils_with_Caramelized_Onions.jpg'},
   wrap:     {file:'Mix Gyros (Chicken & Pork) Pitta Wrap - Montague Gyros 2025-12-06.jpg', artist:'Andy Li', license:'CC0', page:'https://commons.wikimedia.org/wiki/File:Mix_Gyros_(Chicken_%26_Pork)_Pitta_Wrap_-_Montague_Gyros_2025-12-06.jpg'},
@@ -2254,7 +2350,7 @@ function recetaMediaHTML(r){
   const info = fotoTipoInfo(r);
   const url = fotoTipoURL(info);
   return `<div class="rc-media">
-    <img class="rc-photo-img" src="${url}" alt="${r.nombre}" loading="lazy" decoding="async"
+    <img class="rc-photo-img" src="${url}" alt="${esc(r.nombre)}" loading="lazy" decoding="async"
          onerror="this.parentElement.classList.add('foto-error');">
     <div class="rc-thumb-fallback">${recetaThumb(r)}</div>
     <span class="rc-photo-tag">Foto ilustrativa</span>
@@ -2264,9 +2360,9 @@ function recetaMediaHTML(r){
 function renderCreditosFotos(){
   const panel = document.getElementById('credits-panel');
   if(!panel) return;
-  panel.innerHTML = `<div class="note" style="margin:0 0 10px;">Las fotos de los platos son representativas del tipo de comida (no son fotos exactas de cada receta). Vienen de Wikimedia Commons con licencia abierta.</div>
+  panel.innerHTML = `<div class="note" style="margin:0 0 var(--space-xs);">Las fotos de los platos son representativas del tipo de comida (no son fotos exactas de cada receta). Vienen de Wikimedia Commons con licencia abierta.</div>
   <ul class="photo-credits" style="list-style:none;padding:0;margin:0;">
-    ${Object.values(TIPO_FOTO).map(info => `<li style="margin-bottom:4px;">${info.artist} — ${info.license} — <a href="${info.page}" target="_blank" rel="noopener">ver en Wikimedia Commons</a></li>`).join('')}
+    ${Object.values(TIPO_FOTO).map(info => `<li style="margin-bottom:var(--space-2xs);">${info.artist} — ${info.license} — <a href="${info.page}" target="_blank" rel="noopener noreferrer">ver en Wikimedia Commons</a></li>`).join('')}
   </ul>`;
 }
 
@@ -2276,7 +2372,7 @@ function renderRecetaCard(r){
     <div class="recipe-card" onclick="abrirReceta(${r.id})" tabindex="0" onkeydown="if(event.key==='Enter'){abrirReceta(${r.id});}">
       ${recetaMediaHTML(r)}
       <div class="rc-tags">${r.ia ? '<span class="tag tag-ia">✨ IA</span>' : ''}<span class="tag">${tagLabel}</span>${dietaTag(r)}${volTag(r)}</div>
-      <h4>${r.nombre}</h4>
+      <h4>${esc(r.nombre)}</h4>
       <div class="rc-macros">
         <span class="mc mc-kcal"><b>${r.kcal}</b> kcal</span>
         <span class="mc mc-prot"><b>${r.proteina}g</b> prot</span>
@@ -2295,23 +2391,23 @@ function abrirReceta(id, meal){
   if(!r) return;
   const cat = r.categoria === 'desayuno' ? 'Desayuno' : r.categoria === 'comida' ? 'Comida' : 'Snack';
   const notaPorcion = meal && r.kcal !== getReceta(id).kcal
-    ? `<div class="note" style="margin:10px 0 0;">Porción ajustada a tu meta de ${MEAL_LABELS[meal].toLowerCase()} (receta base: ${getReceta(id).kcal} kcal).</div>` : '';
+    ? `<div class="note" style="margin:var(--space-xs) 0 0;">Porción ajustada a tu meta de ${MEAL_LABELS[meal].toLowerCase()} (receta base: ${getReceta(id).kcal} kcal).</div>` : '';
   document.getElementById('receta-modal-body').innerHTML = `
     ${recetaMediaHTML(r)}
     <div class="rc-tags"><span class="tag">${cat}</span>${dietaTag(r)}${volTag(r)}</div>
-    <h3 style="margin:8px 0 0;">${r.nombre}</h3>
+    <h3 style="margin:var(--space-xs) 0 0;">${esc(r.nombre)}</h3>
     <div class="macros">
       <span class="mc mc-kcal"><b>${r.kcal}</b> kcal</span>
       <span class="mc mc-prot"><b>${r.proteina}g</b> proteína</span>
       <span class="mc mc-carb"><b>${r.carbos}g</b> carbos</span>
       <span class="mc mc-fat"><b>${r.grasa}g</b> grasa</span>
     </div>
-    ${r.vol ? '<div class="note" style="margin:10px 0 0;">🥗 <b>Alto volumen / bajo en calorías.</b> Porción abundante con muchos vegetales de bajo aporte calórico: llena el plato y sacia sin sumar muchas calorías. Útil si elegiste un déficit alto y sientes más hambre.</div>' : ''}
+    ${r.vol ? '<div class="note" style="margin:var(--space-xs) 0 0;">🥗 <b>Alto volumen / bajo en calorías.</b> Porción abundante con muchos vegetales de bajo aporte calórico: llena el plato y sacia sin sumar muchas calorías. Útil si elegiste un déficit alto y sientes más hambre.</div>' : ''}
     ${notaPorcion}
     <h5>Ingredientes <span class="ing-hint">— cantidad y aporte por porción</span></h5>
     <ul class="ing-list">${r.ingredientes.map(ingItemHTML).join('')}</ul>
     <h5>Preparación</h5>
-    <ol>${r.pasos.map(p=>`<li>${p}</li>`).join('')}</ol>`;
+    <ol>${r.pasos.map(p=>`<li>${esc(p)}</li>`).join('')}</ol>`;
   document.getElementById('receta-modal').classList.add('open');
 }
 
@@ -2326,7 +2422,7 @@ function renderIngredientes(){
   const chips = document.getElementById('ia-chips');
   if(!chips) return;
   const activos = favIng.map((ing, i) =>
-    `<span class="ia-chip on" onclick="quitarIngrediente(${i})" title="Quitar">${ing} <b>✕</b></span>`).join('');
+    `<span class="ia-chip on" onclick="quitarIngrediente(${i})" title="Quitar">${esc(ing)} <b>✕</b></span>`).join('');
   const sugeridos = IA_SUGERENCIAS
     .filter(s => !favIng.includes(s))
     .slice(0, 8)
@@ -2482,29 +2578,29 @@ function normaliza(s){
 
 // Ingredientes base que vale la pena cocinar por lote
 const BATCH_BASES = [
-  {nombre:'Pechuga de pollo', emoji:'🍗', keys:['pechuga de pollo','pollo desmenuzado','pollo en cubos','pollo a la plancha','pollo cocida','de pollo'],
+  {nombre:'Pechuga de pollo', keys:['pechuga de pollo','pollo desmenuzado','pollo en cubos','pollo a la plancha','pollo cocida','de pollo'],
    tip:'Cocina toda la pechuga de una vez (a la plancha o al horno), córtala/desménuzala y guárdala 3-4 días en refrigeración o congela en porciones.'},
-  {nombre:'Pavo (molido y pechuga)', emoji:'🦃', keys:['pavo'],
+  {nombre:'Pavo (molido y pechuga)', keys:['pavo'],
    tip:'Dora todo el pavo molido con sal y especias base; sirve para chili, albóndigas y salteados de la semana.'},
-  {nombre:'Tofu firme', emoji:'🧊', keys:['tofu'],
+  {nombre:'Tofu firme', keys:['tofu'],
    tip:'Prensa y hornea todo el bloque de tofu en cubos; úsalo en bowls, salteados y revueltos durante 4 días.'},
-  {nombre:'Quinoa cocida', emoji:'🌾', keys:['quinoa'],
+  {nombre:'Quinoa cocida', keys:['quinoa'],
    tip:'Cocina 2-3 tazas de quinoa de una vez; aguanta 5 días en refrigeración y es base de ensaladas y bowls.'},
-  {nombre:'Arroz integral cocido', emoji:'🍚', keys:['arroz integral'],
+  {nombre:'Arroz integral cocido', keys:['arroz integral'],
    tip:'Prepara una olla grande de arroz integral y refrigéralo; recaliéntalo con unas gotas de agua.'},
-  {nombre:'Lentejas', emoji:'🫘', keys:['lenteja'],
+  {nombre:'Lentejas', keys:['lenteja'],
    tip:'Cocina una tanda grande de lentejas; divídelas para guisos, sopas, boloñesa y bowls.'},
-  {nombre:'Garbanzos', emoji:'🫛', keys:['garbanzo'],
+  {nombre:'Garbanzos', keys:['garbanzo'],
    tip:'Cocina o escurre un lote de garbanzos: parte para hummus/falafel, parte para ensaladas y curries.'},
-  {nombre:'Frijoles', emoji:'🫘', keys:['frijol','frijoles'],
+  {nombre:'Frijoles', keys:['frijol','frijoles'],
    tip:'Cocina una olla de frijoles y congela en porciones planas para hamburguesas, chili y desayunos.'},
-  {nombre:'Camote', emoji:'🍠', keys:['camote'],
+  {nombre:'Camote', keys:['camote'],
    tip:'Hornea varias bandejas de camote en cubos a la vez; se guarda 4 días y sirve de guarnición lista.'},
-  {nombre:'Huevos duros', emoji:'🥚', keys:['huevo duro','huevos duros','huevo cocido'],
+  {nombre:'Huevos duros', keys:['huevo duro','huevos duros','huevo cocido'],
    tip:'Hierve media docena de huevos de una vez para snacks y desayunos rápidos de varios días.'},
-  {nombre:'Edamame', emoji:'🟢', keys:['edamame'],
+  {nombre:'Edamame', keys:['edamame'],
    tip:'Cocina toda la bolsa de edamame; parte con vaina para snack y parte pelado para ensaladas y hummus.'},
-  {nombre:'Verduras asadas (pimiento, calabacín, cebolla)', emoji:'🫑', keys:['calabacin','pimiento','verduras asadas','vegetales al gusto','vegetales mixtos'],
+  {nombre:'Verduras asadas (pimiento, calabacín, cebolla)', keys:['calabacin','pimiento','verduras asadas','vegetales al gusto','vegetales mixtos'],
    tip:'Asa dos bandejas de verduras variadas; se reparten en bowls, wraps, pastas y omelettes.'},
 ];
 
@@ -2518,7 +2614,7 @@ function renderBatch(){
   }).filter(g => g.recetas.length >= 2)
     .sort((a,b) => b.recetas.length - a.recetas.length);
 
-  let html = `<div class="note" style="margin:0 0 16px;">Cocina un ingrediente base <b>una sola vez</b> y resuélvelo en varias recetas de la semana. Cada grupo te dice cuántos días cubre y qué preparar.</div>`;
+  let html = `<div class="note" style="margin:0 0 var(--space-md);">Cocina un ingrediente base <b>una sola vez</b> y resuélvelo en varias recetas de la semana. Cada grupo te dice cuántos días cubre y qué preparar.</div>`;
 
   html += grupos.map(({base, recetas}) => {
     const items = recetas.map(r => {
@@ -2580,7 +2676,7 @@ function renderPlanMealCard(meal, id, marcadoComido, bloqueado){
     <div class="plan-meal-media">${recetaMediaHTML(r)}</div>
     <div class="plan-meal-body">
       <div class="plan-meal-top"><span class="tag">${MEAL_LABELS[meal]}</span>${dietaTag(r)}${volTag(r)}</div>
-      <h4 onclick="abrirReceta(${r.id}, '${meal}')">${r.nombre}</h4>
+      <h4 onclick="abrirReceta(${r.id}, '${meal}')">${esc(r.nombre)}</h4>
       <div class="rc-macros">
         <span class="mc mc-kcal"><b>${r.kcal}</b> kcal</span>
         <span class="mc mc-prot"><b>${r.proteina}g</b> prot</span>
@@ -2605,7 +2701,7 @@ function diffTxt(actual, objetivo, unidad){
 
 function renderResumenDia(t){
   return `<div class="day-summary">
-    <h3 style="margin:0 0 4px;">Resumen del día</h3>
+    <h3 style="margin:0 0 var(--space-2xs);">Resumen del día</h3>
     <p class="hint" style="margin:0;">Solo cuenta lo que marcaste como comido.</p>
     <ul>
       <li><span>Calorías</span><span><b>${t.kcal}</b> / ${t.objetivo.calorias} kcal · ${diffTxt(t.kcal, t.objetivo.calorias, ' kcal')}</span></li>
@@ -2650,6 +2746,8 @@ function terminarDia(){
 function emptyStateHTML(mensaje, icono){
   return `<div class="empty-state">${icono || catIcon('comida')}<p>${mensaje}</p></div>`;
 }
+// Ícono de línea para estados vacíos de gráficas (peso, check-ins)
+const CHART_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 15l3-4 3 2 4-6"/></svg>';
 
 function renderPlanDia(){
   const cont = document.getElementById('plan-dia');
@@ -2670,13 +2768,13 @@ function renderPlanDia(){
   const terminado = diasTerminados[hoy];
   const marcado = terminado ? terminado.meals : (comidasMarcadas[hoy] || {});
 
-  let html = `<div class="note" style="margin-bottom:14px;">Día ${idx + 1} de 90 · objetivo ${plan.calorias} kcal y ${plan.proteina} g de proteína.</div>`;
+  let html = `<div class="note" style="margin-bottom:var(--space-sm);">Día ${idx + 1} de 90 · objetivo ${plan.calorias} kcal y ${plan.proteina} g de proteína.</div>`;
   html += '<div class="plan-meal-list">';
   MEAL_ORDER.forEach(m => { html += renderPlanMealCard(m, diaPlan[m], !!marcado[m], !!terminado); });
   html += '</div>';
   html += terminado
     ? renderResumenDia(terminado)
-    : `<button class="btn-primary" style="margin-top:14px;" onclick="terminarDia()"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9"/></svg>Terminar día</button>`;
+    : `<button class="btn-primary" style="margin-top:var(--space-sm);" onclick="terminarDia()"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9"/></svg>Terminar día</button>`;
   cont.innerHTML = html;
 
   const tot = terminado
@@ -2718,7 +2816,7 @@ function renderHistorialDias(){
   el.innerHTML = fechas.map(f => {
     const t = diasTerminados[f];
     const fechaFmt = new Date(f + 'T00:00:00').toLocaleDateString('es-EC', {day:'numeric', month:'short', year:'numeric'});
-    return `<div class="miday-item" style="flex-direction:column;align-items:flex-start;gap:4px;">
+    return `<div class="miday-item" style="flex-direction:column;align-items:flex-start;gap:var(--space-2xs);">
       <b>${fechaFmt}</b>
       <span class="mi-macros">Kcal ${t.kcal}/${t.objetivo.calorias} (${diffTxt(t.kcal, t.objetivo.calorias, '')}) · Prot ${t.proteina}/${t.objetivo.proteina}g · Carb ${t.carbos}/${t.objetivo.carbos}g · Grasa ${t.grasa}/${t.objetivo.grasa}g</span>
     </div>`;
@@ -2829,7 +2927,7 @@ function dibujarTarjeta(data){
   // Eyebrow
   ctx.fillStyle = 'rgba(255,255,255,0.75)';
   ctx.font = '700 34px "Plus Jakarta Sans", Arial, sans-serif';
-  ctx.fillText('RECETARIO PROTEICO · 90 DÍAS', W/2, 145);
+  ctx.fillText('TRANSFORMA TU CUERPO · 90 DÍAS', W/2, 145);
 
   // Día completado
   ctx.fillStyle = '#ffffff';
@@ -2930,8 +3028,8 @@ function resetTracker(){
 function agregarPeso(){
   const semana = parseInt(document.getElementById('w-semana').value, 10);
   const peso = parseFloat(document.getElementById('w-peso').value);
-  if(!semana || semana < 1 || semana > 13 || !peso){
-    alert('Ingresa una semana entre 1 y 13 y un peso válido.');
+  if(!semana || semana < 1 || semana > 13 || !peso || peso < 30 || peso > 300){
+    alert('Ingresa una semana entre 1 y 13 y un peso válido en kg (entre 30 y 300).');
     return;
   }
   const existente = pesos.find(p => p.semana === semana);
@@ -2955,7 +3053,7 @@ function renderPesos(){
   const lista = document.getElementById('weight-list');
 
   if(pesos.length === 0){
-    chart.innerHTML = `<p style="color:var(--muted);margin:0;font-size:13px;">Aún no has registrado tu peso. Agrega tu peso de la semana 1 para empezar la gráfica.</p>`;
+    chart.innerHTML = emptyStateHTML('Aún no has registrado tu peso. Agrega tu peso de la <b>semana 1</b> para empezar la gráfica.', CHART_ICON);
     lista.innerHTML = '';
     return;
   }
@@ -2989,7 +3087,7 @@ function renderPesos(){
   const dif = (ultimo - primero).toFixed(1);
   const difTxt = dif > 0 ? `+${dif}` : dif;
   lista.innerHTML = `<li style="border:none;font-weight:700;color:var(--ink);"><span>Cambio total</span><span>${difTxt} kg</span></li>` +
-    pesos.map(p => `<li><span>Semana ${p.semana}</span><span>${p.peso} kg <button class="rm-btn" style="margin-left:8px;padding:2px 7px;" onclick="eliminarPeso(${p.semana})">✕</button></span></li>`).join('');
+    pesos.map(p => `<li><span>Semana ${p.semana}</span><span>${p.peso} kg <button class="rm-btn" style="margin-left:var(--space-xs);padding:var(--space-2xs) var(--space-xs);" onclick="eliminarPeso(${p.semana})">✕</button></span></li>`).join('');
 }
 
 // ============================================================
@@ -3118,7 +3216,7 @@ function renderCheckin(){
   checkins.forEach((c,i) => puntos.push({etq:'C'+(i+1), peso:c.peso}));
 
   if(puntos.length < 1){
-    chartEl.innerHTML = `<p style="color:var(--muted);margin:0;font-size:13px;">Todavía no hay check-ins. Tu gráfica de progreso aparecerá aquí.</p>`;
+    chartEl.innerHTML = emptyStateHTML('Todavía no hay check-ins. Tu gráfica de progreso aparecerá aquí.', CHART_ICON);
     listEl.innerHTML = '';
     return;
   }
@@ -3156,7 +3254,7 @@ function renderCheckin(){
     return `<li>
       <span><b>${c.fecha}</b> · ${c.peso} kg${dpTxt}</span>
       <span>${c.plan.calorias} kcal / ${c.plan.proteina} g prot
-        <button class="rm-btn" style="margin-left:8px;padding:2px 7px;" onclick="eliminarCheckin(${i})">✕</button></span>
+        <button class="rm-btn" style="margin-left:var(--space-xs);padding:var(--space-2xs) var(--space-xs);" onclick="eliminarCheckin(${i})">✕</button></span>
     </li>`;
   }).join('');
   const total = checkins.length && pesoInicial() != null
@@ -3532,6 +3630,17 @@ function marcarRutinaHoy(){ toggleRutina(hoyISO()); }
 // ============================================================
 function isMobile(){ return window.matchMedia('(max-width: 980px)').matches; }
 
+// Muestra el degradado de "hay más pestañas" solo cuando de verdad hay
+// contenido oculto a cada lado (pantallas muy angostas o zoom grande).
+function actualizarTabbarFade(){
+  const wrap = document.getElementById('tabbar-wrap');
+  const tb = document.getElementById('tabbar');
+  if(!wrap || !tb) return;
+  const maxScroll = tb.scrollWidth - tb.clientWidth;
+  wrap.classList.toggle('show-left', tb.scrollLeft > 2);
+  wrap.classList.toggle('show-right', maxScroll > 2 && tb.scrollLeft < maxScroll - 2);
+}
+
 function setTab(name){
   const el = document.querySelector('.panel[data-panel="' + name + '"]');
   const isMain = !!(el && el.classList.contains('main-panel'));
@@ -3688,6 +3797,13 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCheckin();
   renderHistorialDias();
   renderMovimiento();
+
+  const tabbarEl = document.getElementById('tabbar');
+  if(tabbarEl){
+    actualizarTabbarFade();
+    tabbarEl.addEventListener('scroll', actualizarTabbarFade, {passive:true});
+    window.addEventListener('resize', actualizarTabbarFade);
+  }
 
   // Si ya había un plan guardado, restaurar resultados y plan de comidas
   if(plan){
