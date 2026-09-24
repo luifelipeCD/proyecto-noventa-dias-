@@ -34,3 +34,13 @@ body.dialog-open{overflow:hidden;}
 }
 @media(max-width:380px){.header-status{font-size:0;}.profile-button{font-size:14px;}.energy-main strong{font-size:38px;}.energy-orbit{width:105px;height:105px;}.wizard-steps li{font-size:10px;gap:5px;}.wizard-steps li>span{width:23px;height:23px;}.plan-workspace{padding:25px 17px;}.plan-meal{flex-direction:column;}.plan-meal-media{width:100%;}.plan-meal-media .rc-photo-img{aspect-ratio:2;}.tab-btn{font-size:9px;}}
 @media print{.dashboard-grid,.progress-layout,.meal-layout{display:block;}.dashboard-grid>article{margin-bottom:20px;}.plan-guide,.help-center{display:none;}.plan-shell{display:block;}.recipe-card,.plan-meal{break-inside:avoid;}}
+
+/* ---------- Compatibilidad con main (Bloques 1–3 de Kinetic Vitality) ----------
+   Al traer main a Astra entraron algunos estilos del sistema oscuro que usan verde
+   fijo (glow "activo", tarjeta hero del contador). Aquí se devuelven al look de Astra
+   sin tocar la lógica ni el HTML de main. */
+:root{--glow-primary:none;}
+.hero-card{background:none;border:0;border-radius:0;padding:0;margin-bottom:0;box-shadow:none;}
+.hero-card .progress{margin-top:0;}
+.tour-spot{box-shadow:0 0 0 3px var(--primary),0 0 0 8px #6858cc33;}
+.fab{box-shadow:var(--shadow);}
