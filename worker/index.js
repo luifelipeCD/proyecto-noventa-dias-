@@ -38,6 +38,10 @@ const MAX_TOTAL_LEN = 300;             // caracteres de toda la lista junta
 const LIMITE_DIARIO = 5;
 const VENTANA_MS = 24 * 60 * 60 * 1000;
 
+// Tamaño máximo aceptado del cuerpo de la petición (bytes). La petición real es de pocos
+// KB; esto es solo una cota defensiva antes de parsear el JSON.
+const MAX_BODY_BYTES = 8 * 1024;
+
 // Único origen permitido (más los que se añadan en la var de entorno ALLOWED_ORIGIN).
 const ALLOWED_ORIGINS = ['https://luifelipecd.github.io'];
 
@@ -45,7 +49,9 @@ function allowedOrigins(env) {
   const extra = String(env.ALLOWED_ORIGIN || '')
     .split(',')
     .map((s) => s.trim())
-    .filter(Boolean);
+    // Nunca se refleja "*" ni un origen vacío como permitido, aunque alguien lo
+    // ponga por error en la variable de entorno: seguiría exigiéndose un Origin exacto.
+    .filter((s) => s && s !== '*');
   return [...ALLOWED_ORIGINS, ...extra];
 }
 
@@ -164,14 +170,32 @@ function normalizarReceta(r) {
   };
 }
 
+// Caracteres de control / formato invisible: no tienen razón de estar en un nombre de
+// ingrediente y se usan a veces para ofuscar intentos de inyección (saltos de línea
+// disfrazados, RTL/LTR override, espacios de ancho cero, etc.).
+// eslint-disable-next-line no-control-regex
+const CARACTERES_RAROS = /[\u0000-\u001F\u007F-\u009F\u200B-\u200F\u2028-\u202E\u2060-\u2064\uFEFF]/;
+
 // Valida que la entrada sea "una lista corta de ingredientes", no un texto largo / inyección.
 // Devuelve { ok:true, ingredientes:[...] } o { ok:false, error:"..." }.
 function validarIngredientes(arr) {
   if (!Array.isArray(arr)) {
     return { ok: false, error: 'Falta la lista "ingredientes" (un array de textos).' };
   }
+  // Corta pronto si el array es enorme: evita gastar CPU en listas absurdas antes de
+  // siquiera mirar el contenido (el límite real de ingredientes válidos es MAX_INGREDIENTES).
+  if (arr.length > 50) {
+    return { ok: false, error: 'Escribe como máximo 15 ingredientes.' };
+  }
   const limpios = [];
   for (const item of arr) {
+    if (typeof item !== 'string' && typeof item !== 'number') continue;
+    if (CARACTERES_RAROS.test(String(item))) {
+      return {
+        ok: false,
+        error: 'Uno de los ingredientes tiene caracteres no válidos. Usa solo texto normal.',
+      };
+    }
     // Colapsa espacios y saltos de línea: cada ingrediente es una sola línea.
     const x = String(item).replace(/\s+/g, ' ').trim();
     if (!x) continue;
@@ -342,6 +366,13 @@ export default {
       return fail('El Worker no tiene configurada la API key (ANTHROPIC_API_KEY).', 500, request, env);
     }
 
+    // Corta pronto los cuerpos anormalmente grandes (la petición real pesa unos pocos KB:
+    // 15 ingredientes cortos + un token de Turnstile). Defensa extra antes de parsear JSON.
+    const contentLength = Number(request.headers.get('Content-Length') || 0);
+    if (contentLength > MAX_BODY_BYTES) {
+      return fail('El cuerpo de la petición es demasiado grande.', 413, request, env);
+    }
+
     let body;
     try {
       body = await request.json();
@@ -361,6 +392,9 @@ export default {
     // 3) Límite de uso por IP (antes de gastar en captcha o IA).
     const limite = await leerLimite(env, ip);
     if (limite && limite.count >= LIMITE_DIARIO) {
+      // Log de abuso sin datos personales: ni la IP ni los ingredientes se registran, solo
+      // que ocurrió un bloqueo por límite (útil para ver tendencias con `wrangler tail`).
+      console.log('rate_limit_exceeded');
       return json(
         {
           ok: false,
@@ -376,6 +410,7 @@ export default {
     // 4) Turnstile: el token debe validar contra siteverify antes de generar nada.
     const captcha = await verificarCaptcha(env, body && body.turnstileToken, ip);
     if (!captcha.ok) {
+      console.log('captcha_failed');
       return json(
         {
           ok: false,
