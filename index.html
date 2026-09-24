@@ -145,12 +145,14 @@
   /* ---------- BARRA SUPERIOR ---------- */
   .appbar{background:rgba(10,17,32,0.82);color:var(--ink);border-bottom:1px solid var(--outline-soft);
     backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
-  .appbar-in{max-width:1280px;margin:0 auto;padding:var(--space-sm) var(--space-md);display:flex;align-items:center;gap:var(--space-sm);}
+  .appbar-in{max-width:1280px;margin:0 auto;padding:var(--space-sm) var(--space-md);display:flex;align-items:center;justify-content:space-between;gap:var(--space-sm);}
   .brand{display:flex;align-items:center;gap:var(--space-xs);font-family:var(--font-head);font-weight:700;
     font-size:19px;letter-spacing:-0.015em;color:var(--ink);}
   .brand-badge{background:var(--primary);color:var(--on-primary);border-radius:11px;width:30px;height:30px;
     display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;}
   .brand .tagline{opacity:.9;font-size:12px;font-weight:500;letter-spacing:0;color:var(--ink-var);}
+  @media (max-width:460px){.brand .tagline{display:none;}}
+
 
   /* ---------- PESTANAS (celular) ---------- */
   .tabbar-wrap{position:sticky;top:0;z-index:38;}
@@ -792,9 +794,17 @@
   <div class="appbar-in">
     <a class="brand" href="#" onclick="setTab('inicio');return false" aria-label="90 días, inicio"><span class="brand-badge">90<span>°</span></span><span class="brand-name">noventa<span class="tagline">BIENESTAR, A TU RITMO</span></span></a>
     <div class="header-context">TU ESPACIO PERSONAL <span>/</span> <b id="page-label">Progreso</b></div>
-    <div class="header-status"><span></span> Guardado local <button class="profile-button" onclick="setTab('calculadora')" aria-label="Abrir mi plan"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></svg></button></div>
+    <div class="header-status auth-area" id="auth-area"><span class="auth-dot"></span><i class="auth-status-text">Guardado local</i><button class="profile-button" onclick="abrirAuth()" aria-label="Iniciar sesión"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></svg></button></div>
   </div>
 </header>
+
+<!-- MODAL: entrar con correo (magic link) -->
+<div class="modal-bg" id="auth-modal" onclick="if(event.target===this)cerrarAuth()">
+  <div class="modal-card auth-card" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <button class="modal-x" onclick="cerrarAuth()" aria-label="Cerrar">✕</button>
+    <div id="auth-modal-body"></div>
+  </div>
+</div>
 
 <!-- PESTAÑAS (celular) -->
 <nav class="tabbar" id="tabbar" aria-label="Navegación principal">
@@ -1931,7 +1941,8 @@ const LS = {
   checkins:'rp90_checkins', // historial de check-ins quincenales [{fecha, peso, plan}]
   mov:'rp90_mov',          // días (ISO) en que se hizo la rutina de fuerza
   pasosCal:'rp90_pasos_cal', // último valor del conversor de pasos a calorías
-  favIng:'rp90_fav_ing'    // ingredientes favoritos para el generador con IA
+  favIng:'rp90_fav_ing',   // ingredientes favoritos para el generador con IA
+  sesion:'rp90_sesion'     // { token, email } de la cuenta con la que se inició sesión
 };
 
 function lsGet(key, fallback){
@@ -1961,6 +1972,210 @@ const IA_SUGERENCIAS = ['pollo','huevo','atún','tofu','yogur griego','avena','l
 let favIng = lsGet(LS.favIng, []); // ingredientes que el usuario marcó como favoritos
 let recetasIA = [];                // recetas generadas por IA en esta sesión (no se persisten)
 let iaIdSeq = 9000;                // ids para las recetas de IA (fuera del rango de RECETAS)
+
+// ============================================================
+// CUENTA (login por correo, sin contraseña — mismo Worker que la IA)
+// ============================================================
+let sesion = lsGet(LS.sesion, null);   // { token, email } o null si nadie inició sesión
+let cuenta = null;                     // { email, subscription } — se llena al validar /me
+
+function guardarSesion(token, email){
+  sesion = { token, email };
+  lsSet(LS.sesion, sesion);
+}
+function borrarSesion(){
+  sesion = null;
+  cuenta = null;
+  try{ localStorage.removeItem(LS.sesion); }catch(e){}
+}
+
+const AUTH_ICON = '<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/></svg>';
+const MAIL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/></svg>';
+
+// Estado de la cuenta en la barra superior (mismo lugar que "Guardado local" de Astra).
+function renderAuthArea(){
+  const cont = document.getElementById('auth-area');
+  if(!cont) return;
+  if(sesion){
+    const inicial = esc((sesion.email || '?').trim().charAt(0).toUpperCase());
+    cont.classList.add('signed-in');
+    cont.innerHTML = `<span class="auth-dot"></span><i class="auth-status-text">Sesión iniciada</i>
+      <button class="profile-button has-initial" onclick="abrirAuth()" aria-label="Tu cuenta: ${esc(sesion.email)}">${inicial}</button>`;
+  } else {
+    cont.classList.remove('signed-in');
+    cont.innerHTML = `<span class="auth-dot"></span><i class="auth-status-text">Guardado local</i>
+      <button class="auth-login-btn" onclick="abrirAuth()">Iniciar sesión</button>
+      <button class="profile-button" onclick="abrirAuth()" aria-label="Iniciar sesión">${AUTH_ICON}</button>`;
+  }
+}
+
+// Columna lateral lila, igual que la de "Mi plan": explica qué es la cuenta sin prometer de más.
+function authGuiaHTML(){
+  return `<aside class="auth-guide">
+      <span class="eyebrow">TU CUENTA</span>
+      <h2>Entra sin<br>contraseñas.</h2>
+      <ul class="auth-perks">
+        <li><span aria-hidden="true">✉</span><div>Un link a tu correo<small>Sin claves que recordar.</small></div></li>
+        <li><span aria-hidden="true">◈</span><div>Tu plan sigue aquí<small>Tus datos se quedan en este navegador.</small></div></li>
+        <li><span aria-hidden="true">✦</span><div>Lista para lo que viene<small>Tu cuenta prepara las próximas funciones.</small></div></li>
+      </ul>
+    </aside>`;
+}
+function authShell(contenido){
+  return `<div class="auth-shell">${authGuiaHTML()}<div class="auth-main">${contenido}</div></div>`;
+}
+
+function authFormularioHTML(mensaje){
+  return authShell(`
+    <div class="auth-topline">INICIAR SESIÓN</div>
+    <h2 id="auth-title">Entra con tu correo.</h2>
+    <p class="hint">Te mandamos un link de acceso. Ábrelo en este dispositivo y listo.</p>
+    <div class="field">
+      <label for="auth-email">Correo electrónico</label>
+      <input type="email" id="auth-email" placeholder="tu@correo.com" autocomplete="email" inputmode="email"
+             onkeydown="if(event.key==='Enter'){event.preventDefault();solicitarLink();}">
+    </div>
+    <div id="auth-estado" aria-live="polite">${mensaje || ''}</div>
+    <div class="auth-actions"><button class="btn-primary" id="auth-enviar" type="button" onclick="solicitarLink()">Enviarme el link →</button></div>
+    <p class="privacy-note auth-privacy">◈ Solo usamos tu correo para tu cuenta. Sin suscripción.</p>`);
+}
+
+function authEnviadoHTML(email, nota){
+  return authShell(`
+    <div class="auth-sent-mark" aria-hidden="true">${MAIL_ICON}</div>
+    <div class="auth-topline">LINK ENVIADO</div>
+    <h2 id="auth-title">Revisa tu correo.</h2>
+    <p class="hint">Te mandamos un link a <b>${esc(email)}</b>. Ábrelo desde este mismo dispositivo para entrar — caduca en 15 minutos.</p>
+    <div class="auth-tip">¿No llega? Revisa las carpetas de spam o promociones.</div>
+    ${nota}
+    <div class="auth-actions">
+      <button class="btn-secondary" type="button" onclick="mostrarFormularioAuth()">Usar otro correo</button>
+      <button class="btn-primary" type="button" onclick="cerrarAuth()">Entendido</button>
+    </div>`);
+}
+
+function authCuentaHTML(){
+  const email = (cuenta && cuenta.email) || (sesion && sesion.email) || '';
+  const activa = cuenta && cuenta.subscription && /^(active|activa|trialing)$/i.test(String(cuenta.subscription.status || cuenta.subscription));
+  return authShell(`
+    <div class="auth-account-head">
+      <span class="auth-avatar" aria-hidden="true">${esc(email.charAt(0).toUpperCase() || '?')}</span>
+      <div><div class="auth-topline">TU CUENTA</div><h2 id="auth-title" class="auth-email-title">${esc(email)}</h2></div>
+    </div>
+    <dl class="auth-facts">
+      <div><dt>Plan</dt><dd>${activa ? 'Premium activo' : 'Gratuito'}</dd></div>
+      <div><dt>Tus datos</dt><dd>Guardados en este navegador</dd></div>
+    </dl>
+    <div class="auth-actions">
+      <button class="btn-secondary" type="button" onclick="cerrarSesion()">Cerrar sesión</button>
+      <button class="btn-primary" type="button" onclick="cerrarAuth()">Volver a mi espacio</button>
+    </div>`);
+}
+
+function mostrarFormularioAuth(){
+  document.getElementById('auth-modal-body').innerHTML = authFormularioHTML();
+  setTimeout(() => document.getElementById('auth-email')?.focus(), 50);
+}
+
+function abrirAuth(){
+  const body = document.getElementById('auth-modal-body');
+  if(sesion){
+    body.innerHTML = authCuentaHTML();
+    document.getElementById('auth-modal').classList.add('open');
+    return;
+  }
+  body.innerHTML = authFormularioHTML();
+  document.getElementById('auth-modal').classList.add('open');
+  setTimeout(() => document.getElementById('auth-email')?.focus(), 50);
+}
+function cerrarAuth(){
+  document.getElementById('auth-modal').classList.remove('open');
+}
+
+async function solicitarLink(){
+  const input = document.getElementById('auth-email');
+  const btn = document.getElementById('auth-enviar');
+  const estado = document.getElementById('auth-estado');
+  if(!input || !estado) return;
+  const email = input.value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    estado.innerHTML = `<div class="auth-msg is-error">Escribe un correo válido.</div>`;
+    return;
+  }
+  btn.disabled = true;
+  estado.innerHTML = `<div class="auth-msg">Enviando tu link…</div>`;
+  try{
+    const resp = await fetch(IA_WORKER_URL + '/auth/solicitar-link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await resp.json().catch(() => ({}));
+    if(!resp.ok || !data.ok){
+      estado.innerHTML = `<div class="auth-msg is-error">${esc(data.error || 'No se pudo enviar el link. Intenta de nuevo.')}</div>`;
+      btn.disabled = false;
+      return;
+    }
+    // Solo en local sin RESEND_API_KEY configurado: el Worker devuelve el link para
+    // poder probar el flujo sin depender de un correo real (ver README-worker.md).
+    const nota = (data.dev_link && /^https?:\/\//i.test(data.dev_link))
+      ? `<div class="auth-tip">Modo desarrollo (sin Resend configurado):
+          <a href="${esc(data.dev_link)}">abrir el link de acceso</a>.</div>`
+      : '';
+    document.getElementById('auth-modal-body').innerHTML = authEnviadoHTML(email, nota);
+  }catch(e){
+    estado.innerHTML = `<div class="auth-msg is-error">No se pudo contactar el servicio. Revisa tu conexión e inténtalo de nuevo.</div>`;
+    btn.disabled = false;
+  }
+}
+
+function cerrarSesion(){
+  borrarSesion();
+  cerrarAuth();
+  renderAuthArea();
+  toast('Sesión cerrada.');
+}
+
+// Si la URL trae ?login_token=..., lo canjeamos por una sesión y limpiamos la URL.
+async function verificarLoginDesdeURL(){
+  const params = new URLSearchParams(location.search);
+  const token = params.get('login_token');
+  if(!token) return;
+  params.delete('login_token');
+  const nuevaURL = location.pathname + (params.toString() ? '?' + params.toString() : '') + location.hash;
+  history.replaceState(null, '', nuevaURL);
+
+  try{
+    const resp = await fetch(IA_WORKER_URL + '/auth/verificar?token=' + encodeURIComponent(token));
+    const data = await resp.json().catch(() => ({}));
+    if(resp.ok && data.ok){
+      guardarSesion(data.token, data.email);
+      cuenta = { email: data.email, subscription: data.subscription };
+      renderAuthArea();
+      toast('Sesión iniciada como ' + data.email);
+    } else {
+      toast(data.error || 'El link ya no es válido. Pide uno nuevo.');
+    }
+  }catch(e){
+    toast('No se pudo validar el link. Revisa tu conexión.');
+  }
+}
+
+// Refresca el estado de la cuenta contra el Worker. Si la sesión ya no es válida
+// (revocada, vencida), la borra localmente sin mostrar ningún error al usuario.
+async function cargarCuenta(){
+  if(!sesion) return;
+  try{
+    const resp = await fetch(IA_WORKER_URL + '/me', {
+      headers: { Authorization: 'Bearer ' + sesion.token }
+    });
+    if(resp.status === 401){ borrarSesion(); renderAuthArea(); return; }
+    const data = await resp.json().catch(() => ({}));
+    if(resp.ok && data.ok) cuenta = { email: data.email, subscription: data.subscription };
+  }catch(e){
+    // Sin conexión: no borramos la sesión, seguimos con lo que ya había en localStorage.
+  }
+}
 
 // Restaura el sexo y el objetivo guardados para que el recálculo funcione tras recargar
 if(datos && datos.genero) genero = datos.genero;
@@ -3958,6 +4173,9 @@ function endTour(){
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
   setTab('inicio');
+  // Cuenta por correo: pinta el estado, canjea ?login_token=... y valida la sesión guardada.
+  renderAuthArea();
+  verificarLoginDesdeURL().then(cargarCuenta);
   document.getElementById('intro-date').textContent = new Date().toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long'});
   document.getElementById('ai-details').addEventListener('toggle',function(){document.getElementById('ai-toggle').setAttribute('aria-expanded',String(this.open));});
   const focusOrigins = new WeakMap();
@@ -3974,7 +4192,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown',event=>{
     if(event.key==='Escape'){
       if(!document.getElementById('more-menu').hidden)document.getElementById('more-button').focus();
-      toggleMore(false);cerrarReceta();cerrarTarjeta();
+      toggleMore(false);cerrarReceta();cerrarTarjeta();cerrarAuth();
       if(document.body.classList.contains('tour-active'))endTour();
     }
     if(event.key==='Tab'){
