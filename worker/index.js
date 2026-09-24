@@ -1,12 +1,15 @@
 /**
  * Cloudflare Worker de "Transforma tu Cuerpo en 90 Días": generador de recetas con IA
- * + cuentas de usuario por magic link (correo, sin contraseña).
+ * (premium) + cuentas de usuario por magic link + suscripción con Stripe.
  *
- * ---- POST /  (generador de recetas) ----
+ * ---- POST /  (generador de recetas, requiere sesión + suscripción activa/en prueba) ----
+ *   Header: Authorization: Bearer <token de sesión>
  *   Body: { "ingredientes": ["pollo", "arroz", "brócoli"], "turnstileToken": "..." }
  *   OK (200): { "ok": true, "receta": {...}, "restantes": number }
+ *   Sin sesión válida -> 401. Con sesión pero sin suscripción -> 402 { requierePremium:true }.
  *   Protecciones: CORS estricto, Turnstile, límite de 5/IP/24h, prompt anti-inyección,
- *   validación de entrada. (Sin cambios de comportamiento respecto a versiones previas.)
+ *   validación de entrada (sin cambios respecto a versiones previas, solo se le agregó
+ *   el requisito de sesión+suscripción por encima).
  *
  * ---- POST /auth/solicitar-link  (pedir el link de acceso) ----
  *   Body: { "email": "persona@correo.com" }
@@ -22,14 +25,27 @@
  * ---- GET /me  (estado de la cuenta autenticada) ----
  *   Header: Authorization: Bearer <token de sesión>
  *   OK (200): { "ok": true, "email", "subscription": { status, trial_end, current_period_end } }
- *   subscription queda en blanco ("none") hasta que se integre Stripe (próxima fase).
  *
- * Todas las rutas exigen el mismo CORS estricto: solo el Origin "https://luifelipecd.github.io"
- * (o los de ALLOWED_ORIGIN / localhost para `wrangler dev`) — cualquier otro Origin -> 403.
+ * ---- POST /billing/crear-checkout { plan: "mensual" | "anual" }  (requiere sesión) ----
+ *   Crea (o reutiliza) el Customer de Stripe del usuario y una Checkout Session en modo
+ *   suscripción con 7 días de prueba gratis (trial_period_days). OK (200): { ok:true, url }
+ *   — el frontend redirige a esa URL (el hosted Checkout de Stripe; no hace falta Stripe.js).
+ *
+ * ---- POST /billing/webhook  (lo llama Stripe, no el frontend) ----
+ *   Verifica la firma con STRIPE_WEBHOOK_SECRET (nunca CORS/Origin — Stripe no manda
+ *   ninguno). Escucha checkout.session.completed, customer.subscription.updated/deleted
+ *   e invoice.upcoming (dispara el correo de aviso de fin de prueba). Idempotente por
+ *   event.id (tabla webhook_events) para no reprocesar reintentos de Stripe.
+ *
+ * Todas las rutas (salvo el webhook) exigen el mismo CORS estricto: solo el Origin
+ * "https://luifelipecd.github.io" (o los de ALLOWED_ORIGIN / localhost para
+ * `wrangler dev`) — cualquier otro Origin -> 403.
  *
  * Secrets en env (nunca en el código): ANTHROPIC_API_KEY, TURNSTILE_SECRET_KEY,
- * SESSION_SECRET (firma de sesión, obligatorio), RESEND_API_KEY (envío de correo;
- * sin él, el Worker no manda el correo pero sigue funcionando — ver enviarMagicLinkEmail).
+ * SESSION_SECRET (firma de sesión, obligatorio), RESEND_API_KEY (envío de correo; sin
+ * él, el Worker no manda el correo pero sigue funcionando — ver enviarCorreo),
+ * STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET. STRIPE_PRICE_MENSUAL/STRIPE_PRICE_ANUAL van
+ * como vars normales (no son secretas, son solo IDs de precio).
  */
 
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
@@ -366,6 +382,25 @@ async function handleGenerarReceta(request, env) {
     return fail('El Worker no tiene configurada la API key (ANTHROPIC_API_KEY).', 500, request, env);
   }
 
+  // El generador de IA es la única función gratis que cuesta dinero real por uso, así
+  // que además del gating del frontend, aquí se exige sesión + suscripción activa/en
+  // prueba de verdad (defensa en profundidad: nadie puede llamarlo directo sin pagar).
+  const payload = await usuarioDesdeRequest(request, env);
+  if (!payload || !payload.sub) {
+    return fail('Inicia sesión para generar recetas con IA.', 401, request, env);
+  }
+  if (!env.DB) return fail('El Worker no tiene configurada la base de datos (DB).', 500, request, env);
+  let usuarioIA;
+  try {
+    usuarioIA = await env.DB.prepare('SELECT subscription_status FROM users WHERE id = ?').bind(payload.sub).first();
+  } catch (e) {
+    console.error('D1 select user (generarReceta) error', e && e.message);
+    return fail('No se pudo verificar tu cuenta. Intenta de nuevo.', 500, request, env);
+  }
+  if (!usuarioIA || !ESTADOS_PREMIUM.includes(usuarioIA.subscription_status)) {
+    return json({ ok: false, requierePremium: true, error: 'Necesitas una suscripción activa para generar recetas con IA.' }, 402, request, env);
+  }
+
   // Corta pronto los cuerpos anormalmente grandes (la petición real pesa unos pocos KB:
   // 15 ingredientes cortos + un token de Turnstile). Defensa extra antes de parsear JSON.
   const contentLength = Number(request.headers.get('Content-Length') || 0);
@@ -543,16 +578,14 @@ async function usuarioDesdeRequest(request, env) {
 // Sin RESEND_API_KEY no se envía nada, pero el Worker sigue funcionando: registra el
 // link en los logs (visible con `wrangler tail`) para poder probar el flujo en local
 // sin depender de una cuenta de Resend real (mismo criterio que TURNSTILE_SECRET_KEY).
-async function enviarMagicLinkEmail(env, email, link) {
+// Envío genérico por Resend. Sin RESEND_API_KEY no se manda nada, pero el Worker sigue
+// funcionando (se registra en los logs) — mismo criterio que TURNSTILE_SECRET_KEY.
+async function enviarCorreo(env, email, subject, html, { linkParaLogs } = {}) {
   if (!env.RESEND_API_KEY) {
-    console.error('Resend: falta RESEND_API_KEY — correo NO enviado. Link (solo para pruebas locales):', link);
+    console.error('Resend: falta RESEND_API_KEY — correo NO enviado.', linkParaLogs ? 'Link (solo pruebas locales): ' + linkParaLogs : subject);
     return { ok: false, sinConfigurar: true };
   }
   const from = env.RESEND_FROM || 'Transforma tu Cuerpo <onboarding@resend.dev>';
-  const html =
-    '<p>Toca el siguiente link para entrar a tu cuenta. Caduca en 15 minutos y solo sirve una vez:</p>' +
-    `<p><a href="${link}">${link}</a></p>` +
-    '<p>Si no pediste este correo, ignóralo — no se hizo ningún cambio en tu cuenta.</p>';
   try {
     const resp = await fetch(RESEND_URL, {
       method: 'POST',
@@ -560,7 +593,7 @@ async function enviarMagicLinkEmail(env, email, link) {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + String(env.RESEND_API_KEY).trim(),
       },
-      body: JSON.stringify({ from, to: [email], subject: 'Tu link para entrar a Transforma tu Cuerpo en 90 Días', html }),
+      body: JSON.stringify({ from, to: [email], subject, html }),
     });
     if (!resp.ok) {
       const detalle = await resp.text().catch(() => '');
@@ -572,6 +605,24 @@ async function enviarMagicLinkEmail(env, email, link) {
     console.error('Resend: error de red', e && e.message);
     return { ok: false };
   }
+}
+
+async function enviarMagicLinkEmail(env, email, link) {
+  const html =
+    '<p>Toca el siguiente link para entrar a tu cuenta. Caduca en 15 minutos y solo sirve una vez:</p>' +
+    `<p><a href="${link}">${link}</a></p>` +
+    '<p>Si no pediste este correo, ignóralo — no se hizo ningún cambio en tu cuenta.</p>';
+  return enviarCorreo(env, email, 'Tu link para entrar a Transforma tu Cuerpo en 90 Días', html, { linkParaLogs: link });
+}
+
+// Aviso de fin de prueba (disparado por el webhook invoice.upcoming de Stripe).
+async function enviarAvisoPrueba(env, email, dias, montoTexto) {
+  const diasTxt = dias <= 0 ? 'hoy' : `en ${dias} día${dias === 1 ? '' : 's'}`;
+  const html =
+    `<p>Tu prueba gratis de Transforma tu Cuerpo en 90 Días termina ${diasTxt}.</p>` +
+    `<p>Después de eso se te cobrará <b>${montoTexto}</b> automáticamente — no tienes que hacer nada si quieres continuar.</p>` +
+    '<p>Si prefieres cancelar antes de que se cobre, puedes hacerlo desde tu cuenta.</p>';
+  return enviarCorreo(env, email, `Tu prueba termina ${diasTxt} — Transforma tu Cuerpo en 90 Días`, html);
 }
 
 function estadoSuscripcion(user) {
@@ -725,9 +776,268 @@ async function handleMe(request, env) {
   return json({ ok: true, email: user.email, subscription: estadoSuscripcion(user) }, 200, request, env);
 }
 
+// ============================================================
+// SUSCRIPCIÓN (Stripe Checkout + webhooks)
+// ============================================================
+const STRIPE_API_URL = 'https://api.stripe.com/v1';
+const PLANES = { mensual: 'STRIPE_PRICE_MENSUAL', anual: 'STRIPE_PRICE_ANUAL' };
+// Cuentan como "premium activo": en prueba o pagando. Cualquier otro valor bloquea.
+const ESTADOS_PREMIUM = ['trialing', 'active'];
+
+// Convierte un objeto JS (anidado) al formato x-www-form-urlencoded con notación de
+// corchetes que espera la API de Stripe, ej. {a:{b:1}} -> "a[b]=1".
+function stripeForm(obj, prefix) {
+  const partes = [];
+  for (const key in obj) {
+    if (obj[key] === undefined || obj[key] === null) continue;
+    const k = prefix ? `${prefix}[${key}]` : key;
+    const v = obj[key];
+    if (typeof v === 'object' && !Array.isArray(v)) {
+      partes.push(stripeForm(v, k));
+    } else if (Array.isArray(v)) {
+      v.forEach((item, i) => {
+        if (typeof item === 'object') partes.push(stripeForm(item, `${k}[${i}]`));
+        else partes.push(`${encodeURIComponent(`${k}[${i}]`)}=${encodeURIComponent(item)}`);
+      });
+    } else {
+      partes.push(`${encodeURIComponent(k)}=${encodeURIComponent(v)}`);
+    }
+  }
+  return partes.filter(Boolean).join('&');
+}
+
+// Llama a la API REST de Stripe directamente (sin el SDK oficial: no hace falta bundlear
+// nada extra en el Worker). Lanza un Error con el mensaje de Stripe si la llamada falla.
+async function stripeRequest(env, method, path, params) {
+  const apiKey = String(env.STRIPE_SECRET_KEY || '').trim();
+  const opts = {
+    method,
+    headers: {
+      Authorization: 'Bearer ' + apiKey,
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Stripe-Version': '2024-06-20',
+    },
+  };
+  if (params && method !== 'GET') opts.body = stripeForm(params);
+  const url = STRIPE_API_URL + path + (params && method === 'GET' ? '?' + stripeForm(params) : '');
+  const resp = await fetch(url, opts);
+  const data = await resp.json().catch(() => null);
+  if (!resp.ok) {
+    const msg = (data && data.error && data.error.message) || `Stripe respondió ${resp.status}`;
+    throw new Error(msg);
+  }
+  return data;
+}
+
+// Busca o crea el Customer de Stripe del usuario y lo guarda en D1 (una sola vez).
+async function obtenerOCrearCliente(env, user) {
+  if (user.stripe_customer_id) return user.stripe_customer_id;
+  const customer = await stripeRequest(env, 'POST', '/customers', {
+    email: user.email,
+    metadata: { user_id: String(user.id) },
+  });
+  await env.DB.prepare('UPDATE users SET stripe_customer_id = ? WHERE id = ?').bind(customer.id, user.id).run();
+  return customer.id;
+}
+
+// POST /billing/crear-checkout { plan: 'mensual' | 'anual' } — requiere sesión.
+async function handleCrearCheckout(request, env) {
+  if (!env.DB) return fail('El Worker no tiene configurada la base de datos (DB).', 500, request, env);
+  if (!env.STRIPE_SECRET_KEY) return fail('El Worker no tiene configurado Stripe (STRIPE_SECRET_KEY).', 500, request, env);
+
+  const payload = await usuarioDesdeRequest(request, env);
+  if (!payload || !payload.sub) return fail('Inicia sesión para elegir un plan.', 401, request, env);
+
+  let body;
+  try {
+    body = await request.json();
+  } catch (e) {
+    return fail('El cuerpo debe ser JSON: { "plan": "mensual" | "anual" }.', 400, request, env);
+  }
+  const plan = body && body.plan;
+  if (!PLANES[plan]) return fail('Elige un plan válido: "mensual" o "anual".', 400, request, env);
+  const priceId = env[PLANES[plan]];
+  if (!priceId) return fail(`El Worker no tiene configurado el precio del plan ${plan}.`, 500, request, env);
+
+  let user;
+  try {
+    user = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(payload.sub).first();
+  } catch (e) {
+    console.error('D1 select user error', e && e.message);
+    return fail('No se pudo cargar tu cuenta. Intenta de nuevo.', 500, request, env);
+  }
+  if (!user) return fail('No autenticado.', 401, request, env);
+  if (ESTADOS_PREMIUM.includes(user.subscription_status)) {
+    return fail('Ya tienes una suscripción activa.', 400, request, env);
+  }
+
+  const origin = request.headers.get('Origin');
+  const base = allowedOrigins(env).includes(origin) ? origin : ALLOWED_ORIGINS[0];
+
+  try {
+    const customerId = await obtenerOCrearCliente(env, user);
+    const session = await stripeRequest(env, 'POST', '/checkout/sessions', {
+      mode: 'subscription',
+      customer: customerId,
+      client_reference_id: String(user.id),
+      line_items: [{ price: priceId, quantity: 1 }],
+      subscription_data: { trial_period_days: 7, metadata: { user_id: String(user.id) } },
+      success_url: base + '/?checkout=success',
+      cancel_url: base + '/?checkout=cancel',
+    });
+    return json({ ok: true, url: session.url }, 200, request, env);
+  } catch (e) {
+    console.error('Stripe crear-checkout error', e && e.message);
+    return fail('No se pudo iniciar el pago. Intenta de nuevo en un momento.', 502, request, env);
+  }
+}
+
+// Compara dos strings en tiempo constante (evita filtrar por temporización cuánto
+// coincide la firma calculada con la que mandó Stripe).
+function comparacionSegura(a, b) {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+// Verifica el header Stripe-Signature (formato "t=<ts>,v1=<hex>,...") contra el cuerpo
+// crudo de la petición, replicando el algoritmo documentado por Stripe (HMAC-SHA256 de
+// "<timestamp>.<body>"). Devuelve el evento ya parseado si es válido, o null si no.
+async function verificarEventoStripe(rawBody, sigHeader, secret) {
+  if (!sigHeader) return null;
+  const partes = Object.fromEntries(
+    sigHeader.split(',').map((p) => p.split('=')).map(([k, v]) => [k, v])
+  );
+  const timestamp = partes.t;
+  const firmaEsperada = partes.v1;
+  if (!timestamp || !firmaEsperada) return null;
+  // Tolerancia de 5 minutos contra ataques de repetición.
+  if (Math.abs(Date.now() / 1000 - Number(timestamp)) > 300) return null;
+
+  const key = await hmacKey(secret);
+  const firmado = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(`${timestamp}.${rawBody}`));
+  const firmaCalculada = Array.from(new Uint8Array(firmado)).map((b) => b.toString(16).padStart(2, '0')).join('');
+
+  if (!comparacionSegura(firmaCalculada, firmaEsperada)) return null;
+  try {
+    return JSON.parse(rawBody);
+  } catch (e) {
+    return null;
+  }
+}
+
+async function actualizarSuscripcionPorCliente(env, customerId, campos) {
+  const sets = Object.keys(campos).map((k) => `${k} = ?`).join(', ');
+  const valores = Object.values(campos);
+  await env.DB.prepare(`UPDATE users SET ${sets} WHERE stripe_customer_id = ?`)
+    .bind(...valores, customerId)
+    .run();
+}
+
+// POST /billing/webhook — Stripe llama aquí directamente (sin Origin de navegador, por
+// eso esta ruta se atiende ANTES del filtro de CORS en el dispatcher). La única
+// verificación que importa aquí es la firma criptográfica del cuerpo.
+async function handleWebhook(request, env) {
+  if (!env.STRIPE_WEBHOOK_SECRET) {
+    console.error('Falta STRIPE_WEBHOOK_SECRET: no se puede verificar el webhook.');
+    return new Response('Webhook no configurado', { status: 500 });
+  }
+  const rawBody = await request.text();
+  const evento = await verificarEventoStripe(rawBody, request.headers.get('Stripe-Signature'), env.STRIPE_WEBHOOK_SECRET);
+  if (!evento) return new Response('Firma inválida', { status: 400 });
+
+  // Idempotencia: si ya procesamos este evento (reintento de Stripe), no repetir nada.
+  try {
+    const ins = await env.DB.prepare('INSERT OR IGNORE INTO webhook_events (id, type, created_at) VALUES (?, ?, ?)')
+      .bind(evento.id, evento.type, Date.now())
+      .run();
+    if (!ins.meta || ins.meta.changes !== 1) {
+      return new Response(JSON.stringify({ received: true, duplicado: true }), { status: 200 });
+    }
+  } catch (e) {
+    console.error('D1 webhook_events error', e && e.message);
+    // Si D1 falla no podemos garantizar idempotencia, pero mejor procesar de más que
+    // dejar de actualizar el estado de la suscripción.
+  }
+
+  try {
+    const obj = evento.data.object;
+    if (evento.type === 'checkout.session.completed') {
+      const customerId = obj.customer;
+      const subscriptionId = obj.subscription;
+      if (customerId && subscriptionId) {
+        const sub = await stripeRequest(env, 'GET', `/subscriptions/${subscriptionId}`);
+        await actualizarSuscripcionPorCliente(env, customerId, {
+          stripe_subscription_id: subscriptionId,
+          subscription_status: sub.status,
+          trial_end: sub.trial_end ? sub.trial_end * 1000 : null,
+          current_period_end: sub.current_period_end ? sub.current_period_end * 1000 : null,
+        });
+        console.log('checkout_completado');
+      }
+    } else if (evento.type === 'customer.subscription.updated') {
+      await actualizarSuscripcionPorCliente(env, obj.customer, {
+        stripe_subscription_id: obj.id,
+        subscription_status: obj.status,
+        trial_end: obj.trial_end ? obj.trial_end * 1000 : null,
+        current_period_end: obj.current_period_end ? obj.current_period_end * 1000 : null,
+      });
+      console.log('suscripcion_actualizada');
+    } else if (evento.type === 'customer.subscription.deleted') {
+      await actualizarSuscripcionPorCliente(env, obj.customer, { subscription_status: 'canceled' });
+      console.log('suscripcion_cancelada');
+    } else if (evento.type === 'invoice.upcoming') {
+      const customerId = obj.customer;
+      let user;
+      try {
+        user = await env.DB.prepare('SELECT id, email FROM users WHERE stripe_customer_id = ?').bind(customerId).first();
+      } catch (e) {
+        console.error('D1 select user (invoice.upcoming) error', e && e.message);
+      }
+      if (user) {
+        // "Reclama" el envío con una escritura atómica (UPDATE ... WHERE ... IS NULL):
+        // si dos invoice.upcoming llegaran casi a la vez, solo uno gana la carrera y
+        // manda el correo — un SELECT y luego un UPDATE por separado no sería atómico.
+        let reclamado = false;
+        try {
+          const upd = await env.DB.prepare('UPDATE users SET trial_warning_sent_at = ? WHERE id = ? AND trial_warning_sent_at IS NULL')
+            .bind(Date.now(), user.id)
+            .run();
+          reclamado = !!(upd.meta && upd.meta.changes === 1);
+        } catch (e) {
+          console.error('D1 claim trial_warning error', e && e.message);
+        }
+        if (reclamado) {
+          const proximoCobro = obj.next_payment_attempt ? obj.next_payment_attempt * 1000 : null;
+          const dias = proximoCobro ? Math.max(0, Math.ceil((proximoCobro - Date.now()) / 86400000)) : 3;
+          const monto = ((obj.amount_due || 0) / 100).toFixed(2);
+          const montoTexto = `${monto} ${String(obj.currency || 'usd').toUpperCase()}`;
+          await enviarAvisoPrueba(env, user.email, dias, montoTexto);
+          console.log('aviso_prueba_enviado');
+        }
+      }
+    }
+  } catch (e) {
+    console.error('Error procesando webhook de Stripe', evento.type, e && e.message);
+    // Devolvemos 200 igual: si el problema es nuestro (no de la firma), preferimos que
+    // Stripe no reintente indefinidamente; queda registrado en los logs para revisarlo.
+  }
+
+  return new Response(JSON.stringify({ received: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    // El webhook de Stripe lo llama el propio Stripe (sin Origin de navegador y sin
+    // preflight): se atiende antes del filtro de CORS. Su única defensa es la firma
+    // criptográfica del cuerpo (ver verificarEventoStripe), no el Origin.
+    if (url.pathname === '/billing/webhook' && request.method === 'POST') {
+      return handleWebhook(request, env);
+    }
+
     const origin = request.headers.get('Origin');
     const origenOK = originPermitido(request, env);
 
@@ -739,11 +1049,14 @@ export default {
       });
     }
 
-    // CORS estricto para todas las rutas: se exige el Origin del sitio.
+    // CORS estricto para todas las demás rutas: se exige el Origin del sitio.
     if (!origenOK) {
       return fail('Origen no permitido.', 403, request, env);
     }
 
+    if (url.pathname === '/billing/crear-checkout' && request.method === 'POST') {
+      return handleCrearCheckout(request, env);
+    }
     if (url.pathname === '/auth/solicitar-link' && request.method === 'POST') {
       return handleSolicitarLink(request, env);
     }

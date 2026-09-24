@@ -36,11 +36,19 @@ database_id = "e1fb6282-6a08-4744-bc6d-2e4a59f32c3b"
 # RESEND_FROM (var, opcional): remitente del correo. Por defecto usa el dominio de pruebas
 # de Resend (onboarding@resend.dev), que solo entrega a la cuenta dueña de la API key —
 # para mandar a cualquier usuario hace falta verificar un dominio propio en Resend.
-# [vars]
-# RESEND_FROM = "Transforma tu Cuerpo <hola@tudominio.com>"
 
-# --- CORS (opcional) ---
-# El Worker ya permite por defecto tu GitHub Pages (luifelipecd.github.io) y localhost.
-# Si sirves el sitio desde otro dominio, añádelo aquí (separados por coma):
-# [vars]
-# ALLOWED_ORIGIN = "https://midominio.com,https://www.midominio.com"
+# --- SUSCRIPCIÓN (Stripe) ---
+# STRIPE_SECRET_KEY y STRIPE_WEBHOOK_SECRET van como secret (nunca en este archivo):
+#   npx wrangler secret put STRIPE_SECRET_KEY --config worker/wrangler.toml
+#   npx wrangler secret put STRIPE_WEBHOOK_SECRET --config worker/wrangler.toml
+# El endpoint del webhook en Stripe (modo test) es:
+#   https://recetario-ia.recetario90.workers.dev/billing/webhook
+# STRIPE_PRICE_MENSUAL / STRIPE_PRICE_ANUAL: los id de precio (price_...) de cada plan en
+# Stripe. No son secretos (solo identifican un precio público), van aquí como vars.
+
+# --- VARIABLES (no secretas) ---
+[vars]
+STRIPE_PRICE_MENSUAL = ""
+STRIPE_PRICE_ANUAL = ""
+# RESEND_FROM = "Transforma tu Cuerpo <hola@tudominio.com>"
+# ALLOWED_ORIGIN = "https://midominio.com,https://www.midominio.com"  # CORS extra, opcional
