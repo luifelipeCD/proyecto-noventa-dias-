@@ -784,6 +784,42 @@
   @media (prefers-reduced-motion:reduce){
     .panel.active,.main-panel.active,.recipe-card,.plan-meal,.why-card{animation:none;}
   }
+
+  /* ---------- SUSCRIPCIÓN (Stripe): banner de prueba y bloqueo premium ---------- */
+  /* Usa los tokens de color de Astra (interface.css los redefine); nada de colores fijos. */
+  .trial-banner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    background:color-mix(in srgb, var(--warn) 12%, var(--container));
+    border:1px solid color-mix(in srgb, var(--warn) 35%, transparent);
+    border-radius:16px;padding:14px 18px;margin:14px 0 0;}
+  .trial-banner p{margin:0;font-size:13px;color:var(--ink);line-height:1.5;}
+  .trial-banner strong{color:var(--warn);}
+  .trial-banner .btn-primary{width:auto;margin:0;padding:10px 18px;min-height:0;flex-shrink:0;}
+  @media (max-width:520px){.trial-banner{flex-direction:column;align-items:stretch;margin:14px 16px 0;}}
+
+  .premium-gate{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;
+    background:var(--container);border:1px solid var(--outline-soft);border-radius:20px;
+    padding:44px 28px;margin:0 auto;max-width:420px;box-shadow:var(--shadow);}
+  .premium-gate-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;
+    background:var(--primary-soft);color:var(--primary-bright);font-size:20px;margin-bottom:4px;}
+  .premium-gate-icon svg{width:22px;height:22px;}
+  .premium-gate h3{margin:0;font-size:19px;color:var(--ink);}
+  .premium-gate p{margin:0;font-size:13px;color:var(--ink-var);line-height:1.6;max-width:340px;}
+  .premium-gate .btn-primary{width:auto;margin-top:10px;}
+
+  /* Tarjetas de plan: independientes de .premium-gate porque también se usan dentro
+     de "Tu cuenta" (authCuentaHTML), que no vive dentro de un .premium-gate. */
+  .premium-plans{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px;width:100%;}
+  .plan-card{display:block;flex:1 1 150px;border:1px solid var(--outline-soft);border-radius:14px;padding:16px 14px;
+    background:var(--surface-lowest);text-align:left;cursor:pointer;font-family:inherit;
+    transition:border-color .15s ease,transform .1s ease;}
+  .plan-card:hover{border-color:var(--primary-line);}
+  .plan-card:active{transform:scale(0.98);}
+  .plan-card .plan-name{display:block;font-size:11px;font-weight:800;text-transform:uppercase;
+    letter-spacing:.05em;color:var(--ink-var);margin-bottom:4px;}
+  .plan-card .plan-price{display:block;font-size:20px;font-weight:800;color:var(--ink);
+    font-family:var(--font-display,inherit);}
+  .plan-card .plan-note{display:block;font-size:11px;color:var(--primary-bright);margin-top:4px;font-weight:600;}
+  .plan-card.recommended{border-color:var(--primary-line);background:var(--primary-soft);}
 </style>
 <link rel="stylesheet" href="redesign.css">
 <link rel="stylesheet" href="interface.css">
@@ -825,6 +861,8 @@
   <div><span class="eyebrow" id="intro-date">TU ESPACIO DE BIENESTAR</span><h1 id="page-title">Un buen día empieza contigo.</h1><p id="page-subtitle">Lo que necesitas para cuidarte hoy, sin complicaciones.</p></div>
   <button class="intro-badge" onclick="setTab('calculadora')">Mi plan <span aria-hidden="true">↗</span></button>
 </div>
+
+<div class="trial-banner" id="trial-banner" hidden></div>
 
 <div class="app">
   <section class="panel" data-panel="inicio" id="panel-inicio">
@@ -934,13 +972,14 @@
 
     <!-- 2 · MI DÍA / PLAN DE COMIDAS -->
     <section class="panel side-panel" data-panel="midia" id="panel-midia">
-      <div class="meal-layout"><div class="meal-content"><div class="section-heading"><div><span class="eyebrow">A DISFRUTAR</span><h2>Tus comidas de hoy</h2></div><button class="btn-secondary" onclick="setTab('recetario')">Explorar recetas ↗</button></div>
+      <div class="meal-layout" id="content-midia"><div class="meal-content"><div class="section-heading"><div><span class="eyebrow">A DISFRUTAR</span><h2>Tus comidas de hoy</h2></div><button class="btn-secondary" onclick="setTab('recetario')">Explorar recetas ↗</button></div>
       <p class="hint">Abre un plato para ver la preparación. Márcalo después de comer.</p>
       <div id="plan-dia"><p class="section-sub" style="margin-top:10px;">Calcula tu plan (paso 1) para generar tu menú de 90 días.</p></div>
       </div><aside class="meal-summary"><span class="eyebrow">LO QUE LLEVAS HOY</span><h3>Tu balance diario</h3>
       <div id="mi-dia-bars"></div>
       <button class="btn-secondary" style="width:100%;margin-top:14px;" onclick="setTab('recetario')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v17H6.5A2.5 2.5 0 0 0 4 22Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v17h5.5a2.5 2.5 0 0 1 2.5 2Z"/></svg>Ver todas las recetas</button>
       </aside></div>
+      <div class="premium-gate" id="gate-midia" hidden></div>
     </section>
 
   </aside>
@@ -956,7 +995,7 @@
       <div class="recipe-toolbar"><div><h2>Ideas que dan ganas.</h2><p class="hint">72 recetas para explorar. Tu menú personal está en Comidas.</p></div><button class="btn-secondary" onclick="toggleRecipeAI()" id="ai-toggle" aria-expanded="false" aria-controls="ai-details">✦ Crear con IA</button></div>
 
       <!-- Generador de recetas con IA -->
-      <details class="ia-disclosure" id="ai-details"><summary>Tu cocina con IA <span>Elige ingredientes y crea una receta</span></summary><div class="ia-box">
+      <details class="ia-disclosure" id="ai-details"><summary>Tu cocina con IA <span>Elige ingredientes y crea una receta</span></summary><div class="ia-box" id="content-ia">
         <h3>Tus ingredientes favoritos</h3>
         <p class="section-sub">Elige o escribe ingredientes que te gusten y la IA arma una receta alta en proteína.</p>
         <div class="ia-input-row">
@@ -973,7 +1012,9 @@
         <button class="btn-primary" id="ia-generar" type="button" onclick="generarRecetaIA()">Generar receta con IA</button>
         <div id="ia-estado"></div>
         <div id="ia-resultado"></div>
-      </div></details>
+      </div>
+      <div class="premium-gate" id="gate-ia" hidden></div>
+      </details>
 
       <div class="recipe-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg><input type="search" id="recipe-search" aria-label="Buscar recetas por nombre o ingrediente" placeholder="¿Qué te apetece? Busca un plato o ingrediente…" oninput="filterRecipeSearch()"><span id="recipe-count" aria-live="polite">72 recetas</span></div>
       <div class="filters" id="filtros"></div>
@@ -991,6 +1032,7 @@
 
     <!-- PROGRESO -->
     <section class="panel main-panel active" data-panel="progreso" id="panel-progreso">
+      <div id="content-progreso">
       <div class="progress-layout"><div class="progress-calendar">
       <span class="eyebrow">CONSTRUYE TU CONSTANCIA</span><h2>Tu mapa de progreso</h2>
       <p class="hint">Marca cada día que cumpliste tu plan. Se guarda en tu navegador.</p>
@@ -1031,12 +1073,15 @@
       <h3>Historial de días de comida</h3>
       <p class="hint">Resumen de cada día que terminaste desde <b>Mi día</b>: lo comido contra tu meta.</p>
       <div id="historial-dias"></div>
+      </div>
+      <div class="premium-gate" id="gate-progreso" hidden></div>
     </section>
 
     <!-- MOVIMIENTO -->
     <section class="panel main-panel" data-panel="movimiento" id="panel-movimiento">
       <h2>Movimiento</h2>
       <p class="hint">Rutina de gimnasio por grupo muscular y un conversor rápido de pasos a calorías. Usa el peso que guardaste en la calculadora.</p>
+      <div id="content-movimiento">
 
       <div class="move-steps">
         <span class="move-steps-label">Pasos al día recomendados</span>
@@ -1061,6 +1106,8 @@
       <button class="btn-primary" id="move-today-btn" onclick="marcarRutinaHoy()">✓ Marcar rutina de hoy</button>
       <div class="move-count" id="move-count"></div>
       <div class="cal-grid move-grid" id="move-grid"></div>
+      </div>
+      <div class="premium-gate" id="gate-movimiento" hidden></div>
     </section>
 
   </main>
@@ -2056,16 +2103,33 @@ function authEnviadoHTML(email, nota){
 
 function authCuentaHTML(){
   const email = (cuenta && cuenta.email) || (sesion && sesion.email) || '';
-  const activa = cuenta && cuenta.subscription && /^(active|activa|trialing)$/i.test(String(cuenta.subscription.status || cuenta.subscription));
+  const sub = cuenta && cuenta.subscription;
+  const activa = tienePremium();
+  const enPrueba = activa && sub && String(sub.status).toLowerCase() === 'trialing';
+
+  let filas = `<div><dt>Plan</dt><dd>${activa ? (enPrueba ? 'Prueba gratis' : 'Premium activo') : 'Gratuito'}</dd></div>`;
+  if(enPrueba && sub.trial_end) filas += `<div><dt>Tu prueba termina</dt><dd>${fmtFechaCorta(sub.trial_end)}</dd></div>`;
+  else if(activa && sub.current_period_end) filas += `<div><dt>Próximo cobro</dt><dd>${fmtFechaCorta(sub.current_period_end)}</dd></div>`;
+  filas += `<div><dt>Tus datos</dt><dd>Guardados en este navegador</dd></div>`;
+
+  const planes = activa ? '' : `
+    <p class="hint" style="margin:18px 0 10px;">Desbloquea tu plan automático de 90 días, Progreso, Movimiento y el generador de recetas con IA.</p>
+    <div class="premium-plans">
+      <button class="plan-card recommended" type="button" onclick="iniciarCheckout('mensual')">
+        <span class="plan-name">Mensual</span><span class="plan-price">${PRECIOS.mensual}</span><span class="plan-note">7 días gratis</span>
+      </button>
+      <button class="plan-card" type="button" onclick="iniciarCheckout('anual')">
+        <span class="plan-name">Anual</span><span class="plan-price">${PRECIOS.anual}</span><span class="plan-note">7 días gratis</span>
+      </button>
+    </div>`;
+
   return authShell(`
     <div class="auth-account-head">
       <span class="auth-avatar" aria-hidden="true">${esc(email.charAt(0).toUpperCase() || '?')}</span>
       <div><div class="auth-topline">TU CUENTA</div><h2 id="auth-title" class="auth-email-title">${esc(email)}</h2></div>
     </div>
-    <dl class="auth-facts">
-      <div><dt>Plan</dt><dd>${activa ? 'Premium activo' : 'Gratuito'}</dd></div>
-      <div><dt>Tus datos</dt><dd>Guardados en este navegador</dd></div>
-    </dl>
+    <dl class="auth-facts">${filas}</dl>
+    ${planes}
     <div class="auth-actions">
       <button class="btn-secondary" type="button" onclick="cerrarSesion()">Cerrar sesión</button>
       <button class="btn-primary" type="button" onclick="cerrarAuth()">Volver a mi espacio</button>
@@ -2133,6 +2197,8 @@ function cerrarSesion(){
   borrarSesion();
   cerrarAuth();
   renderAuthArea();
+  aplicarGatingPremium();
+  renderTrialBanner();
   toast('Sesión cerrada.');
 }
 
@@ -2152,6 +2218,8 @@ async function verificarLoginDesdeURL(){
       guardarSesion(data.token, data.email);
       cuenta = { email: data.email, subscription: data.subscription };
       renderAuthArea();
+      aplicarGatingPremium();
+      renderTrialBanner();
       toast('Sesión iniciada como ' + data.email);
     } else {
       toast(data.error || 'El link ya no es válido. Pide uno nuevo.');
@@ -2164,16 +2232,142 @@ async function verificarLoginDesdeURL(){
 // Refresca el estado de la cuenta contra el Worker. Si la sesión ya no es válida
 // (revocada, vencida), la borra localmente sin mostrar ningún error al usuario.
 async function cargarCuenta(){
-  if(!sesion) return;
+  if(!sesion){ aplicarGatingPremium(); renderTrialBanner(); return; }
   try{
     const resp = await fetch(IA_WORKER_URL + '/me', {
       headers: { Authorization: 'Bearer ' + sesion.token }
     });
-    if(resp.status === 401){ borrarSesion(); renderAuthArea(); return; }
+    if(resp.status === 401){ borrarSesion(); renderAuthArea(); aplicarGatingPremium(); renderTrialBanner(); return; }
     const data = await resp.json().catch(() => ({}));
     if(resp.ok && data.ok) cuenta = { email: data.email, subscription: data.subscription };
   }catch(e){
     // Sin conexión: no borramos la sesión, seguimos con lo que ya había en localStorage.
+  }
+  aplicarGatingPremium();
+  renderTrialBanner();
+}
+
+// ============================================================
+// SUSCRIPCIÓN (Stripe) — precios, checkout y bloqueo de secciones premium
+// ============================================================
+// Precios de referencia para la pantalla de bloqueo (solo texto: el monto real que se
+// cobra lo define el Price de Stripe que el Worker use para cada plan).
+const PRECIOS = { mensual: '$9.99/mes', anual: '$79/año' };
+
+function tienePremium(){
+  const status = cuenta && cuenta.subscription && cuenta.subscription.status;
+  return /^(active|trialing)$/i.test(String(status || ''));
+}
+
+function fmtFechaCorta(epochMs){
+  try{ return new Date(epochMs).toLocaleDateString('es', {day:'numeric', month:'short', year:'numeric'}); }
+  catch(e){ return ''; }
+}
+
+// Contenido de la pantalla de bloqueo: pide iniciar sesión si hace falta, o elegir un
+// plan si ya hay cuenta pero sin suscripción activa.
+function premiumGateHTML(desc){
+  if(!sesion){
+    return `<div class="premium-gate">
+      <span class="premium-gate-icon" aria-hidden="true">${AUTH_ICON}</span>
+      <h3>Necesitas una cuenta</h3>
+      <p>${desc} Inicia sesión con tu correo para desbloquear esto.</p>
+      <button class="btn-primary" type="button" onclick="abrirAuth()">Iniciar sesión →</button>
+    </div>`;
+  }
+  return `<div class="premium-gate">
+    <span class="premium-gate-icon" aria-hidden="true">✦</span>
+    <h3>Necesitas una suscripción activa</h3>
+    <p>${desc} Empieza tu prueba gratis de 7 días — cancela cuando quieras.</p>
+    <div class="premium-plans">
+      <button class="plan-card recommended" type="button" onclick="iniciarCheckout('mensual')">
+        <span class="plan-name">Mensual</span><span class="plan-price">${PRECIOS.mensual}</span><span class="plan-note">7 días gratis</span>
+      </button>
+      <button class="plan-card" type="button" onclick="iniciarCheckout('anual')">
+        <span class="plan-name">Anual</span><span class="plan-price">${PRECIOS.anual}</span><span class="plan-note">7 días gratis</span>
+      </button>
+    </div>
+  </div>`;
+}
+
+// Panel (contenedor real) + pantalla de bloqueo (paywall) de cada sección premium.
+const GATES_PREMIUM = [
+  { cont:'content-midia', gate:'gate-midia', desc:'Tu plan automático de comidas para los 90 días es una función premium.' },
+  { cont:'content-progreso', gate:'gate-progreso', desc:'El seguimiento de tu progreso (calendario, peso y check-ins) es una función premium.' },
+  { cont:'content-movimiento', gate:'gate-movimiento', desc:'La rutina de gimnasio y el seguimiento de tu actividad son una función premium.' },
+  { cont:'content-ia', gate:'gate-ia', desc:'El generador de recetas con IA es una función premium.' },
+];
+
+function aplicarGatingPremium(){
+  const premium = tienePremium();
+  GATES_PREMIUM.forEach(({cont, gate, desc}) => {
+    const contEl = document.getElementById(cont);
+    const gateEl = document.getElementById(gate);
+    if(!contEl || !gateEl) return;
+    contEl.hidden = !premium;
+    gateEl.hidden = premium;
+    if(!premium) gateEl.innerHTML = premiumGateHTML(desc);
+  });
+}
+
+// Banner de "tu prueba está por terminar" (3 días o menos), leyendo trial_end de /me.
+function renderTrialBanner(){
+  const el = document.getElementById('trial-banner');
+  if(!el) return;
+  const sub = cuenta && cuenta.subscription;
+  const enPrueba = sub && String(sub.status).toLowerCase() === 'trialing' && sub.trial_end;
+  const msRestantes = enPrueba ? sub.trial_end - Date.now() : Infinity;
+  if(!enPrueba || msRestantes > 3 * 24 * 60 * 60 * 1000){
+    el.hidden = true;
+    return;
+  }
+  const dias = Math.max(0, Math.ceil(msRestantes / (24 * 60 * 60 * 1000)));
+  const texto = dias <= 0 ? 'Tu prueba gratis termina hoy.' : `Tu prueba gratis termina en ${dias} día${dias === 1 ? '' : 's'}.`;
+  el.hidden = false;
+  el.innerHTML = `<p><strong>${texto}</strong> Después se te cobrará automáticamente — puedes revisarlo en tu cuenta.</p>
+    <button class="btn-primary" type="button" onclick="abrirAuth()">Ver mi cuenta →</button>`;
+}
+
+// Crea la sesión de Checkout de Stripe y redirige (hosted Checkout: no hace falta Stripe.js).
+async function iniciarCheckout(plan){
+  if(!sesion){ abrirAuth(); return; }
+  toast('Conectando con el pago…');
+  try{
+    const resp = await fetch(IA_WORKER_URL + '/billing/crear-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + sesion.token },
+      body: JSON.stringify({ plan })
+    });
+    const data = await resp.json().catch(() => ({}));
+    if(resp.ok && data.ok && data.url){
+      location.href = data.url;
+    } else {
+      toast(data.error || 'No se pudo iniciar el pago. Intenta de nuevo.');
+    }
+  }catch(e){
+    toast('No se pudo contactar el servicio de pago. Revisa tu conexión.');
+  }
+}
+
+// Si la URL trae ?checkout=success|cancel (vuelta del Checkout de Stripe), limpia la URL
+// y refresca la cuenta. El webhook puede tardar unos segundos en llegar, así que
+// reintenta una vez si todavía no se ve la suscripción activa.
+async function verificarCheckoutDesdeURL(){
+  const params = new URLSearchParams(location.search);
+  const estado = params.get('checkout');
+  if(!estado) return;
+  params.delete('checkout');
+  const nuevaURL = location.pathname + (params.toString() ? '?' + params.toString() : '') + location.hash;
+  history.replaceState(null, '', nuevaURL);
+
+  if(estado === 'success'){
+    toast('¡Gracias! Confirmando tu suscripción…');
+    await cargarCuenta();
+    if(!tienePremium()){
+      setTimeout(async () => { await cargarCuenta(); }, 3000);
+    }
+  } else if(estado === 'cancel'){
+    toast('Pago cancelado. Puedes intentarlo cuando quieras.');
   }
 }
 
@@ -4173,9 +4367,11 @@ function endTour(){
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
   setTab('inicio');
-  // Cuenta por correo: pinta el estado, canjea ?login_token=... y valida la sesión guardada.
+  // Cuenta por correo + suscripción: bloquea de entrada (hasta confirmar premium),
+  // pinta el estado, canjea ?login_token=.../?checkout=... y valida todo contra el Worker.
+  aplicarGatingPremium();
   renderAuthArea();
-  verificarLoginDesdeURL().then(cargarCuenta);
+  verificarLoginDesdeURL().then(() => verificarCheckoutDesdeURL()).then(cargarCuenta);
   document.getElementById('intro-date').textContent = new Date().toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long'});
   document.getElementById('ai-details').addEventListener('toggle',function(){document.getElementById('ai-toggle').setAttribute('aria-expanded',String(this.open));});
   const focusOrigins = new WeakMap();
