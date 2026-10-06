@@ -1,0 +1,650 @@
+[
+  {
+    "id": 1,
+    "name": "Tortilla de claras con espinaca y queso bajo en grasa",
+    "path": "assets/recipes/catalog/1.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 2,
+    "name": "Yogur griego con proteína, moras y chía",
+    "path": "assets/recipes/catalog/2.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 3,
+    "name": "Avena proteica con canela y manzana",
+    "path": "assets/recipes/catalog/3.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 4,
+    "name": "Batido de proteína con plátano y mantequilla de maní light",
+    "path": "assets/recipes/catalog/4.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 5,
+    "name": "Tostada integral con huevo pochado y aguacate",
+    "path": "assets/recipes/catalog/5.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 6,
+    "name": "Bowl de requesón con piña y semillas de chía",
+    "path": "assets/recipes/catalog/6.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 7,
+    "name": "Panqueques proteicos de avena y claras",
+    "path": "assets/recipes/catalog/7.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 8,
+    "name": "Huevos revueltos con champiñones, espinaca y pavo",
+    "path": "assets/recipes/catalog/8.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 33,
+    "name": "Tofu revuelto con cúrcuma y espinaca",
+    "path": "assets/recipes/catalog/33.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 34,
+    "name": "Pudín de chía con leche de soya y frutos rojos",
+    "path": "assets/recipes/catalog/34.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 35,
+    "name": "Pan integral con hummus, tomate y semillas de girasol",
+    "path": "assets/recipes/catalog/35.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 36,
+    "name": "Smoothie verde con proteína vegetal, espinaca y piña",
+    "path": "assets/recipes/catalog/36.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 37,
+    "name": "Bowl de yogur de soya con granola sin azúcar y plátano",
+    "path": "assets/recipes/catalog/37.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 38,
+    "name": "Omelette de harina de garbanzo con pimientos",
+    "path": "assets/recipes/catalog/38.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 39,
+    "name": "Requesón batido con cacao y fresas",
+    "path": "assets/recipes/catalog/39.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 40,
+    "name": "Huevos al horno con frijoles y salsa (shakshuka de frijol)",
+    "path": "assets/recipes/catalog/40.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 9,
+    "name": "Pechuga de pollo a la plancha con brócoli y camote",
+    "path": "assets/recipes/catalog/9.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 10,
+    "name": "Salmón al horno con espárragos y quinoa",
+    "path": "assets/recipes/catalog/10.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 11,
+    "name": "Ensalada de atún con garbanzos y limón",
+    "path": "assets/recipes/catalog/11.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 12,
+    "name": "Lomo de res magro con ensalada grande de tomate y hojas verdes",
+    "path": "assets/recipes/catalog/12.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 13,
+    "name": "Pechuga de pavo rellena de espinaca y champiñones",
+    "path": "assets/recipes/catalog/13.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 14,
+    "name": "Camarones salteados con muchos vegetales y arroz integral",
+    "path": "assets/recipes/catalog/14.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 15,
+    "name": "Tofu marinado a la plancha con muchos vegetales asados y arroz integral",
+    "path": "assets/recipes/catalog/15.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 16,
+    "name": "Chili de pavo molido con frijoles negros y muchas verduras",
+    "path": "assets/recipes/catalog/16.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 17,
+    "name": "Merluza al horno con puré de coliflor",
+    "path": "assets/recipes/catalog/17.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 18,
+    "name": "Wrap integral de pollo con yogur en lugar de mayonesa",
+    "path": "assets/recipes/catalog/18.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 19,
+    "name": "Lentejas guisadas con pechuga de pollo desmenuzada",
+    "path": "assets/recipes/catalog/19.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 20,
+    "name": "Bowl de quinoa con garbanzos, pepino y feta bajo en grasa",
+    "path": "assets/recipes/catalog/20.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 21,
+    "name": "Pescado blanco al vapor con muchos vegetales al limón",
+    "path": "assets/recipes/catalog/21.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 22,
+    "name": "Albóndigas de pavo en salsa de tomate con zoodles",
+    "path": "assets/recipes/catalog/22.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 23,
+    "name": "Ensalada César grande light con pollo (aderezo de yogur)",
+    "path": "assets/recipes/catalog/23.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 24,
+    "name": "Curry de pollo bajo en grasa con arroz integral",
+    "path": "assets/recipes/catalog/24.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 41,
+    "name": "Curry de garbanzos y espinaca con arroz integral",
+    "path": "assets/recipes/catalog/41.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 42,
+    "name": "Bowl de lentejas rojas con muchas verduras asadas",
+    "path": "assets/recipes/catalog/42.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 43,
+    "name": "Chili sin carne de frijol y soya texturizada",
+    "path": "assets/recipes/catalog/43.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 44,
+    "name": "Tacos de tempeh con repollo morado y salsa",
+    "path": "assets/recipes/catalog/44.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 45,
+    "name": "Ensalada grande de quinoa, edamame y aguacate",
+    "path": "assets/recipes/catalog/45.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 46,
+    "name": "Pasta integral con lentejas a la boloñesa",
+    "path": "assets/recipes/catalog/46.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 47,
+    "name": "Buddha bowl de tofu al horno, brócoli y camote",
+    "path": "assets/recipes/catalog/47.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 48,
+    "name": "Hamburguesa de frijol negro con ensalada",
+    "path": "assets/recipes/catalog/48.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 49,
+    "name": "Salteado de tofu con muchos vegetales y fideos soba",
+    "path": "assets/recipes/catalog/49.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 50,
+    "name": "Sopa espesa de lentejas con muchas verduras",
+    "path": "assets/recipes/catalog/50.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 51,
+    "name": "Berenjena rellena de quinoa y garbanzos",
+    "path": "assets/recipes/catalog/51.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 52,
+    "name": "Wrap de falafel al horno con salsa de yogur de soya",
+    "path": "assets/recipes/catalog/52.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 53,
+    "name": "Pollo al curry rojo con muchas verduras",
+    "path": "assets/recipes/catalog/53.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 54,
+    "name": "Pescado blanco a la plancha con ensalada grande tibia de garbanzo",
+    "path": "assets/recipes/catalog/54.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 55,
+    "name": "Atún sellado con ajonjolí y vegetales salteados",
+    "path": "assets/recipes/catalog/55.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 56,
+    "name": "Pechuga de pollo BBQ al horno con elote y ensalada grande de repollo",
+    "path": "assets/recipes/catalog/56.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 65,
+    "name": "Ensalada gigante de pollo a la plancha",
+    "path": "assets/recipes/catalog/65.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 66,
+    "name": "Sopa de verduras con pollo desmenuzado",
+    "path": "assets/recipes/catalog/66.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 67,
+    "name": "Salteado grande de vegetales con camarones",
+    "path": "assets/recipes/catalog/67.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 68,
+    "name": "Ensalada gigante de atún y huevo",
+    "path": "assets/recipes/catalog/68.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 69,
+    "name": "Wok de tofu y muchos vegetales (sin arroz)",
+    "path": "assets/recipes/catalog/69.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 25,
+    "name": "Plato grande de crudités con hummus",
+    "path": "assets/recipes/catalog/25.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 26,
+    "name": "Yogur griego natural con nueces",
+    "path": "assets/recipes/catalog/26.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 27,
+    "name": "Claras de huevo duras",
+    "path": "assets/recipes/catalog/27.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 28,
+    "name": "Batido proteico simple",
+    "path": "assets/recipes/catalog/28.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 29,
+    "name": "Requesón con canela y un toque de miel",
+    "path": "assets/recipes/catalog/29.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 30,
+    "name": "Edamame al vapor con sal",
+    "path": "assets/recipes/catalog/30.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 31,
+    "name": "Rodajas de manzana con mantequilla de maní light",
+    "path": "assets/recipes/catalog/31.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 32,
+    "name": "Atún en agua con galletas de arroz",
+    "path": "assets/recipes/catalog/32.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 57,
+    "name": "Garbanzos tostados crujientes con especias",
+    "path": "assets/recipes/catalog/57.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 58,
+    "name": "Hummus de edamame con crudités",
+    "path": "assets/recipes/catalog/58.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 59,
+    "name": "Batido de proteína vegetal con plátano",
+    "path": "assets/recipes/catalog/59.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 60,
+    "name": "Galleta de arroz con crema de cacahuate y plátano",
+    "path": "assets/recipes/catalog/60.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 61,
+    "name": "Bocaditos de avena, dátil y proteína vegetal",
+    "path": "assets/recipes/catalog/61.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 62,
+    "name": "Queso cottage con piña y semillas de calabaza",
+    "path": "assets/recipes/catalog/62.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 63,
+    "name": "Huevo duro con aguacate y crudités",
+    "path": "assets/recipes/catalog/63.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 64,
+    "name": "Yogur islandés (skyr) con frutos rojos",
+    "path": "assets/recipes/catalog/64.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 72,
+    "name": "Gelatina sin azúcar con fresas y yogur",
+    "path": "assets/recipes/catalog/72.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 73,
+    "name": "Sandía con queso cottage y menta",
+    "path": "assets/recipes/catalog/73.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 74,
+    "name": "Crudités gigantes con dip de yogur y eneldo",
+    "path": "assets/recipes/catalog/74.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "width": 960,
+    "height": 720
+  }
+]

@@ -1,0 +1,1 @@
+Versiones WebP de las fotografías de Free Exercise DB incluidas en ../exercises/. Se conserva el encuadre y la resolución originales; solo cambia el formato de entrega. Fuente y licencia: ../exercises/README.md y ../exercises/LICENSE.md.

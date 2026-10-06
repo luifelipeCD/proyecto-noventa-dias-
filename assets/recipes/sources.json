@@ -1,0 +1,122 @@
+[
+  {
+    "type": "huevo",
+    "localFile": "huevo.jpg",
+    "file": "Omelette on a plate.jpg",
+    "artist": "Infrogmation of New Orleans",
+    "license": "CC BY 2.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Omelette_on_a_plate.jpg"
+  },
+  {
+    "type": "pollo",
+    "localFile": "pollo.jpg",
+    "file": "Pesto Chicken and Grilled Zucchini.jpg",
+    "artist": "Infrogmation of New Orleans",
+    "license": "CC BY-SA 4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Pesto_Chicken_and_Grilled_Zucchini.jpg"
+  },
+  {
+    "type": "pescado",
+    "localFile": "pescado.jpg",
+    "file": "Liat Portal for Foodie Disorder - Grilled salmon with sweet potatoes.jpg",
+    "artist": "HaJunkiyada",
+    "license": "CC BY-SA 4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Grilled_salmon_with_sweet_potatoes.jpg"
+  },
+  {
+    "type": "carne",
+    "localFile": "carne.jpg",
+    "file": "Ribeye Steak on Sizzling Plate.jpg",
+    "artist": "Ceeseven",
+    "license": "CC BY-SA 4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Ribeye_Steak_on_Sizzling_Plate.jpg"
+  },
+  {
+    "type": "batido",
+    "localFile": "batido.jpg",
+    "file": "Fresh fruit smoothie being poured into a glass.jpg",
+    "artist": "Shixart1985",
+    "license": "CC BY 2.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Fresh_fruit_smoothie_being_poured_into_a_glass.jpg"
+  },
+  {
+    "type": "lacteo",
+    "localFile": "lacteo.jpg",
+    "file": "Yogurt fruit bowl.jpg",
+    "artist": "Jumbocombo0811",
+    "license": "CC BY-SA 4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Yogurt_fruit_bowl.jpg"
+  },
+  {
+    "type": "avena",
+    "localFile": "avena.jpg",
+    "file": "Banana Oatmeal Breakfast Bowl (44302857265).jpg",
+    "artist": "Ella Olsson",
+    "license": "CC BY 2.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Banana_Oatmeal_Breakfast_Bowl_(44302857265).jpg"
+  },
+  {
+    "type": "tofu",
+    "localFile": "tofu.jpg",
+    "file": "Salt and Pepper Tofu - close-up - Little Beijing AUD15.80 (4713832191).jpg",
+    "artist": "Alpha from Melbourne, Australia",
+    "license": "CC BY-SA 2.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Salt_and_Pepper_Tofu_-_close-up_-_Little_Beijing_AUD15.80_(4713832191).jpg"
+  },
+  {
+    "type": "ensalada",
+    "localFile": "ensalada.jpg",
+    "file": "Liat Portal for Foodie Disorder - Chopped vegetable salad preparation.jpg",
+    "artist": "HaJunkiyada",
+    "license": "CC BY-SA 4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Chopped_vegetable_salad_preparation.jpg"
+  },
+  {
+    "type": "legumbre",
+    "localFile": "legumbre.jpg",
+    "file": "Liat Portal for Foodie Disorder - Cooked Lentils with Caramelized Onions.jpg",
+    "artist": "HaJunkiyada",
+    "license": "CC BY-SA 4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Cooked_Lentils_with_Caramelized_Onions.jpg"
+  },
+  {
+    "type": "wrap",
+    "localFile": "wrap.jpg",
+    "file": "Mix Gyros (Chicken & Pork) Pitta Wrap - Montague Gyros 2025-12-06.jpg",
+    "artist": "Andy Li",
+    "license": "CC0",
+    "page": "https://commons.wikimedia.org/wiki/File:Mix_Gyros_(Chicken_%26_Pork)_Pitta_Wrap_-_Montague_Gyros_2025-12-06.jpg"
+  },
+  {
+    "type": "sopa",
+    "localFile": "sopa.jpg",
+    "file": "Traditional Vegetable Soup from Argentina.jpg",
+    "artist": "Horacio Cambeiro",
+    "license": "CC BY-SA 3.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Traditional_Vegetable_Soup_from_Argentina.jpg"
+  },
+  {
+    "type": "fruta",
+    "localFile": "fruta.jpg",
+    "file": "Fruit Salad Or Fruit Bowl.jpg",
+    "artist": "Manjeshwari poet mysore",
+    "license": "CC BY-SA 4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:Fruit_Salad_Or_Fruit_Bowl.jpg"
+  },
+  {
+    "type": "nuez",
+    "localFile": "nuez.jpg",
+    "file": "MixedNutsInGlassBowl.JPG",
+    "artist": "Simon Speed",
+    "license": "CC0",
+    "page": "https://commons.wikimedia.org/wiki/File:MixedNutsInGlassBowl.JPG"
+  },
+  {
+    "type": "plato",
+    "localFile": "plato.jpg",
+    "file": "A Nigerian balanced diet.jpg",
+    "artist": "PhoToria",
+    "license": "CC BY-SA 4.0",
+    "page": "https://commons.wikimedia.org/wiki/File:A_Nigerian_balanced_diet.jpg"
+  }
+]

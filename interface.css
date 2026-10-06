@@ -110,3 +110,18 @@ body.dialog-open{overflow:hidden;}
   .auth-facts>div{flex-direction:column;gap:4px;}
   .auth-facts dd{text-align:left;}
 }
+
+/* Fotos y detalle de los ejercicios */
+.ex-card > summary{justify-content:flex-start;gap:14px;}
+.ex-card > summary::after{margin-left:auto;}
+.ex-thumb{width:76px;height:64px;flex:0 0 76px;object-fit:contain;background:#151515;border-radius:10px;}
+.ex-sum-copy{display:flex;flex-direction:column;gap:7px;min-width:0;}
+.ex-sum-series{white-space:normal;line-height:1.5;font-weight:600;}
+.ex-photos{max-width:720px;gap:12px;}
+.ex-photos img{aspect-ratio:4 / 3;object-fit:contain;background:#151515;}
+.ex-photos a{display:block;border-radius:12px;}
+.ex-photos a:focus-visible{outline:3px solid var(--primary);outline-offset:3px;}
+.ex-photos[hidden],.ex-thumb[hidden],.ex-fig-wrap[hidden]{display:none;}
+.ex-photo-hint,.exercise-credit{font-size:12px;line-height:1.6;color:var(--ink-var);}
+.exercise-credit{margin:20px 0;}.exercise-credit a{color:var(--primary);}
+@media(max-width:600px){.ex-photos{grid-template-columns:1fr;max-width:440px;}.ex-thumb{width:68px;height:58px;flex-basis:68px;}.ex-card > summary{gap:10px;}}

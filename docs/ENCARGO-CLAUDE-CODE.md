@@ -1,0 +1,17 @@
+# Encargo de continuación para Claude Code
+
+Este lote quedó implementado y revisado. Antes de continuar, lee `docs/RESULTADO-CLAUDE-CODE.md` y `docs/ENTREGA-NOVENTA.md`; comprueba lo ya resuelto y enfócate en los pendientes autorizados. No repitas cambios ni publiques sin verificar las ramas de Paddle y entrenamiento.
+
+Continúa la aplicación «noventa». El usuario pidió que el trabajo pase a Claude Code, que puedas codificar y subir directamente a GitHub, y que mejoremos la aplicación para publicarla. Lee CLAUDE.md y la revisión previa. Conserva el diseño aprobado.
+
+Trabaja de manera autónoma sobre el código y completa este lote concreto. Codex trabaja en las imágenes; no edites sus archivos durante esta ejecución.
+
+1. **Preferencia alimentaria real:** añade al paso 3 del formulario «Omnívora / Vegetariana / Vegana», guarda la elección con los datos existentes y respétala en todo el menú automático y las sustituciones. Si un menú guardado no corresponde a una nueva preferencia, informa y ofrece regenerarlo conservando el historial. La IA debe recibir la preferencia; no afirmar que detecta alergias. Prueba los 90 días para cada dieta y la compatibilidad de datos antiguos.
+2. **Lista de compras:** crea una lista de los siguientes 7 días del menú, agrupando ingredientes y sumando gramos con las porciones realmente usadas. El programa puede ir por el día 88: limita a los días restantes. Incluye copiar la lista, un estado vacío claro y el período al que corresponde. Conserva el diseño y evita recopilar datos adicionales. Prueba agregación y final de programa.
+3. **Disponibilidad de servicios:** diseña una lectura pública segura de configuración del Worker (solo disponibilidad de correo, generación y planes; nunca claves o valores privados) y úsala para evitar anunciar cobro o prueba gratis disponible cuando el servicio no está configurado. Las fallas de red deben mostrar estado comprensible con opción de reintentar; no autorizar premium si la consulta falla. Evita revelar configuración interna en errores de usuario. Prueba el endpoint y las condiciones de disponibilidad.
+4. **Entrenamiento usable:** permite marcar ejercicios completados por fecha y día de rutina, muestra avance de sesión y agrega un temporizador de descanso accesible, con iniciar/pausar/reiniciar. Evita inventar personalización profesional: la rutina sigue siendo una referencia general. Si añades datos al respaldo, extiende la validación y pruebas del Worker de forma compatible.
+5. **Revisión de publicación:** corrige problemas claros de accesibilidad, manejo de errores y textos desactualizados que encuentres en esas funciones. Revisa el flujo sin conexión y no prometas que premium se valida sin red. No cambies el esquema de pagos ni la autenticación completa en esta iteración sin tests y una razón concreta.
+
+Antes de subir, ejecuta `npm test`, las comprobaciones de sintaxis y `git diff --check`. Revisa que los cambios no incluyan secretos ni la demostración local. Añade solo tus archivos modificados, crea uno o varios commits descriptivos y sube a `origin stripe-suscripcion` sin force. Si la conexión se interrumpe, comprueba primero el SHA remoto antes de reintentar. No crees `.github/workflows` porque el token actual no permite modificarlos.
+
+Escribe `docs/RESULTADO-CLAUDE-CODE.md` con cambios implementados, validación realizada, SHA subido y pendientes de publicación. No des por activados Stripe, correo, migraciones ni despliegues que no hayas realizado. Responde brevemente en español cuando termines.

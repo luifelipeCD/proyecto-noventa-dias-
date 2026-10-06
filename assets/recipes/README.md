@@ -1,0 +1,1 @@
+Fotos ilustrativas por tipo de plato, descargadas de las páginas de Wikimedia Commons enlazadas en los créditos de la aplicación el 5 de octubre de 2026. Se conservan sin modificar y se muestran con autor, licencia y enlace al original en Créditos de las fotos de platos. No representan la receta exacta.

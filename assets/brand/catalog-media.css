@@ -1,0 +1,15 @@
+.rc-media-generated .rc-photo-img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: center;
+  background: #f4ede5;
+}
+.rc-media-generated .rc-photo-tag {
+  color: #4f3c63;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(79, 60, 99, 0.12);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}

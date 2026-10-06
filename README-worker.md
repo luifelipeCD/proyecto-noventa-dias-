@@ -67,8 +67,7 @@ npx wrangler secret put RESEND_API_KEY --config worker/wrangler.toml
 ```
 
 > Sin `SESSION_SECRET` el login queda roto (`/auth/verificar` y `/me` devuelven error 500).
-> Sin `RESEND_API_KEY` el login **no manda el correo**, pero no rompe nada más — ver la
-> sección "Cuentas de usuario (magic link)" más abajo para probarlo sin esa clave.
+> Sin `RESEND_API_KEY` el acceso por correo se rechaza en producción. Para probar sin correo real, añadir `DEV_MODE="true"` únicamente en `worker/.dev.vars` y usar un origen localhost. Nunca activar este modo en producción.
 
 > La **Site Key** de Turnstile (`0x4AAAAAAEr6xThiKA2d4tpi`) es pública y ya está en `index.html`.
 > En el panel de Turnstile, en *Allowed hostnames*, deja solo `luifelipecd.github.io`.
@@ -210,12 +209,28 @@ O desde el panel: **Cloudflare → Storage & Databases → KV → `RATE_LIMIT`**
 
 ## Qué hace el Worker (resumen)
 
-- Solo `POST` con `{ "ingredientes": string[], "turnstileToken": string }` desde el origen del sitio.
+- Solo `POST` con `{ "ingredientes": string[], "turnstileToken": string, "dieta"?: "omnivora"|"vegetariana"|"vegana" }`
+  desde el origen del sitio. `dieta` es opcional y es la preferencia alimentaria que el
+  usuario declaró en su plan; si llega un valor inválido o no llega, se usa "omnivora".
+  Nunca se trata como una alergia ni una restricción médica.
 - Valida la entrada → límite por IP → Turnstile → llama a `claude-haiku-4-5` pidiendo **una**
   receta alta en proteína en el formato del sitio (`nombre`, `categoria`, `dieta`, `kcal`,
   `proteina`, `carbos`, `grasa`, `ingredientes[]`, `pasos[]`), **solo JSON**.
 - Valida y normaliza la respuesta. Si algo falla → `{ "ok": false, "error": "mensaje claro" }`.
 - Cada respuesta OK trae `"restantes": N`.
+
+## Disponibilidad de servicios (GET /config)
+
+Lectura pública (sin sesión) de qué está configurado en el Worker — nunca claves ni
+valores, solo booleanos:
+
+```json
+{ "ok": true, "disponible": { "correo": false, "generacionIA": true, "pagos": { "mensual": false, "anual": false } } }
+```
+
+El frontend la consulta al cargar para no anunciar cobro, prueba gratis o generación con
+IA si el servicio correspondiente no está configurado, y para no activar nada si la
+consulta falla por red (en ese caso muestra un aviso con botón para reintentar).
 
 ## Cuentas de usuario (magic link)
 
@@ -293,3 +308,23 @@ la respuesta para adivinar qué correos ya tienen cuenta.
 `claude-haiku-4-5` cuesta ~$1 / millón de tokens de entrada y ~$5 / millón de salida.
 Cada receta son unos cientos de tokens → céntimos por muchas generaciones.
 El plan gratuito de Cloudflare Workers cubre 100 000 peticiones al día.
+
+## Gestión de suscripción y copia del progreso
+
+Aplicar `worker/schema_progress.sql` a la misma base D1 antes de desplegar el Worker. La tabla es nueva y no altera los datos existentes.
+
+- `POST /billing/portal`: requiere sesión, utiliza el cliente Stripe asociado a esa cuenta y abre el portal alojado de Stripe. Habilitar cancelación, actualización del medio de pago e historial de facturas en la configuración del portal en Stripe.
+- `GET /progreso` y `PUT /progreso`: requieren sesión; guardan únicamente el progreso de ese usuario, nunca el token de sesión. Las revisiones impiden sobrescribir una copia modificada durante la operación.
+- En Tu cuenta, Guardar copia reemplaza la copia remota con confirmación; Cargar copia reemplaza el progreso local con confirmación. No es sincronización automática.
+
+Antes de cobrar: completar STRIPE_PRICE_MENSUAL y STRIPE_PRICE_ANUAL con los precios recurrentes de tu propia cuenta; configurar las claves secretas y webhook según las instrucciones anteriores. Verificar que los importes coincidan con los textos del sitio ($9.99/mes y $79/año). Probar con Stripe en modo de prueba: alta, prueba de 7 días, portal, cancelación y webhook. Luego probar guardar en un navegador y cargar en otro. No introducir claves secretas en index.html. Estos cambios locales no activan cobros ni despliegan la aplicación.
+
+## Correcciones para publicar
+
+APP_URL conserva la ruta de GitHub Pages en el correo, Checkout y portal. Cambiarla si se cambia el dominio o la carpeta. Los errores al procesar un webhook devuelven 503 para permitir reintentos. Ejecutar `npm test` antes de publicar. Consultar `docs/REVISION-Y-PUBLICACION.md` para los pendientes y límites de esta versión.
+
+### Disponibilidad revisada
+
+`GET /config` publica solo indicadores booleanos. Todos los servicios requieren DB y SESSION_SECRET; correo requiere RESEND_API_KEY y RESEND_FROM; IA requiere ANTHROPIC_API_KEY y TURNSTILE_SECRET_KEY; pagos requieren STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET y el identificador del precio correspondiente. Esto verifica presencia de configuración, no validez de cuentas, dominio, tablas o credenciales: probar los flujos externos antes de vender. El checkout rechaza una configuración sin webhook.
+
+El formato nuevo de `rp90_ejercicios_hechos` es `{ "AAAA-MM-DD": { "sesiones": { "0": [0,1], "1": [2] } } }`; los días 0–6 se conservan por separado. También se aceptan las copias anteriores con `dia` y `hechos`. No requiere una tabla adicional: forma parte del JSON de user_progress.

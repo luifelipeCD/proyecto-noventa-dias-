@@ -9,7 +9,7 @@
      declaran por <meta> (los navegadores los ignoran fuera de una cabecera HTTP real), así que no
      se incluyen aquí para no dar una falsa sensación de protección; si se necesita esa protección
      anti-clickjacking habría que servir el sitio desde un host que permita cabeceras propias. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://commons.wikimedia.org https://cdn.jsdelivr.net; connect-src 'self' https://recetario-ia.recetario90.workers.dev; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://commons.wikimedia.org https://upload.wikimedia.org https://thumb.wikimedia.org; connect-src 'self' https://recetario-ia.recetario90.workers.dev; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'; manifest-src 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Transforma tu Cuerpo en 90 Días</title>
 <meta name="description" content="Calcula tus calorías y tu proteína según tu objetivo —bajar de peso, mantener o ganar músculo—, recibe un menú automático con más de 70 recetas altas en proteína y sigue tu avance durante 90 días. Todo funciona en tu navegador, sin cuenta.">
@@ -29,6 +29,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@700;800&display=swap" rel="stylesheet">
 <!-- Cloudflare Turnstile (captcha invisible) para el generador de recetas con IA -->
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script src="assets/recipes/catalog.js"></script>
 <script>
   // El widget entrega el token aquí (se define antes de nada por si Turnstile carga temprano).
   window.turnstileToken = '';
@@ -428,10 +429,10 @@
   .modal-card .macros .mc b{color:var(--mc-c,var(--ink));}
   .modal-card .macros b{color:var(--ink);}
   .ing-hint{font-weight:400;color:var(--ink-var);font-size:11.5px;}
-  .modal-card ul.ing-list{list-style:none;padding:0;margin:var(--space-xs) 0;}
-  .modal-card ul.ing-list li{display:flex;justify-content:space-between;gap:var(--space-xs);flex-wrap:wrap;
+  ul.ing-list{list-style:none;padding:0;margin:var(--space-xs) 0;}
+  ul.ing-list li{display:flex;justify-content:space-between;gap:var(--space-xs);flex-wrap:wrap;
     padding:var(--space-2xs) 0;border-bottom:1px solid var(--outline-soft);font-size:12.5px;}
-  .modal-card ul.ing-list li:last-child{border-bottom:none;}
+  ul.ing-list li:last-child{border-bottom:none;}
   .ing-name{color:var(--ink);}
   .ing-macros{color:var(--ink-var);font-size:11.5px;white-space:nowrap;}
   .modal-head{display:flex;align-items:flex-start;gap:var(--space-sm);}
@@ -624,6 +625,27 @@
   .move-count b{color:var(--ink);}
   .move-grid{grid-template-columns:repeat(7,1fr);margin-top:var(--space-xs);}
 
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+
+  /* Progreso de la sesión de hoy (ejercicios marcados como hechos) */
+  .session-progress{margin:var(--space-sm) 0;}
+  .session-progress-label{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-var);margin-bottom:var(--space-2xs);}
+  .session-progress-label b{color:var(--ink);}
+
+  /* Marcar un ejercicio como hecho */
+  .ex-done-btn{width:100%;margin-top:var(--space-sm);}
+  .ex-done-btn.on{background:var(--container-high);color:var(--primary-bright);border:1px solid var(--primary-line);}
+  .ex-card.done>summary .ex-sum-name::after{content:' ✓';color:var(--fat);}
+
+  /* Temporizador de descanso: accesible, controlado con botones grandes */
+  .rest-timer{background:var(--container-high);border:1px solid var(--outline-soft);border-radius:14px;padding:var(--space-md);margin:var(--space-sm) 0 var(--space-md);}
+  .rest-timer-display{font-family:var(--font-head);font-weight:800;font-size:40px;letter-spacing:-0.02em;color:var(--ink);text-align:center;margin-bottom:var(--space-sm);}
+  .rest-timer-presets{display:flex;gap:var(--space-2xs);flex-wrap:wrap;margin-bottom:var(--space-sm);}
+  .rest-timer-presets button{flex:1;min-width:64px;}
+  .rest-timer-presets button.active{background:var(--primary);color:var(--on-primary);border-color:var(--primary);}
+  .rest-timer-actions{display:flex;gap:var(--space-xs);}
+  .rest-timer-actions>button{flex:1;}
+
   /* Conversor de pasos a calorías */
   .steps-conv{display:flex;flex-direction:column;gap:var(--space-xs);margin-bottom:var(--space-2xs);}
   .steps-conv input{max-width:220px;}
@@ -784,9 +806,46 @@
   @media (prefers-reduced-motion:reduce){
     .panel.active,.main-panel.active,.recipe-card,.plan-meal,.why-card{animation:none;}
   }
+
+  /* ---------- SUSCRIPCIÓN (Stripe): banner de prueba y bloqueo premium ---------- */
+  /* Usa los tokens de color de Astra (interface.css los redefine); nada de colores fijos. */
+  .trial-banner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    background:color-mix(in srgb, var(--warn) 12%, var(--container));
+    border:1px solid color-mix(in srgb, var(--warn) 35%, transparent);
+    border-radius:16px;padding:14px 18px;margin:14px 0 0;}
+  .trial-banner p{margin:0;font-size:13px;color:var(--ink);line-height:1.5;}
+  .trial-banner strong{color:var(--warn);}
+  .trial-banner .btn-primary{width:auto;margin:0;padding:10px 18px;min-height:0;flex-shrink:0;}
+  @media (max-width:520px){.trial-banner{flex-direction:column;align-items:stretch;margin:14px 16px 0;}}
+
+  .premium-gate{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;
+    background:var(--container);border:1px solid var(--outline-soft);border-radius:20px;
+    padding:44px 28px;margin:0 auto;max-width:420px;box-shadow:var(--shadow);}
+  .premium-gate-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;
+    background:var(--primary-soft);color:var(--primary-bright);font-size:20px;margin-bottom:4px;}
+  .premium-gate-icon svg{width:22px;height:22px;}
+  .premium-gate h3{margin:0;font-size:19px;color:var(--ink);}
+  .premium-gate p{margin:0;font-size:13px;color:var(--ink-var);line-height:1.6;max-width:340px;}
+  .premium-gate .btn-primary{width:auto;margin-top:10px;}
+
+  /* Tarjetas de plan: independientes de .premium-gate porque también se usan dentro
+     de "Tu cuenta" (authCuentaHTML), que no vive dentro de un .premium-gate. */
+  .premium-plans{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px;width:100%;}
+  .plan-card{display:block;flex:1 1 150px;border:1px solid var(--outline-soft);border-radius:14px;padding:16px 14px;
+    background:var(--surface-lowest);text-align:left;cursor:pointer;font-family:inherit;
+    transition:border-color .15s ease,transform .1s ease;}
+  .plan-card:hover{border-color:var(--primary-line);}
+  .plan-card:active{transform:scale(0.98);}
+  .plan-card .plan-name{display:block;font-size:11px;font-weight:800;text-transform:uppercase;
+    letter-spacing:.05em;color:var(--ink-var);margin-bottom:4px;}
+  .plan-card .plan-price{display:block;font-size:20px;font-weight:800;color:var(--ink);
+    font-family:var(--font-display,inherit);}
+  .plan-card .plan-note{display:block;font-size:11px;color:var(--primary-bright);margin-top:4px;font-weight:600;}
+  .plan-card.recommended{border-color:var(--primary-line);background:var(--primary-soft);}
 </style>
 <link rel="stylesheet" href="redesign.css">
-<link rel="stylesheet" href="interface.css">
+<link rel="stylesheet" href="interface.css?v=training-photos-1">
+<link rel="stylesheet" href="assets/brand/catalog-media.css">
 </head>
 <body>
 <!-- BARRA SUPERIOR -->
@@ -826,6 +885,8 @@
   <button class="intro-badge" onclick="setTab('calculadora')">Mi plan <span aria-hidden="true">↗</span></button>
 </div>
 
+<div class="trial-banner" id="trial-banner" hidden></div>
+
 <div class="app">
   <section class="panel" data-panel="inicio" id="panel-inicio">
     <div class="start-banner" id="start-banner"><div><span class="eyebrow">TU PRIMER PASO</span><h2>Un plan que empieza por ti.</h2><p>Elige tu objetivo y conoce tus metas. Nosotros organizamos el menú.</p></div><button class="btn-primary" onclick="setTab('calculadora')">Crear mi plan <span aria-hidden="true">→</span></button></div>
@@ -842,7 +903,7 @@
 
     <!-- 1 · CALCULADORA -->
     <section class="panel side-panel" data-panel="calculadora" id="panel-calculadora">
-      <div class="plan-shell"><aside class="plan-guide"><span class="eyebrow">HECHO PARA TI</span><h2>El primer paso<br>es conocerte.</h2><p>Unos pocos datos para organizar tu alimentación de los próximos 90 días.</p><ol class="wizard-steps" aria-label="Pasos de configuración"><li data-wizard-indicator="1" class="current"><span>1</span><div>Tu objetivo<small>¿Qué quieres conseguir?</small></div></li><li data-wizard-indicator="2"><span>2</span><div>Sobre ti<small>Tu punto de partida</small></div></li><li data-wizard-indicator="3"><span>3</span><div>Tu ritmo<small>Actividad y preferencias</small></div></li></ol><div class="privacy-note">◈ Tus datos se quedan en este navegador.<br>Sin cuenta. Sin suscripción.</div></aside>
+      <div class="plan-shell"><aside class="plan-guide"><span class="eyebrow">HECHO PARA TI</span><h2>El primer paso<br>es conocerte.</h2><p>Unos pocos datos para organizar tu alimentación de los próximos 90 días.</p><ol class="wizard-steps" aria-label="Pasos de configuración"><li data-wizard-indicator="1" class="current"><span>1</span><div>Tu objetivo<small>¿Qué quieres conseguir?</small></div></li><li data-wizard-indicator="2"><span>2</span><div>Sobre ti<small>Tu punto de partida</small></div></li><li data-wizard-indicator="3"><span>3</span><div>Tu ritmo<small>Actividad y preferencias</small></div></li></ol><div class="privacy-note">◈ Tus datos se guardan en este navegador.<br>Puedes guardar una copia opcional en tu cuenta.</div></aside>
       <div class="plan-workspace"><div id="wizard-editor"><div class="wizard-topline"><span id="wizard-step-label">PASO 1 DE 3</span><span>Tu plan personal</span></div>
       <div class="wizard-page" data-wizard-page="1"><h2>¿Qué te gustaría lograr?</h2><p class="hint">Elige un objetivo. Puedes cambiarlo más adelante.</p>
       <div class="field">
@@ -913,6 +974,24 @@
           </button>
         </div>
       </div>
+      <div class="field">
+        <label id="dieta-label">Preferencia alimentaria</label>
+        <div class="goal-toggle" id="dieta-toggle" role="group" aria-labelledby="dieta-label">
+          <button type="button" class="goal-opt active" data-dieta="omnivora" aria-pressed="true" onclick="setDieta('omnivora')">
+            <span class="goal-t">🍗 Omnívora</span>
+            <span class="goal-d">Incluye todo tipo de alimentos: carnes, pescado, lácteos y vegetales.</span>
+          </button>
+          <button type="button" class="goal-opt" data-dieta="vegetariana" aria-pressed="false" onclick="setDieta('vegetariana')">
+            <span class="goal-t">🥚 Vegetariana</span>
+            <span class="goal-d">Sin carne ni pescado. Incluye huevo y lácteos.</span>
+          </button>
+          <button type="button" class="goal-opt" data-dieta="vegana" aria-pressed="false" onclick="setDieta('vegana')">
+            <span class="goal-t">🌱 Vegana</span>
+            <span class="goal-d">Sin ningún producto de origen animal.</span>
+          </button>
+        </div>
+        <p class="hint" style="margin-top:8px;">Tu menú automático y el generador con IA usarán solo recetas de esta preferencia. No reemplaza una evaluación de alergias o restricciones médicas: si tienes alguna, revisa cada receta igual.</p>
+      </div>
       </div><p id="wizard-error" class="form-error" role="alert" hidden></p>
       <div class="wizard-actions"><button class="btn-secondary" id="wizard-back" onclick="goWizard(wizardStep-1)" hidden>← Atrás</button><button class="btn-primary" id="wizard-next" onclick="goWizard(wizardStep+1)">Continuar →</button><button class="btn-primary" id="wizard-submit" onclick="finishPlan()" hidden>Calcular mi plan →</button></div>
       </div>
@@ -934,13 +1013,18 @@
 
     <!-- 2 · MI DÍA / PLAN DE COMIDAS -->
     <section class="panel side-panel" data-panel="midia" id="panel-midia">
-      <div class="meal-layout"><div class="meal-content"><div class="section-heading"><div><span class="eyebrow">A DISFRUTAR</span><h2>Tus comidas de hoy</h2></div><button class="btn-secondary" onclick="setTab('recetario')">Explorar recetas ↗</button></div>
+      <div class="meal-layout" id="content-midia"><div class="meal-content"><div class="section-heading"><div><span class="eyebrow">A DISFRUTAR</span><h2>Tus comidas de hoy</h2></div><button class="btn-secondary" onclick="setTab('recetario')">Explorar recetas ↗</button></div>
       <p class="hint">Abre un plato para ver la preparación. Márcalo después de comer.</p>
       <div id="plan-dia"><p class="section-sub" style="margin-top:10px;">Calcula tu plan (paso 1) para generar tu menú de 90 días.</p></div>
+      <details class="more" id="shopping-more" ontoggle="if(this.open)renderListaCompras()">
+        <summary>🛒 Lista de compras de los próximos días</summary>
+        <div class="more-body" id="shopping-panel"></div>
+      </details>
       </div><aside class="meal-summary"><span class="eyebrow">LO QUE LLEVAS HOY</span><h3>Tu balance diario</h3>
       <div id="mi-dia-bars"></div>
       <button class="btn-secondary" style="width:100%;margin-top:14px;" onclick="setTab('recetario')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v17H6.5A2.5 2.5 0 0 0 4 22Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v17h5.5a2.5 2.5 0 0 1 2.5 2Z"/></svg>Ver todas las recetas</button>
       </aside></div>
+      <div class="premium-gate" id="gate-midia" hidden></div>
     </section>
 
   </aside>
@@ -956,7 +1040,7 @@
       <div class="recipe-toolbar"><div><h2>Ideas que dan ganas.</h2><p class="hint">72 recetas para explorar. Tu menú personal está en Comidas.</p></div><button class="btn-secondary" onclick="toggleRecipeAI()" id="ai-toggle" aria-expanded="false" aria-controls="ai-details">✦ Crear con IA</button></div>
 
       <!-- Generador de recetas con IA -->
-      <details class="ia-disclosure" id="ai-details"><summary>Tu cocina con IA <span>Elige ingredientes y crea una receta</span></summary><div class="ia-box">
+      <details class="ia-disclosure" id="ai-details"><summary>Tu cocina con IA <span>Elige ingredientes y crea una receta</span></summary><div class="ia-box" id="content-ia">
         <h3>Tus ingredientes favoritos</h3>
         <p class="section-sub">Elige o escribe ingredientes que te gusten y la IA arma una receta alta en proteína.</p>
         <div class="ia-input-row">
@@ -973,7 +1057,9 @@
         <button class="btn-primary" id="ia-generar" type="button" onclick="generarRecetaIA()">Generar receta con IA</button>
         <div id="ia-estado"></div>
         <div id="ia-resultado"></div>
-      </div></details>
+      </div>
+      <div class="premium-gate" id="gate-ia" hidden></div>
+      </details>
 
       <div class="recipe-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg><input type="search" id="recipe-search" aria-label="Buscar recetas por nombre o ingrediente" placeholder="¿Qué te apetece? Busca un plato o ingrediente…" oninput="filterRecipeSearch()"><span id="recipe-count" aria-live="polite">72 recetas</span></div>
       <div class="filters" id="filtros"></div>
@@ -991,6 +1077,7 @@
 
     <!-- PROGRESO -->
     <section class="panel main-panel active" data-panel="progreso" id="panel-progreso">
+      <div id="content-progreso">
       <div class="progress-layout"><div class="progress-calendar">
       <span class="eyebrow">CONSTRUYE TU CONSTANCIA</span><h2>Tu mapa de progreso</h2>
       <p class="hint">Marca cada día que cumpliste tu plan. Se guarda en tu navegador.</p>
@@ -1031,12 +1118,15 @@
       <h3>Historial de días de comida</h3>
       <p class="hint">Resumen de cada día que terminaste desde <b>Mi día</b>: lo comido contra tu meta.</p>
       <div id="historial-dias"></div>
+      </div>
+      <div class="premium-gate" id="gate-progreso" hidden></div>
     </section>
 
     <!-- MOVIMIENTO -->
     <section class="panel main-panel" data-panel="movimiento" id="panel-movimiento">
       <h2>Movimiento</h2>
       <p class="hint">Rutina de gimnasio por grupo muscular y un conversor rápido de pasos a calorías. Usa el peso que guardaste en la calculadora.</p>
+      <div id="content-movimiento">
 
       <div class="move-steps">
         <span class="move-steps-label">Pasos al día recomendados</span>
@@ -1053,14 +1143,33 @@
       </div>
 
       <h3>Rutina de gimnasio</h3>
-      <p class="section-sub">Bro split: un grupo muscular grande por día. Sábado y domingo, descanso o cardio suave. Toca un ejercicio para ver la técnica y las calorías estimadas.</p>
+      <p class="section-sub">Un grupo muscular por día, con descanso el fin de semana. Abre cada ejercicio para ver dos posiciones del movimiento, el equipo y las series. Las fotos son una referencia visual.</p>
       <div class="day-tabs" id="move-day-tabs"></div>
       <div id="move-rutina"></div>
+
+      <h3>Temporizador de descanso</h3>
+      <p class="section-sub">Úsalo entre series. Elige los segundos de descanso e inicia la cuenta regresiva.</p>
+      <div class="rest-timer" id="rest-timer">
+        <div class="rest-timer-display" id="rest-timer-display" aria-hidden="true">01:30</div>
+        <p class="sr-only" id="rest-timer-status" aria-live="polite"></p>
+        <div class="rest-timer-presets" role="group" aria-label="Duración del descanso">
+          <button type="button" class="btn-secondary" data-seg="30" onclick="setRestTimerDuracion(30)" aria-pressed="false">30 s</button>
+          <button type="button" class="btn-secondary" data-seg="60" onclick="setRestTimerDuracion(60)" aria-pressed="false">60 s</button>
+          <button type="button" class="btn-secondary active" data-seg="90" onclick="setRestTimerDuracion(90)" aria-pressed="true">90 s</button>
+          <button type="button" class="btn-secondary" data-seg="120" onclick="setRestTimerDuracion(120)" aria-pressed="false">120 s</button>
+        </div>
+        <div class="rest-timer-actions">
+          <button type="button" class="btn-primary" id="rest-timer-toggle" onclick="toggleRestTimer()">▶ Iniciar descanso</button>
+          <button type="button" class="btn-secondary" onclick="reiniciarRestTimer()">Reiniciar</button>
+        </div>
+      </div>
 
       <h3>¿Hiciste la rutina?</h3>
       <button class="btn-primary" id="move-today-btn" onclick="marcarRutinaHoy()">✓ Marcar rutina de hoy</button>
       <div class="move-count" id="move-count"></div>
       <div class="cal-grid move-grid" id="move-grid"></div>
+      </div>
+      <div class="premium-gate" id="gate-movimiento" hidden></div>
     </section>
 
   </main>
@@ -1154,7 +1263,7 @@
       </details>
       <details>
         <summary>¿Se guardan mis datos? ¿Es privado?</summary>
-        <p>Todo se calcula y se guarda solo en tu navegador (localStorage). No hay servidor ni cuenta: si abres la página en otro dispositivo o borras los datos del navegador, empiezas de cero.</p>
+        <p>El progreso se guarda en este navegador. Desde Tu cuenta puedes guardar una copia privada y cargarla en otro dispositivo. Guarda tu copia antes de cambiar de equipo o borrar los datos del navegador.</p>
       </details>
     </div>
   </div>
@@ -1926,7 +2035,7 @@ function ingItemHTML(i){
 <script>
 // ============================================================
 // Lógica: calculadora + menú automático + recetario + mi día + tracker 90 días.
-// Todo corre en el navegador del usuario, sin enviar datos a ningún servidor.
+// El progreso se guarda localmente; la cuenta permite guardar una copia privada opcional.
 // ============================================================
 
 const LS = {
@@ -1942,7 +2051,8 @@ const LS = {
   mov:'rp90_mov',          // días (ISO) en que se hizo la rutina de fuerza
   pasosCal:'rp90_pasos_cal', // último valor del conversor de pasos a calorías
   favIng:'rp90_fav_ing',   // ingredientes favoritos para el generador con IA
-  sesion:'rp90_sesion'     // { token, email } de la cuenta con la que se inició sesión
+  sesion:'rp90_sesion',    // { token, email } de la cuenta con la que se inició sesión
+  ejercicios:'rp90_ejercicios_hechos' // {fechaISO: {dia:0-6, hechos:[índices de ejercicio]}}
 };
 
 function lsGet(key, fallback){
@@ -1956,6 +2066,7 @@ function lsSet(key, val){
 let genero = null;
 let objetivo = 'bajar'; // 'bajar' (déficit) | 'subir' (superávit +10%) | 'mantener' (TDEE)
 let intensidad = 0.25;  // solo aplica a 'bajar': 0.20 (suave) | 0.25 (medio) | 0.30 (agresivo)
+let dieta = 'omnivora'; // 'omnivora' | 'vegetariana' | 'vegana' — preferencia declarada, no alergias
 let plan = lsGet(LS.plan, null); // {calorias, proteina, carbos, grasa}
 let datos = lsGet(LS.datos, null); // {peso, altura, edad, genero, actividad, intensidad, objetivo}
 let checkins = lsGet(LS.checkins, []); // [{fecha:'YYYY-MM-DD', peso, plan:{...}}]
@@ -1964,6 +2075,7 @@ let planDias = lsGet(LS.planDias, null);           // plan de comidas fijo, gene
 let planStart = lsGet(LS.planStart, null);         // fecha ISO del día 1 del plan
 let comidasMarcadas = lsGet(LS.comidas, {});       // comidas marcadas como "comidas", por fecha
 let diasTerminados = lsGet(LS.diasTerminados, {}); // resumen de cada día que se "terminó"
+let ejerciciosHechos = lsGet(LS.ejercicios, {});   // {fechaISO: {dia, hechos:[índices]}} — ver RUTINA_SEMANAL
 
 // --- Generador de recetas con IA (backend: Cloudflare Worker, ver README-worker.md) ---
 // URL del Worker desplegado. Si algún día cambia el nombre/subdominio, actualízala aquí.
@@ -2026,17 +2138,26 @@ function authShell(contenido){
 }
 
 function authFormularioHTML(mensaje){
+  // No se promete el envío de correo si el Worker no tiene Resend configurado, ni se
+  // afirma que está disponible si no se pudo comprobar (falla de red): se ofrece reintentar.
+  const correoAviso = disponibilidadError
+    ? `<div class="auth-tip">No pudimos comprobar si el envío de correos está disponible. <button class="btn-link" type="button" onclick="reintentarDisponibilidad()">Reintentar</button></div>`
+    : (disponibilidad && disponibilidad.correo === false
+      ? `<div class="auth-tip">El envío de correos todavía no está configurado. Vuelve pronto.</div>`
+      : '');
+  const correoNoDisponible = !disponibilidadError && disponibilidad && disponibilidad.correo === false;
   return authShell(`
     <div class="auth-topline">INICIAR SESIÓN</div>
     <h2 id="auth-title">Entra con tu correo.</h2>
     <p class="hint">Te mandamos un link de acceso. Ábrelo en este dispositivo y listo.</p>
+    ${correoAviso}
     <div class="field">
       <label for="auth-email">Correo electrónico</label>
-      <input type="email" id="auth-email" placeholder="tu@correo.com" autocomplete="email" inputmode="email"
+      <input type="email" id="auth-email" placeholder="tu@correo.com" autocomplete="email" inputmode="email" ${correoNoDisponible ? 'disabled' : ''}
              onkeydown="if(event.key==='Enter'){event.preventDefault();solicitarLink();}">
     </div>
     <div id="auth-estado" aria-live="polite">${mensaje || ''}</div>
-    <div class="auth-actions"><button class="btn-primary" id="auth-enviar" type="button" onclick="solicitarLink()">Enviarme el link →</button></div>
+    <div class="auth-actions"><button class="btn-primary" id="auth-enviar" type="button" onclick="solicitarLink()" ${correoNoDisponible ? 'disabled' : ''}>Enviarme el link →</button></div>
     <p class="privacy-note auth-privacy">◈ Solo usamos tu correo para tu cuenta. Sin suscripción.</p>`);
 }
 
@@ -2056,16 +2177,32 @@ function authEnviadoHTML(email, nota){
 
 function authCuentaHTML(){
   const email = (cuenta && cuenta.email) || (sesion && sesion.email) || '';
-  const activa = cuenta && cuenta.subscription && /^(active|activa|trialing)$/i.test(String(cuenta.subscription.status || cuenta.subscription));
+  const sub = cuenta && cuenta.subscription;
+  const activa = tienePremium();
+  const enPrueba = activa && sub && String(sub.status).toLowerCase() === 'trialing';
+
+  let filas = `<div><dt>Plan</dt><dd>${activa ? (enPrueba ? 'Prueba gratis' : 'Premium activo') : 'Gratuito'}</dd></div>`;
+  if(enPrueba && sub.trial_end) filas += `<div><dt>Tu prueba termina</dt><dd>${fmtFechaCorta(sub.trial_end)}</dd></div>`;
+  else if(activa && sub.current_period_end) filas += `<div><dt>Próximo cobro</dt><dd>${fmtFechaCorta(sub.current_period_end)}</dd></div>`;
+  filas += `<div><dt>Tus datos</dt><dd>Guardados en este navegador</dd></div>`;
+
+  const planes = activa ? '' : `
+    <p class="hint" style="margin:18px 0 10px;">Desbloquea tu plan automático de 90 días, Progreso, Movimiento y el generador de recetas con IA.</p>
+    ${planesDisponiblesHTML()}`;
+
   return authShell(`
     <div class="auth-account-head">
       <span class="auth-avatar" aria-hidden="true">${esc(email.charAt(0).toUpperCase() || '?')}</span>
       <div><div class="auth-topline">TU CUENTA</div><h2 id="auth-title" class="auth-email-title">${esc(email)}</h2></div>
     </div>
-    <dl class="auth-facts">
-      <div><dt>Plan</dt><dd>${activa ? 'Premium activo' : 'Gratuito'}</dd></div>
-      <div><dt>Tus datos</dt><dd>Guardados en este navegador</dd></div>
-    </dl>
+    <dl class="auth-facts">${filas}</dl>
+    ${planes}
+    <button class="btn-secondary" type="button" onclick="gestionarSuscripcion()">Gestionar pagos o cancelar suscripción</button>
+    <p class="hint">Tu progreso se guarda en este navegador. Puedes guardar una copia privada en tu cuenta y cargarla en otra computadora o celular. La copia no se actualiza automáticamente.</p>
+    <div class="auth-actions">
+      <button class="btn-secondary" type="button" onclick="copiaProgreso('guardar')">Guardar copia en mi cuenta</button>
+      <button class="btn-secondary" type="button" onclick="copiaProgreso('cargar')">Cargar copia de mi cuenta</button>
+    </div>
     <div class="auth-actions">
       <button class="btn-secondary" type="button" onclick="cerrarSesion()">Cerrar sesión</button>
       <button class="btn-primary" type="button" onclick="cerrarAuth()">Volver a mi espacio</button>
@@ -2133,6 +2270,8 @@ function cerrarSesion(){
   borrarSesion();
   cerrarAuth();
   renderAuthArea();
+  aplicarGatingPremium();
+  renderTrialBanner();
   toast('Sesión cerrada.');
 }
 
@@ -2152,6 +2291,8 @@ async function verificarLoginDesdeURL(){
       guardarSesion(data.token, data.email);
       cuenta = { email: data.email, subscription: data.subscription };
       renderAuthArea();
+      aplicarGatingPremium();
+      renderTrialBanner();
       toast('Sesión iniciada como ' + data.email);
     } else {
       toast(data.error || 'El link ya no es válido. Pide uno nuevo.');
@@ -2161,19 +2302,277 @@ async function verificarLoginDesdeURL(){
   }
 }
 
+// true si la última comprobación de /me falló (red u otro error): el paywall lo usa para
+// avisar en vez de fingir que no hay suscripción, y NUNCA para activar premium sin red.
+let cuentaVerificacionError = false;
+
 // Refresca el estado de la cuenta contra el Worker. Si la sesión ya no es válida
 // (revocada, vencida), la borra localmente sin mostrar ningún error al usuario.
 async function cargarCuenta(){
-  if(!sesion) return;
+  if(!sesion){ cuentaVerificacionError = false; aplicarGatingPremium(); renderTrialBanner(); return; }
   try{
     const resp = await fetch(IA_WORKER_URL + '/me', {
       headers: { Authorization: 'Bearer ' + sesion.token }
     });
-    if(resp.status === 401){ borrarSesion(); renderAuthArea(); return; }
+    if(resp.status === 401){ borrarSesion(); cuentaVerificacionError = false; renderAuthArea(); aplicarGatingPremium(); renderTrialBanner(); return; }
     const data = await resp.json().catch(() => ({}));
-    if(resp.ok && data.ok) cuenta = { email: data.email, subscription: data.subscription };
+    if(resp.ok && data.ok){ cuenta = { email: data.email, subscription: data.subscription }; cuentaVerificacionError = false; }
+    else { cuentaVerificacionError = true; }
   }catch(e){
-    // Sin conexión: no borramos la sesión, seguimos con lo que ya había en localStorage.
+    // Sin conexión: no borramos la sesión ni activamos premium; se avisa en el paywall.
+    cuentaVerificacionError = true;
+  }
+  aplicarGatingPremium();
+  renderTrialBanner();
+  if(sesion && document.getElementById('auth-modal')?.classList.contains('open')){
+    document.getElementById('auth-modal-body').innerHTML = authCuentaHTML();
+  }
+}
+
+// ============================================================
+// DISPONIBILIDAD DE SERVICIOS — lectura pública y segura de qué está configurado en el
+// Worker (GET /config nunca devuelve claves ni valores privados, solo booleanos). Evita
+// anunciar cobro o prueba gratis si el servicio no está listo; si la consulta falla por
+// red, se avisa con un estado comprensible y un botón para reintentar (nunca se asume
+// que está disponible).
+// ============================================================
+let disponibilidad = null;       // { correo, generacionIA, pagos:{mensual,anual} } o null si no se ha comprobado
+let disponibilidadError = false; // true si la última consulta falló
+
+async function cargarDisponibilidad(){
+  try{
+    const resp = await fetch(IA_WORKER_URL + '/config');
+    const data = await resp.json().catch(() => ({}));
+    if(resp.ok && data.ok && data.disponible){
+      disponibilidad = data.disponible;
+      disponibilidadError = false;
+    } else {
+      disponibilidadError = true;
+    }
+  }catch(e){
+    disponibilidadError = true;
+  }
+}
+
+// Reintenta comprobar disponibilidad y refresca lo que esté visible en pantalla.
+async function reintentarDisponibilidad(){
+  await cargarDisponibilidad();
+  if(document.getElementById('auth-modal')?.classList.contains('open')){
+    document.getElementById('auth-modal-body').innerHTML = sesion ? authCuentaHTML() : authFormularioHTML();
+  }
+  aplicarGatingPremium();
+}
+
+// Tarjetas de los planes de pago, o un aviso si todavía no están configurados o no se
+// pudo comprobar su disponibilidad (nunca se muestra "prueba gratis" sin confirmarlo).
+function planesDisponiblesHTML(){
+  if(disponibilidadError){
+    return `<div class="note">No pudimos comprobar si los pagos están disponibles. <button class="btn-link" type="button" onclick="reintentarDisponibilidad()">Reintentar →</button></div>`;
+  }
+  if(!disponibilidad){
+    return `<div class="note">Comprobando los planes disponibles…</div>`;
+  }
+  const pagos = disponibilidad.pagos;
+  if(!pagos || (!pagos.mensual && !pagos.anual)){
+    return `<div class="note">Los pagos todavía no están disponibles. Vuelve pronto.</div>`;
+  }
+  return `<div class="premium-plans">
+    ${pagos.mensual ? `<button class="plan-card recommended" type="button" onclick="iniciarCheckout('mensual')">
+      <span class="plan-name">Mensual</span><span class="plan-price">${PRECIOS.mensual}</span><span class="plan-note">7 días gratis</span>
+    </button>` : ''}
+    ${pagos.anual ? `<button class="plan-card" type="button" onclick="iniciarCheckout('anual')">
+      <span class="plan-name">Anual</span><span class="plan-price">${PRECIOS.anual}</span><span class="plan-note">7 días gratis</span>
+    </button>` : ''}
+  </div>`;
+}
+
+// ============================================================
+// SUSCRIPCIÓN (Stripe) — precios, checkout y bloqueo de secciones premium
+// ============================================================
+// Precios de referencia para la pantalla de bloqueo (solo texto: el monto real que se
+// cobra lo define el Price de Stripe que el Worker use para cada plan).
+const PRECIOS = { mensual: '$9.99/mes', anual: '$79/año' };
+
+function tienePremium(){
+  const status = cuenta && cuenta.subscription && cuenta.subscription.status;
+  return !cuentaVerificacionError && /^(active|trialing)$/i.test(String(status || ''));
+}
+
+function fmtFechaCorta(epochMs){
+  try{ return new Date(epochMs).toLocaleDateString('es', {day:'numeric', month:'short', year:'numeric'}); }
+  catch(e){ return ''; }
+}
+
+// Contenido de la pantalla de bloqueo: pide iniciar sesión si hace falta, o elegir un
+// plan si ya hay cuenta pero sin suscripción activa.
+function premiumGateHTML(desc){
+  if(!sesion){
+    return `<div class="premium-gate">
+      <span class="premium-gate-icon" aria-hidden="true">${AUTH_ICON}</span>
+      <h3>Necesitas una cuenta</h3>
+      <p>${desc} Inicia sesión con tu correo para desbloquear esto.</p>
+      <button class="btn-primary" type="button" onclick="abrirAuth()">Iniciar sesión →</button>
+    </div>`;
+  }
+  // Falla de red al comprobar /me: no se autoriza premium sin confirmarlo, se avisa y se
+  // ofrece reintentar en vez de mostrar el paywall normal como si no hubiera suscripción.
+  if(cuentaVerificacionError){
+    return `<div class="premium-gate">
+      <span class="premium-gate-icon" aria-hidden="true">⚠</span>
+      <h3>No pudimos comprobar tu suscripción</h3>
+      <p>Parece que no hay conexión. No activamos funciones premium sin confirmarlo primero.</p>
+      <button class="btn-primary" type="button" onclick="cargarCuenta()">Reintentar →</button>
+    </div>`;
+  }
+  if(disponibilidadError){
+    return `<div class="premium-gate">
+      <span class="premium-gate-icon" aria-hidden="true">⚠</span>
+      <h3>No pudimos comprobar los planes</h3>
+      <p>Revisa tu conexión e inténtalo de nuevo.</p>
+      <button class="btn-primary" type="button" onclick="reintentarDisponibilidad()">Reintentar →</button>
+    </div>`;
+  }
+  if(!disponibilidad){
+    return `<div class="premium-gate">
+      <span class="premium-gate-icon" aria-hidden="true">✦</span>
+      <h3>Comprobando disponibilidad…</h3>
+      <p>${desc}</p>
+    </div>`;
+  }
+  const pagos = disponibilidad.pagos;
+  if(!pagos || (!pagos.mensual && !pagos.anual)){
+    return `<div class="premium-gate">
+      <span class="premium-gate-icon" aria-hidden="true">✦</span>
+      <h3>Todavía no disponible</h3>
+      <p>${desc} Los pagos no están configurados todavía; vuelve pronto.</p>
+    </div>`;
+  }
+  return `<div class="premium-gate">
+    <span class="premium-gate-icon" aria-hidden="true">✦</span>
+    <h3>Necesitas una suscripción activa</h3>
+    <p>${desc} Empieza tu prueba gratis de 7 días — cancela cuando quieras.</p>
+    ${planesDisponiblesHTML()}
+  </div>`;
+}
+
+// Panel (contenedor real) + pantalla de bloqueo (paywall) de cada sección premium.
+const GATES_PREMIUM = [
+  { cont:'content-midia', gate:'gate-midia', desc:'Tu plan automático de comidas para los 90 días es una función premium.' },
+  { cont:'content-progreso', gate:'gate-progreso', desc:'El seguimiento de tu progreso (calendario, peso y check-ins) es una función premium.' },
+  { cont:'content-movimiento', gate:'gate-movimiento', desc:'La rutina de gimnasio y el seguimiento de tu actividad son una función premium.' },
+  { cont:'content-ia', gate:'gate-ia', desc:'El generador de recetas con IA es una función premium.' },
+];
+
+function aplicarGatingPremium(){
+  const premium = tienePremium();
+  GATES_PREMIUM.forEach(({cont, gate, desc}) => {
+    const contEl = document.getElementById(cont);
+    const gateEl = document.getElementById(gate);
+    if(!contEl || !gateEl) return;
+    contEl.hidden = !premium;
+    gateEl.hidden = premium;
+    if(!premium) gateEl.innerHTML = premiumGateHTML(desc);
+  });
+}
+
+// Banner de "tu prueba está por terminar" (3 días o menos), leyendo trial_end de /me.
+function renderTrialBanner(){
+  const el = document.getElementById('trial-banner');
+  if(!el) return;
+  const sub = cuenta && cuenta.subscription;
+  const enPrueba = sub && String(sub.status).toLowerCase() === 'trialing' && sub.trial_end;
+  const msRestantes = enPrueba ? sub.trial_end - Date.now() : Infinity;
+  if(!enPrueba || msRestantes > 3 * 24 * 60 * 60 * 1000){
+    el.hidden = true;
+    return;
+  }
+  const dias = Math.max(0, Math.ceil(msRestantes / (24 * 60 * 60 * 1000)));
+  const texto = dias <= 0 ? 'Tu prueba gratis termina hoy.' : `Tu prueba gratis termina en ${dias} día${dias === 1 ? '' : 's'}.`;
+  el.hidden = false;
+  el.innerHTML = `<p><strong>${texto}</strong> Después se te cobrará automáticamente — puedes revisarlo en tu cuenta.</p>
+    <button class="btn-primary" type="button" onclick="abrirAuth()">Ver mi cuenta →</button>`;
+}
+
+// Crea la sesión de Checkout de Stripe y redirige (hosted Checkout: no hace falta Stripe.js).
+async function iniciarCheckout(plan){
+  if(!sesion){ abrirAuth(); return; }
+  toast('Conectando con el pago…');
+  try{
+    const resp = await fetch(IA_WORKER_URL + '/billing/crear-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + sesion.token },
+      body: JSON.stringify({ plan })
+    });
+    const data = await resp.json().catch(() => ({}));
+    if(resp.ok && data.ok && data.url){
+      location.href = data.url;
+    } else {
+      toast(data.error || 'No se pudo iniciar el pago. Intenta de nuevo.');
+    }
+  }catch(e){
+    toast('No se pudo contactar el servicio de pago. Revisa tu conexión.');
+  }
+}
+
+async function cuentaRequest(path, options = {}){
+  if(!sesion) throw new Error('Inicia sesión primero.');
+  const response = await fetch(IA_WORKER_URL + path, { ...options, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + sesion.token } });
+  const result = await response.json();
+  if(!response.ok || !result.ok) throw new Error(result.error || 'No se pudo completar la operación.');
+  return result;
+}
+async function gestionarSuscripcion(){
+  try { const result = await cuentaRequest('/billing/portal', { method: 'POST' }); location.href = result.url; }
+  catch(error){ toast(error.message); }
+}
+let copiaOcupada = false;
+async function copiaProgreso(accion){
+  if(copiaOcupada) return;
+  copiaOcupada = true;
+  const email = sesion?.email;
+  const keys = Object.values(LS).filter(key => key !== LS.sesion);
+  try {
+    const remote = await cuentaRequest('/progreso');
+    if(sesion?.email !== email) throw new Error('La cuenta cambió. Intenta de nuevo.');
+    if(accion === 'guardar'){
+      if(!confirm('Guardar el progreso de este navegador en ' + email + '? Reemplazará la copia anterior de esta cuenta.')) return;
+      const snapshot = Object.fromEntries(keys.filter(key => localStorage.getItem(key) !== null).map(key => [key, lsGet(key, null)]));
+      await cuentaRequest('/progreso', { method: 'PUT', body: JSON.stringify({ data: snapshot, revision: remote.revision }) });
+      toast('Copia guardada en tu cuenta.');
+    } else {
+      if(!remote.data){ toast('Tu cuenta todavía no tiene una copia guardada.'); return; }
+      if(!confirm('Cargar la copia de ' + email + '? Reemplazará el progreso de este navegador.')) return;
+      // Conservar una copia local de seguridad antes de restaurar.
+      localStorage.setItem('rp90_respaldo_antes_de_cargar', JSON.stringify(Object.fromEntries(keys.map(key => [key, localStorage.getItem(key)]))));
+      for(const key of keys){
+        if(Object.prototype.hasOwnProperty.call(remote.data, key)) localStorage.setItem(key, JSON.stringify(remote.data[key]));
+        else localStorage.removeItem(key);
+      }
+      location.reload();
+    }
+  } catch(error){ toast(error.message); }
+  finally { copiaOcupada = false; }
+}
+
+// Si la URL trae ?checkout=success|cancel (vuelta del Checkout de Stripe), limpia la URL
+// y refresca la cuenta. El webhook puede tardar unos segundos en llegar, así que
+// reintenta una vez si todavía no se ve la suscripción activa.
+async function verificarCheckoutDesdeURL(){
+  const params = new URLSearchParams(location.search);
+  const estado = params.get('checkout');
+  if(!estado) return;
+  params.delete('checkout');
+  const nuevaURL = location.pathname + (params.toString() ? '?' + params.toString() : '') + location.hash;
+  history.replaceState(null, '', nuevaURL);
+
+  if(estado === 'success'){
+    toast('¡Gracias! Confirmando tu suscripción…');
+    await cargarCuenta();
+    if(!tienePremium()){
+      setTimeout(async () => { await cargarCuenta(); }, 3000);
+    }
+  } else if(estado === 'cancel'){
+    toast('Pago cancelado. Puedes intentarlo cuando quieras.');
   }
 }
 
@@ -2181,6 +2580,7 @@ async function cargarCuenta(){
 if(datos && datos.genero) genero = datos.genero;
 if(datos && datos.objetivo) objetivo = datos.objetivo;
 if(datos && datos.intensidad != null) intensidad = parseFloat(datos.intensidad);
+if(datos && ['omnivora','vegetariana','vegana'].includes(datos.dieta)) dieta = datos.dieta; // datos antiguos sin dieta -> se queda 'omnivora'
 
 function getReceta(id){ return RECETAS.find(r => r.id === id) || recetasIA.find(r => r.id === id); }
 
@@ -2216,6 +2616,33 @@ function setIntensidad(v){
   intensidad = parseFloat(v);
   document.querySelectorAll('#deficit-toggle .def-opt').forEach(b =>
     b.classList.toggle('active', parseFloat(b.dataset.def) === intensidad));
+}
+
+// Preferencia alimentaria declarada por el usuario (paso 3). Filtra el menú automático,
+// las sustituciones y lo que recibe el generador de IA. No es una declaración de alergias.
+const DIETAS = ['omnivora', 'vegetariana', 'vegana'];
+const DIETA_LABEL = { omnivora: 'Omnívora', vegetariana: 'Vegetariana', vegana: 'Vegana' };
+function setDieta(d){
+  if(!DIETAS.includes(d)) return;
+  dieta = d;
+  document.querySelectorAll('#dieta-toggle .goal-opt').forEach(b => {
+    const activo = b.dataset.dieta === d;
+    b.classList.toggle('active', activo);
+    b.setAttribute('aria-pressed', String(activo));
+  });
+}
+// Recetas que respetan una preferencia alimentaria: vegana solo ve veganas; vegetariana ve
+// vegetarianas + veganas (sin carne ni pescado); omnívora ve todo el catálogo.
+function recetasParaDieta(d){
+  if(d === 'vegana') return RECETAS.filter(r => r.dieta === 'vegana');
+  if(d === 'vegetariana') return RECETAS.filter(r => r.dieta === 'vegetariana' || r.dieta === 'vegana');
+  return RECETAS;
+}
+// ¿Las recetas ya asignadas en `pd` (un planDias) respetan la preferencia `d`?
+function planDiasCompatibleConDieta(pd, d){
+  if(!pd) return true;
+  const permitidos = new Set(recetasParaDieta(d).map(r => r.id));
+  return pd.every(dia => MEAL_ORDER.every(m => permitidos.has(dia[m])));
 }
 
 // ---------- Fórmula del plan (pura, reutilizable en cada check-in) ----------
@@ -2329,7 +2756,8 @@ function calcular(){
     genero: genero,
     objetivo: objetivo,
     actividad: parseFloat(document.getElementById('actividad').value),
-    intensidad: intensidad
+    intensidad: intensidad,
+    dieta: dieta
   };
 
   if(!nuevosDatos.peso || !nuevosDatos.altura || !nuevosDatos.edad || !genero){
@@ -2347,6 +2775,17 @@ function calcular(){
   if(nuevosDatos.edad < 14 || nuevosDatos.edad > 90){
     alert('Ingresa una edad válida en años (entre 14 y 90).');
     return;
+  }
+
+  // Si ya había un menú generado y tiene platillos que no respetan la nueva preferencia
+  // alimentaria, se avisa antes de reemplazarlo. El historial de días terminados y
+  // check-ins no se borra: solo se regenera el menú de los 90 días.
+  if(planDias && !planDiasCompatibleConDieta(planDias, nuevosDatos.dieta)){
+    const seguir = confirm(
+      'Tu menú guardado tiene platillos que no son "' + DIETA_LABEL[nuevosDatos.dieta] + '". ' +
+      '¿Generamos un nuevo menú de 90 días con tu preferencia actual? Tu historial de días terminados y check-ins se conserva.'
+    );
+    if(!seguir) return;
   }
 
   datos = nuevosDatos;
@@ -2402,10 +2841,11 @@ function crearBolsa(ids){
 }
 
 // Recetas de una categoría, acotadas a las más cercanas a la meta calórica
-// de esa comida (para respetar el objetivo) y con más peso a "alto volumen"
-// cuando el déficit es alto (más saciedad con menos calorías).
-function poolCategoria(categoriaReceta, metaKcal, priorizarVolumen){
-  const base = RECETAS.filter(r => r.categoria === categoriaReceta);
+// de esa comida (para respetar el objetivo), que respeten la preferencia alimentaria,
+// y con más peso a "alto volumen" cuando el déficit es alto (más saciedad con menos calorías).
+function poolCategoria(categoriaReceta, metaKcal, priorizarVolumen, dietaFiltro){
+  const permitidas = new Set(recetasParaDieta(dietaFiltro || 'omnivora').map(r => r.id));
+  const base = RECETAS.filter(r => r.categoria === categoriaReceta && permitidas.has(r.id));
   const ordenadas = [...base].sort((a,b) => Math.abs(a.kcal - metaKcal) - Math.abs(b.kcal - metaKcal));
   const zonaN = Math.min(ordenadas.length, Math.max(10, Math.ceil(ordenadas.length * 0.6)));
   const zona = ordenadas.slice(0, zonaN);
@@ -2430,9 +2870,9 @@ function generarPlanDias(dias){
   const metaMerienda = plan.calorias * MEAL_PCT.merienda;
   const metaComida = (metaAlmuerzo + metaCena) / 2;
 
-  const bagDesayuno = crearBolsa(poolCategoria('desayuno', metaDesayuno, false));
-  const bagComida = crearBolsa(poolCategoria('comida', metaComida, deficitAlto));
-  const bagSnack = crearBolsa(poolCategoria('snack', metaMerienda, deficitAlto));
+  const bagDesayuno = crearBolsa(poolCategoria('desayuno', metaDesayuno, false, dieta));
+  const bagComida = crearBolsa(poolCategoria('comida', metaComida, deficitAlto, dieta));
+  const bagSnack = crearBolsa(poolCategoria('snack', metaMerienda, deficitAlto, dieta));
 
   const resultado = [];
   let prevDesayuno = null, prevCena = null, prevMerienda = null;
@@ -2597,28 +3037,30 @@ const TIPO_FOTO = {
   nuez:     {file:'MixedNutsInGlassBowl.JPG', artist:'Simon Speed', license:'CC0', page:'https://commons.wikimedia.org/wiki/File:MixedNutsInGlassBowl.JPG'},
   plato:    {file:'A Nigerian balanced diet.jpg', artist:'PhoToria', license:'CC BY-SA 4.0', page:'https://commons.wikimedia.org/wiki/File:A_Nigerian_balanced_diet.jpg'}
 };
+const FOTOS_PLATOS_LOCALES = new Set(["avena", "batido", "carne", "ensalada", "fruta", "huevo", "lacteo", "legumbre", "nuez", "pescado", "plato", "pollo", "sopa", "tofu", "wrap"]);
 function fotoTipoInfo(r){ return TIPO_FOTO[recetaTipoId(r)] || TIPO_FOTO.plato; }
-function fotoTipoURL(info, width){ return WM_FILEPATH + encodeURIComponent(info.file) + '?width=' + (width || 480); }
+function fotoTipoURL(info, width){
+  const tipo = Object.keys(TIPO_FOTO).find(key => TIPO_FOTO[key] === info);
+  if(FOTOS_PLATOS_LOCALES.has(tipo)) return 'assets/recipes/' + tipo + '.jpg';
+  return WM_FILEPATH + encodeURIComponent(info.file) + '?width=' + (width || 480);
+}
 
 // Foto representativa + respaldo automático al glifo SVG si la imagen no carga (sin internet, CDN bloqueado, etc.)
 function recetaMediaHTML(r){
-  const info = fotoTipoInfo(r);
-  const url = fotoTipoURL(info);
-  return `<div class="rc-media">
-    <img class="rc-photo-img" src="${url}" alt="${esc(r.nombre)}" loading="lazy" decoding="async"
+  const image = FOTOS_RECETAS[r.id];
+  if(!image) return recetaThumb(r);
+  return `<div class="rc-media rc-media-generated">
+    <img class="rc-photo-img" src="${image.path}" width="${image.width}" height="${image.height}" alt="Imagen ilustrativa de ${esc(r.nombre)}" loading="lazy" decoding="async"
          onerror="this.parentElement.classList.add('foto-error');">
     <div class="rc-thumb-fallback">${recetaThumb(r)}</div>
-    <span class="rc-photo-tag">Foto ilustrativa</span>
+    <span class="rc-photo-tag">Imagen ilustrativa</span>
   </div>`;
 }
 
 function renderCreditosFotos(){
   const panel = document.getElementById('credits-panel');
   if(!panel) return;
-  panel.innerHTML = `<div class="note" style="margin:0 0 var(--space-xs);">Las fotos de los platos son representativas del tipo de comida (no son fotos exactas de cada receta). Vienen de Wikimedia Commons con licencia abierta.</div>
-  <ul class="photo-credits" style="list-style:none;padding:0;margin:0;">
-    ${Object.values(TIPO_FOTO).map(info => `<li style="margin-bottom:var(--space-2xs);">${info.artist} — ${info.license} — <a href="${info.page}" target="_blank" rel="noopener noreferrer">ver en Wikimedia Commons</a></li>`).join('')}
-  </ul>`;
+  panel.innerHTML = '<div class="note" style="margin:0;">Las imágenes del catálogo fueron generadas con IA para ilustrar cada receta. El aspecto y la porción del plato preparado pueden variar. Las fotografías de ejercicios provienen de Free Exercise DB; sus créditos están en Rutina.</div>';
 }
 
 function renderRecetaCard(r){
@@ -2730,6 +3172,22 @@ async function generarRecetaIA(){
     estado.innerHTML = `<div class="ia-msg">La generación con IA todavía no está configurada. Sigue los pasos de <b>README-worker.md</b> y pon la URL de tu Worker en <code>IA_WORKER_URL</code>.</div>`;
     return;
   }
+  if(!sesion || !tienePremium()){
+    estado.innerHTML = '<div class="ia-msg">Inicia sesión con una suscripción activa para generar recetas.</div>';
+    return;
+  }
+  if(!disponibilidad && !disponibilidadError){
+    estado.innerHTML = '<div class="ia-msg">Estamos comprobando la disponibilidad. Inténtalo en un momento.</div>';
+    return;
+  }
+  if(disponibilidadError){
+    estado.innerHTML = `<div class="ia-msg ia-error">No pudimos comprobar si el generador está disponible. <button class="btn-link" type="button" onclick="reintentarDisponibilidad()">Reintentar</button></div>`;
+    return;
+  }
+  if(disponibilidad && disponibilidad.generacionIA === false){
+    estado.innerHTML = `<div class="ia-msg">El generador de recetas con IA todavía no está configurado. Vuelve pronto.</div>`;
+    return;
+  }
 
   // Token del captcha invisible (Turnstile). Suele estar listo a los ~1–2 s de cargar la página.
   const token = window.turnstileToken || (window.turnstile ? (turnstile.getResponse() || '') : '');
@@ -2746,22 +3204,22 @@ async function generarRecetaIA(){
   try{
     const resp = await fetch(IA_WORKER_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ingredientes: favIng, turnstileToken: token })
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + sesion.token },
+      body: JSON.stringify({ ingredientes: favIng, turnstileToken: token, dieta })
     });
     const data = await resp.json().catch(() => ({}));
     // Captcha rechazado: aviso amigable, no error feo
     if(resp.status === 403 && data.captcha){
-      estado.innerHTML = `<div class="ia-msg ia-limit">🔒 ${data.error || 'No pudimos verificar que eres una persona. Recarga la página e inténtalo de nuevo.'}</div>`;
+      estado.innerHTML = `<div class="ia-msg ia-limit">🔒 ${esc(data.error || 'No pudimos verificar que eres una persona. Recarga la página e inténtalo de nuevo.')}</div>`;
       return;
     }
     // Límite diario alcanzado: aviso tranquilo, no error
     if(resp.status === 429 || data.limited){
-      estado.innerHTML = `<div class="ia-msg ia-limit">⏳ ${data.error || 'Ya generaste el máximo de recetas con IA por hoy. Vuelve mañana.'}</div>`;
+      estado.innerHTML = `<div class="ia-msg ia-limit">⏳ ${esc(data.error || 'Ya generaste el máximo de recetas con IA por hoy. Vuelve mañana.')}</div>`;
       return;
     }
     if(!resp.ok || !data.ok || !data.receta){
-      estado.innerHTML = `<div class="ia-msg ia-error">${data.error || 'No se pudo generar la receta. Intenta de nuevo en un momento.'}</div>`;
+      estado.innerHTML = `<div class="ia-msg ia-error">${esc(data.error || 'No se pudo generar la receta. Intenta de nuevo en un momento.')}</div>`;
       return;
     }
     const r = data.receta;
@@ -3044,6 +3502,93 @@ function renderPlanDia(){
     + '</div>';
 
   actualizarFab();
+  const shoppingDetails = document.getElementById('shopping-more');
+  if(shoppingDetails && shoppingDetails.open) renderListaCompras();
+}
+
+// ============================================================
+// LISTA DE COMPRAS — ingredientes agrupados de los próximos días del menú
+// (hasta 7, menos si el programa de 90 días está por terminar), sumando los
+// gramos de las porciones realmente usadas (ya ajustadas a la meta de cada comida).
+// ============================================================
+const DIAS_LISTA_COMPRAS = 7;
+
+// Cuántos días hay que incluir desde `idx` (0-based) sin pasarnos de `totalDias` ni de `max`.
+function diasRestantesParaLista(totalDias, idx, max){
+  return Math.max(0, Math.min(max, totalDias - idx));
+}
+
+// Agrega los ingredientes de `dias` días de `planDias` a partir de `idx`, sumando gramos
+// por nombre de ingrediente. `recetaFn(meal, id)` debe devolver la receta ya escalada a la
+// porción real de esa comida (ver recetaParaComida).
+function agregarIngredientesDias(planDiasArr, idx, dias, recetaFn){
+  const mapa = new Map();
+  for(let i = 0; i < dias; i++){
+    const diaPlan = planDiasArr[idx + i];
+    if(!diaPlan) continue;
+    MEAL_ORDER.forEach(m => {
+      const r = recetaFn(m, diaPlan[m]);
+      if(!r || !Array.isArray(r.ingredientes)) return;
+      r.ingredientes.forEach(ing => {
+        const nombre = ingNombre(ing);
+        const key = normaliza(nombre);
+        const gramos = (typeof ing === 'string' || ing.g == null) ? 0 : ing.g;
+        if(!mapa.has(key)) mapa.set(key, { nombre, g: 0 });
+        mapa.get(key).g += gramos;
+      });
+    });
+  }
+  return [...mapa.values()].sort((a,b) => a.nombre.localeCompare(b.nombre, 'es'));
+}
+
+let listaComprasTexto = '';
+
+function renderListaCompras(){
+  const panel = document.getElementById('shopping-panel');
+  if(!panel) return;
+  if(!plan || !planDias || !planStart){
+    panel.innerHTML = emptyStateHTML('Calcula tu plan para ver la lista de compras de tu menú.');
+    listaComprasTexto = '';
+    return;
+  }
+  const idx = Math.max(0, diasEntre(planStart, hoyISO()));
+  const dias = diasRestantesParaLista(planDias.length, idx, DIAS_LISTA_COMPRAS);
+  if(dias === 0){
+    panel.innerHTML = emptyStateHTML('Llegaste al final del programa de 90 días: no quedan más días para agrupar en una lista de compras.');
+    listaComprasTexto = '';
+    return;
+  }
+  const items = agregarIngredientesDias(planDias, idx, dias, recetaParaComida);
+  const fmt = d => d.toLocaleDateString('es-EC', {day:'numeric', month:'short'});
+  const inicio = new Date(); const fin = new Date(); fin.setDate(fin.getDate() + dias - 1);
+  const periodo = dias === 1
+    ? `Para hoy, ${fmt(inicio)}`
+    : `Del ${fmt(inicio)} al ${fmt(fin)} (${dias} días${dias < DIAS_LISTA_COMPRAS ? ' — tu programa termina pronto' : ''})`;
+
+  const filas = items.map(it => `<li><span class="ing-name">${esc(it.nombre)}</span>${it.g > 0 ? `<span class="ing-macros">${Math.round(it.g)} g</span>` : ''}</li>`).join('');
+  panel.innerHTML = `
+    <div class="note" style="margin:0 0 var(--space-sm);">${esc(periodo)} · ${items.length} ingrediente${items.length === 1 ? '' : 's'}, sumando las porciones reales de tu menú.</div>
+    <ul class="ing-list">${filas}</ul>
+    <button class="btn-secondary" type="button" onclick="copiarListaCompras()">Copiar lista</button>
+  `;
+  listaComprasTexto = `Lista de compras — ${periodo}\n` + items.map(it => `- ${it.nombre}${it.g > 0 ? `: ${Math.round(it.g)} g` : ''}`).join('\n');
+}
+
+async function copiarListaCompras(){
+  if(!listaComprasTexto){ toast('No hay nada para copiar.'); return; }
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      await navigator.clipboard.writeText(listaComprasTexto);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = listaComprasTexto; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+    }
+    toast('Lista copiada.');
+  }catch(e){
+    toast('No se pudo copiar. Selecciona el texto manualmente.');
+  }
 }
 
 function actualizarFab(){
@@ -3352,7 +3897,10 @@ function renderPesos(){
 // ============================================================
 const DIAS_ENTRE_CHECKINS = 14;
 
-function hoyISO(){ return new Date().toISOString().slice(0,10); }
+function fechaLocalISO(fecha){
+  return `${fecha.getFullYear()}-${String(fecha.getMonth()+1).padStart(2,'0')}-${String(fecha.getDate()).padStart(2,'0')}`;
+}
+function hoyISO(){ return fechaLocalISO(new Date()); }
 function diasEntre(a, b){
   return Math.round((new Date(b+'T00:00:00') - new Date(a+'T00:00:00')) / 86400000);
 }
@@ -3646,40 +4194,41 @@ const FIG = {
 };
 
 // ============================================================
-// Fotos reales de cada ejercicio (postura correcta: 0 = inicio, 1 = fin).
+// Fotografías de dos posiciones de cada ejercicio; el orden del catálogo no indica inicio o fin.
 // Fuente: free-exercise-db (github.com/yuhonas/free-exercise-db), licencia libre,
-// servida por el CDN de jsDelivr. Si una imagen no carga en el navegador,
+// incluida en assets/exercises. Si una imagen no carga en el navegador,
 // la tarjeta cae automáticamente al diagrama SVG de FIG (ver exFotoFalla).
 // ============================================================
-const EX_FOTO_BASE = 'https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/';
+const EX_FOTO_BASE = 'assets/exercises-webp/';
 const EX_FOTOS = {
-  bench:      ["Barbell_Bench_Press_-_Medium_Grip/0.jpg", "Barbell_Bench_Press_-_Medium_Grip/1.jpg"],  // Barbell Bench Press - Medium Grip
-  incline:    ["Incline_Dumbbell_Press/0.jpg", "Incline_Dumbbell_Press/1.jpg"],  // Incline Dumbbell Press
-  fly:        ["Dumbbell_Flyes/0.jpg", "Dumbbell_Flyes/1.jpg"],  // Dumbbell Flyes
-  dips:       ["Dips_-_Chest_Version/0.jpg", "Dips_-_Chest_Version/1.jpg"],  // Dips - Chest Version
-  pushup:     ["Pushups/0.jpg", "Pushups/1.jpg"],  // Pushups
-  pullup:     ["Pullups/0.jpg", "Pullups/1.jpg"],  // Pullups
-  bbrow:      ["Bent_Over_Barbell_Row/0.jpg", "Bent_Over_Barbell_Row/1.jpg"],  // Bent Over Barbell Row
-  cablerow:   ["Seated_Cable_Rows/0.jpg", "Seated_Cable_Rows/1.jpg"],  // Seated Cable Rows
-  deadlift:   ["Barbell_Deadlift/0.jpg", "Barbell_Deadlift/1.jpg"],  // Barbell Deadlift
-  machrow:    ["Leverage_Iso_Row/0.jpg", "Leverage_Iso_Row/1.jpg"],  // Leverage Iso Row
-  squat:      ["Barbell_Squat/0.jpg", "Barbell_Squat/1.jpg"],  // Barbell Squat
-  legpress:   ["Leg_Press/0.jpg", "Leg_Press/1.jpg"],  // Leg Press
-  lunge:      ["Dumbbell_Lunges/0.jpg", "Dumbbell_Lunges/1.jpg"],  // Dumbbell Lunges
-  legcurl:    ["Lying_Leg_Curls/0.jpg", "Lying_Leg_Curls/1.jpg"],  // Lying Leg Curls
-  legext:     ["Leg_Extensions/0.jpg", "Leg_Extensions/1.jpg"],  // Leg Extensions
-  calf:       ["Standing_Calf_Raises/0.jpg", "Standing_Calf_Raises/1.jpg"],  // Standing Calf Raises
-  ohp:        ["Standing_Military_Press/0.jpg", "Standing_Military_Press/1.jpg"],  // Standing Military Press
-  latraise:   ["Side_Lateral_Raise/0.jpg", "Side_Lateral_Raise/1.jpg"],  // Side Lateral Raise
-  frontraise: ["Front_Dumbbell_Raise/0.jpg", "Front_Dumbbell_Raise/1.jpg"],  // Front Dumbbell Raise
-  reardelt:   ["Reverse_Flyes/0.jpg", "Reverse_Flyes/1.jpg"],  // Reverse Flyes
-  arnold:     ["Arnold_Dumbbell_Press/0.jpg", "Arnold_Dumbbell_Press/1.jpg"],  // Arnold Dumbbell Press
-  bbcurl:     ["Barbell_Curl/0.jpg", "Barbell_Curl/1.jpg"],  // Barbell Curl
-  hammer:     ["Hammer_Curls/0.jpg", "Hammer_Curls/1.jpg"],  // Hammer Curls
-  skull:      ["Lying_Triceps_Press/0.jpg", "Lying_Triceps_Press/1.jpg"],  // Lying Triceps Press
-  pushdown:   ["Triceps_Pushdown/0.jpg", "Triceps_Pushdown/1.jpg"],  // Triceps Pushdown
-  conccurl:   ["Concentration_Curls/0.jpg", "Concentration_Curls/1.jpg"],  // Concentration Curls
+  bench:      ["Barbell_Bench_Press_-_Medium_Grip/0.webp", "Barbell_Bench_Press_-_Medium_Grip/1.webp"],  // Barbell Bench Press - Medium Grip
+  incline:    ["Incline_Dumbbell_Press/0.webp", "Incline_Dumbbell_Press/1.webp"],  // Incline Dumbbell Press
+  fly:        ["Dumbbell_Flyes/0.webp", "Dumbbell_Flyes/1.webp"],  // Dumbbell Flyes
+  dips:       ["Dips_-_Chest_Version/0.webp", "Dips_-_Chest_Version/1.webp"],  // Dips - Chest Version
+  pushup:     ["Pushups/0.webp", "Pushups/1.webp"],  // Pushups
+  pullup:     ["Pullups/0.webp", "Pullups/1.webp"],  // Pullups
+  bbrow:      ["Bent_Over_Barbell_Row/0.webp", "Bent_Over_Barbell_Row/1.webp"],  // Bent Over Barbell Row
+  cablerow:   ["Seated_Cable_Rows/0.webp", "Seated_Cable_Rows/1.webp"],  // Seated Cable Rows
+  deadlift:   ["Barbell_Deadlift/0.webp", "Barbell_Deadlift/1.webp"],  // Barbell Deadlift
+  machrow:    ["Leverage_Iso_Row/0.webp", "Leverage_Iso_Row/1.webp"],  // Leverage Iso Row
+  squat:      ["Barbell_Squat/0.webp", "Barbell_Squat/1.webp"],  // Barbell Squat
+  legpress:   ["Leg_Press/0.webp", "Leg_Press/1.webp"],  // Leg Press
+  lunge:      ["Dumbbell_Lunges/0.webp", "Dumbbell_Lunges/1.webp"],  // Dumbbell Lunges
+  legcurl:    ["Lying_Leg_Curls/0.webp", "Lying_Leg_Curls/1.webp"],  // Lying Leg Curls
+  legext:     ["Leg_Extensions/0.webp", "Leg_Extensions/1.webp"],  // Leg Extensions
+  calf:       ["Standing_Calf_Raises/0.webp", "Standing_Calf_Raises/1.webp"],  // Standing Calf Raises
+  ohp:        ["Standing_Military_Press/0.webp", "Standing_Military_Press/1.webp"],  // Standing Military Press
+  latraise:   ["Side_Lateral_Raise/0.webp", "Side_Lateral_Raise/1.webp"],  // Side Lateral Raise
+  frontraise: ["Front_Dumbbell_Raise/0.webp", "Front_Dumbbell_Raise/1.webp"],  // Front Dumbbell Raise
+  reardelt:   ["Reverse_Flyes/0.webp", "Reverse_Flyes/1.webp"],  // Reverse Flyes
+  arnold:     ["Arnold_Dumbbell_Press/0.webp", "Arnold_Dumbbell_Press/1.webp"],  // Arnold Dumbbell Press
+  bbcurl:     ["Barbell_Curl/0.webp", "Barbell_Curl/1.webp"],  // Barbell Curl
+  hammer:     ["Hammer_Curls/0.webp", "Hammer_Curls/1.webp"],  // Hammer Curls
+  skull:      ["Lying_Triceps_Press/0.webp", "Lying_Triceps_Press/1.webp"],  // Lying Triceps Press
+  pushdown:   ["Triceps_Pushdown/0.webp", "Triceps_Pushdown/1.webp"],  // Triceps Pushdown
+  conccurl:   ["Concentration_Curls/0.webp", "Concentration_Curls/1.webp"],  // Concentration Curls
 };
+const EX_EQUIPO = {"bench": "Barra y banco plano", "incline": "Mancuernas y banco inclinado", "fly": "Mancuernas y banco plano", "dips": "Paralelas", "pushup": "Peso corporal", "pullup": "Barra de dominadas", "bbrow": "Barra", "cablerow": "Polea", "deadlift": "Barra", "machrow": "Máquina", "squat": "Barra y soporte", "legpress": "Máquina", "lunge": "Mancuernas", "legcurl": "Máquina", "legext": "Máquina", "calf": "Máquina", "ohp": "Barra", "latraise": "Mancuernas", "frontraise": "Mancuernas", "reardelt": "Mancuernas y banco inclinado", "arnold": "Mancuernas y banco", "bbcurl": "Barra", "hammer": "Mancuernas", "skull": "Barra Z y banco", "pushdown": "Polea", "conccurl": "Mancuerna y banco"};
 // Índice inverso valor-de-FIG -> clave, para elegir las fotos por ejercicio sin tocar RUTINA_SEMANAL.
 const FIG_CLAVE = new Map(Object.entries(FIG).map(([k, v]) => [v, k]));
 function exFotosDe(e){
@@ -3693,30 +4242,30 @@ const RUTINA_SEMANAL = {
   1: { grupo: 'Pecho', ejercicios: [
     { nombre: 'Press de banca plano', musculo: 'Pectoral mayor', series: '4 × 8–10', pesado: true, fig: FIG.bench },
     { nombre: 'Press inclinado con mancuerna', musculo: 'Pectoral superior', series: '4 × 10–12', fig: FIG.incline },
-    { nombre: 'Aperturas con mancuerna o cable', musculo: 'Pectoral (apertura)', series: '3 × 12–15', fig: FIG.fly },
-    { nombre: 'Fondos en paralelas (o press declinado)', musculo: 'Pectoral inferior y tríceps', series: '3 × 8–12', fig: FIG.dips },
+    { nombre: 'Aperturas con mancuernas', musculo: 'Pectoral (apertura)', series: '3 × 12–15', fig: FIG.fly },
+    { nombre: 'Fondos en paralelas', musculo: 'Pectoral inferior y tríceps', series: '3 × 8–12', fig: FIG.dips },
     { nombre: 'Flexiones', musculo: 'Pectoral y core', series: '3 × 12–20', fig: FIG.pushup },
   ]},
   2: { grupo: 'Espalda', ejercicios: [
-    { nombre: 'Dominadas o jalón al pecho', musculo: 'Dorsal ancho', series: '4 × 8–12', fig: FIG.pullup },
+    { nombre: 'Dominadas', musculo: 'Dorsal ancho', series: '4 × 8–12', fig: FIG.pullup },
     { nombre: 'Remo con barra', musculo: 'Dorsal y romboides', series: '4 × 8–10', fig: FIG.bbrow },
     { nombre: 'Remo sentado en polea', musculo: 'Dorsal medio', series: '3 × 10–12', fig: FIG.cablerow },
     { nombre: 'Peso muerto', musculo: 'Espalda baja, glúteo y femoral', series: '4 × 5–8', pesado: true, fig: FIG.deadlift },
     { nombre: 'Remo en máquina', musculo: 'Dorsal y trapecio', series: '3 × 10–12', fig: FIG.machrow },
   ]},
   3: { grupo: 'Pierna', ejercicios: [
-    { nombre: 'Sentadilla', musculo: 'Cuádriceps y glúteo', series: '4 × 8–10', pesado: true, fig: FIG.squat },
+    { nombre: 'Sentadilla con barra', musculo: 'Cuádriceps y glúteo', series: '4 × 8–10', pesado: true, fig: FIG.squat },
     { nombre: 'Prensa de piernas', musculo: 'Cuádriceps y glúteo', series: '4 × 10–12', fig: FIG.legpress },
-    { nombre: 'Zancadas', musculo: 'Cuádriceps y glúteo', series: '3 × 10–12 / pierna', fig: FIG.lunge },
-    { nombre: 'Curl femoral', musculo: 'Isquiotibiales', series: '3 × 12–15', fig: FIG.legcurl },
+    { nombre: 'Zancadas con mancuernas', musculo: 'Cuádriceps y glúteo', series: '3 × 10–12 / pierna', fig: FIG.lunge },
+    { nombre: 'Curl femoral acostado', musculo: 'Isquiotibiales', series: '3 × 12–15', fig: FIG.legcurl },
     { nombre: 'Extensión de cuádriceps', musculo: 'Cuádriceps', series: '3 × 12–15', fig: FIG.legext },
     { nombre: 'Elevación de talones (gemelos)', musculo: 'Gastrocnemio y sóleo', series: '4 × 15–20', fig: FIG.calf },
   ]},
   4: { grupo: 'Hombro', ejercicios: [
-    { nombre: 'Press militar', musculo: 'Deltoides (todo)', series: '4 × 8–10', fig: FIG.ohp },
+    { nombre: 'Press militar con barra', musculo: 'Deltoides (todo)', series: '4 × 8–10', fig: FIG.ohp },
     { nombre: 'Elevaciones laterales', musculo: 'Deltoides lateral', series: '4 × 12–15', fig: FIG.latraise },
     { nombre: 'Elevaciones frontales', musculo: 'Deltoides anterior', series: '3 × 12–15', fig: FIG.frontraise },
-    { nombre: 'Pájaros (elevación posterior)', musculo: 'Deltoides posterior', series: '3 × 15–20', fig: FIG.reardelt },
+    { nombre: 'Aperturas posteriores en banco inclinado', musculo: 'Deltoides posterior', series: '3 × 15–20', fig: FIG.reardelt },
     { nombre: 'Press Arnold', musculo: 'Deltoides (todo)', series: '3 × 10–12', fig: FIG.arnold },
   ]},
   5: { grupo: 'Brazo', ejercicios: [
@@ -3767,15 +4316,15 @@ function renderMovimiento(){
   const cntEl = document.getElementById('move-count');
   if(cntEl){
     const semana = hechos.filter(dd => { const n = diasEntre(dd, hoy); return n >= 0 && n < 7; }).length;
-    cntEl.innerHTML = `<b>${hechos.length}</b> sesión${hechos.length === 1 ? '' : 'es'} en total · <b>${semana}</b> en los últimos 7 días · meta 5 por semana`;
+    cntEl.innerHTML = `<b>${hechos.length}</b> ${hechos.length === 1 ? 'sesión' : 'sesiones'} en total · <b>${semana}</b> en los últimos 7 días · meta 5 por semana`;
   }
   const grid = document.getElementById('move-grid');
   if(grid){
     let html = '';
     for(let i = 13; i >= 0; i--){
       const dt = new Date(); dt.setDate(dt.getDate() - i);
-      const iso = dt.toISOString().slice(0, 10);
-      html += `<div class="cal-day ${hechos.includes(iso) ? 'done' : ''}" onclick="toggleRutina('${iso}')" title="${iso}">${dt.getDate()}</div>`;
+      const iso = fechaLocalISO(dt);
+      html += `<button type="button" class="cal-day ${hechos.includes(iso) ? 'done' : ''}" onclick="toggleRutina('${iso}')" aria-label="Actividad del ${iso}" aria-pressed="${hechos.includes(iso)}" title="${iso}">${dt.getDate()}</button>`;
     }
     grid.innerHTML = html;
   }
@@ -3812,7 +4361,7 @@ function renderRutinaMov(){
     if(d === diaMovActivo) cls.push('active');
     if(r.descanso) cls.push('rest');
     return `<button type="button" class="${cls.join(' ')}" onclick="setDiaMov(${d})" `
-      + `title="${DIAS_NOMBRE[d]}${d === hoy ? ' (hoy)' : ''}">${DIAS_CORTO[d]}${d === hoy ? '<span aria-hidden="true"> •</span>' : ''}</button>`;
+      + `aria-pressed="${d === diaMovActivo}" aria-label="${DIAS_NOMBRE[d]}: ${r.grupo}" title="${DIAS_NOMBRE[d]}${d === hoy ? ' (hoy)' : ''}">${DIAS_CORTO[d]}${d === hoy ? '<span aria-hidden="true"> •</span>' : ''}</button>`;
   }).join('');
 
   const r = RUTINA_SEMANAL[diaMovActivo];
@@ -3827,40 +4376,149 @@ function renderRutinaMov(){
   }
 
   const peso = pesoUsuario();
-  let html = cab + ` — ${r.grupo}<small>${r.ejercicios.length} ejercicios · 4x10–12 orientativo</small></div>`;
+  const hechos = sesionEjercicios(hoyISO(), diaMovActivo);
+  let html = cab + ` — ${r.grupo}<small>${r.ejercicios.length} ejercicios · Series y repeticiones en cada tarjeta</small></div>`;
+  html += `<div class="session-progress">
+    <div class="session-progress-label"><span>Avance de la sesión</span><b>${hechos.length} / ${r.ejercicios.length}</b></div>
+    <div class="bar-track"><div class="bar-fill" style="width:${Math.round(hechos.length / r.ejercicios.length * 100)}%"></div></div>
+  </div>`;
   if(peso == null){
     html += '<div class="move-need-weight">Calcula tu plan en la calculadora (paso 1) para ver las calorías estimadas de cada ejercicio.</div>';
   }
   let total = 0;
-  r.ejercicios.forEach(e => {
+  r.ejercicios.forEach((e, indice) => {
     const kc = kcalEjercicio(e.pesado);
     if(kc != null) total += kc;
     const fotos = exFotosDe(e);
+    const equipo = EX_EQUIPO[FIG_CLAVE.get(e.fig)] || 'Gimnasio';
     const ilustracion = fotos
       ? `<div class="ex-illus">
           <div class="ex-photos">
-            <figure><img src="${fotos[0]}" alt="${e.nombre}: posición inicial" loading="lazy" onerror="exFotoFalla(this)"><figcaption>Inicio</figcaption></figure>
-            <figure><img src="${fotos[1]}" alt="${e.nombre}: posición final" loading="lazy" onerror="exFotoFalla(this)"><figcaption>Fin</figcaption></figure>
+            <figure><a href="${fotos[0]}" target="_blank" rel="noopener" aria-label="Ampliar ${e.nombre}, posición A"><img src="${fotos[0]}" alt="${e.nombre}: posición A" loading="lazy" decoding="async" onerror="exFotoFalla(this)"></a><figcaption>Posición A</figcaption></figure>
+            <figure><a href="${fotos[1]}" target="_blank" rel="noopener" aria-label="Ampliar ${e.nombre}, posición B"><img src="${fotos[1]}" alt="${e.nombre}: posición B" loading="lazy" decoding="async" onerror="exFotoFalla(this)"></a><figcaption>Posición B</figcaption></figure>
           </div>
           <div class="ex-fig-wrap" hidden>${e.fig}</div>
         </div>`
       : e.fig;
-    html += `<details class="ex-card">
-      <summary><span class="ex-sum-name">${e.nombre}</span><span class="ex-sum-series">${e.series}</span></summary>
+    const hecho = hechos.includes(indice);
+    html += `<details class="ex-card ${hecho ? 'done' : ''}" ${indice === 0 ? 'open' : ''}>
+      <summary>${fotos ? `<img class="ex-thumb" src="${fotos[0]}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true">` : ''}<span class="ex-sum-copy"><span class="ex-sum-name">${e.nombre}</span><span class="ex-sum-series">${e.series} <span aria-hidden="true">·</span> ${equipo}</span></span></summary>
       <div class="ex-body">
         ${ilustracion}
-        <div class="ex-meta"><b>Músculo principal:</b> ${e.musculo}<br><b>Series × repeticiones:</b> ${e.series}</div>
+        <p class="ex-photo-hint">Dos posiciones del movimiento. Toca una foto para ampliarla.</p>
+        <div class="ex-meta"><b>Equipo:</b> ${equipo}<br><b>Músculo principal:</b> ${e.musculo}<br><b>Series × repeticiones:</b> ${e.series}</div>
         ${kc != null ? `<div class="ex-kcal"><span class="n">≈ ${kc} kcal</span><span class="aprox">Aproximado, varía según intensidad, descansos y técnica.</span></div>` : ''}
+        <button type="button" class="btn-secondary ex-done-btn ${hecho ? 'on' : ''}" aria-pressed="${hecho}" onclick="toggleEjercicioHecho(${diaMovActivo},${indice})">${hecho ? '✓ Hecho hoy' : '☐ Marcar hecho'}</button>
       </div>
     </details>`;
   });
   if(peso != null){
     html += `<div class="day-total"><span>Total aproximado de la rutina</span><span class="n">≈ ${total} kcal</span></div>`;
   }
+  html += '<p class="exercise-credit">Fotos: <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener">Free Exercise DB</a>.</p>';
   cont.innerHTML = html;
 }
 
+// Ejercicios marcados como hechos para una fecha + día de rutina concretos. Si la fecha
+// conserva por separado cada día de rutina y admite las copias antiguas con dia/hechos.
+function sesionEjercicios(iso, dia){
+  const s = ejerciciosHechos[iso];
+  if(s && s.sesiones) return s.sesiones[String(dia)] || [];
+  return (s && s.dia === dia) ? s.hechos : [];
+}
+
+function toggleEjercicioHecho(dia, indice){
+  const iso = hoyISO();
+  const anterior = ejerciciosHechos[iso];
+  const sesiones = anterior && anterior.sesiones ? anterior.sesiones : {};
+  if(anterior && !anterior.sesiones && Array.isArray(anterior.hechos)){
+    sesiones[String(anterior.dia)] = [...anterior.hechos];
+  }
+  const hechos = [...(sesiones[String(dia)] || [])];
+  const pos = hechos.indexOf(indice);
+  if(pos >= 0) hechos.splice(pos, 1); else hechos.push(indice);
+  sesiones[String(dia)] = hechos;
+  ejerciciosHechos[iso] = { sesiones };
+  lsSet(LS.ejercicios, ejerciciosHechos);
+  renderRutinaMov();
+}
+
 function setDiaMov(d){ diaMovActivo = d; renderRutinaMov(); }
+
+// ============================================================
+// TEMPORIZADOR DE DESCANSO — accesible (iniciar/pausar/reiniciar), vive fuera de
+// renderRutinaMov() para que cambiar de pestaña de día no lo reinicie a mitad de cuenta.
+// ============================================================
+let restTimerDuracion = 90;
+let restTimerRestante = 90;
+let restTimerIntervalo = null;
+let restTimerCorriendo = false;
+let restTimerHasta = 0;
+
+function fmtMMSS(s){
+  const m = Math.floor(s / 60), ss = s % 60;
+  return String(m).padStart(2, '0') + ':' + String(ss).padStart(2, '0');
+}
+
+function renderRestTimer(anuncio){
+  const disp = document.getElementById('rest-timer-display');
+  if(disp) disp.textContent = fmtMMSS(Math.max(0, restTimerRestante));
+  const toggle = document.getElementById('rest-timer-toggle');
+  if(toggle) toggle.textContent = restTimerCorriendo
+    ? '⏸ Pausar'
+    : (restTimerRestante === restTimerDuracion ? '▶ Iniciar descanso' : '▶ Reanudar');
+  const status = document.getElementById('rest-timer-status');
+  if(status && anuncio) status.textContent = anuncio;
+}
+
+function setRestTimerDuracion(segundos){
+  pausarRestTimer();
+  restTimerDuracion = segundos;
+  restTimerRestante = segundos;
+  document.querySelectorAll('.rest-timer-presets button').forEach(b => {
+    const activo = parseInt(b.dataset.seg, 10) === segundos;
+    b.classList.toggle('active', activo);
+    b.setAttribute('aria-pressed', String(activo));
+  });
+  renderRestTimer('Descanso ajustado a ' + segundos + ' segundos.');
+}
+
+function toggleRestTimer(){
+  if(restTimerCorriendo) pausarRestTimer(); else iniciarRestTimer();
+}
+
+function iniciarRestTimer(){
+  if(restTimerCorriendo) return;
+  if(restTimerRestante <= 0) restTimerRestante = restTimerDuracion;
+  restTimerHasta = Date.now() + restTimerRestante * 1000;
+  restTimerCorriendo = true;
+  renderRestTimer('Descanso iniciado: ' + fmtMMSS(restTimerRestante) + '.');
+  restTimerIntervalo = setInterval(() => {
+    restTimerRestante = Math.max(0, Math.ceil((restTimerHasta - Date.now()) / 1000));
+    if(restTimerRestante <= 0){
+      restTimerRestante = 0;
+      pausarRestTimer();
+      renderRestTimer('Descanso terminado.');
+      toast('Descanso terminado.');
+      return;
+    }
+    renderRestTimer();
+  }, 250);
+}
+
+function pausarRestTimer(){
+  const estabaCorriendo = restTimerCorriendo;
+  if(estabaCorriendo) restTimerRestante = Math.max(0, Math.ceil((restTimerHasta - Date.now()) / 1000));
+  restTimerCorriendo = false;
+  if(restTimerIntervalo){ clearInterval(restTimerIntervalo); restTimerIntervalo = null; }
+  if(estabaCorriendo) renderRestTimer('Descanso en pausa.');
+}
+
+function reiniciarRestTimer(){
+  pausarRestTimer();
+  restTimerRestante = restTimerDuracion;
+  renderRestTimer('Descanso reiniciado.');
+}
 
 // Si una de las fotos del ejercicio no carga, ocultamos el par y mostramos el diagrama SVG.
 function exFotoFalla(img){
@@ -4173,9 +4831,14 @@ function endTour(){
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
   setTab('inicio');
-  // Cuenta por correo: pinta el estado, canjea ?login_token=... y valida la sesión guardada.
+  // Cuenta por correo + suscripción: bloquea de entrada (hasta confirmar premium),
+  // pinta el estado, canjea ?login_token=.../?checkout=... y valida todo contra el Worker.
+  aplicarGatingPremium();
   renderAuthArea();
-  verificarLoginDesdeURL().then(cargarCuenta);
+  verificarLoginDesdeURL().then(() => verificarCheckoutDesdeURL()).then(cargarCuenta);
+  // En paralelo: disponibilidad pública del Worker (correo, IA, planes). No bloquea el
+  // inicio de sesión; cuando responde, refresca el paywall para no prometer de más.
+  cargarDisponibilidad().then(aplicarGatingPremium);
   document.getElementById('intro-date').textContent = new Date().toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long'});
   document.getElementById('ai-details').addEventListener('toggle',function(){document.getElementById('ai-toggle').setAttribute('aria-expanded',String(this.open));});
   const focusOrigins = new WeakMap();
@@ -4233,6 +4896,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if(datos.genero) setGender(datos.genero);
       if(datos.intensidad != null) setIntensidad(datos.intensidad);
       if(datos.objetivo) setObjetivo(datos.objetivo);
+      setDieta(datos.dieta || 'omnivora');
       document.getElementById('actividad').value = datos.actividad;
     }
     pintarResultado(

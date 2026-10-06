@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS user_progress (
+ user_id INTEGER PRIMARY KEY REFERENCES users(id),
+ data TEXT NOT NULL,
+ revision INTEGER NOT NULL DEFAULT 1
+);

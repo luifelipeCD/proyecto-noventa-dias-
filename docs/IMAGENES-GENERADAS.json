@@ -1,0 +1,722 @@
+[
+  {
+    "id": 1,
+    "name": "Tortilla de claras con espinaca y queso bajo en grasa",
+    "path": "assets/recipes/catalog/1.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final food photograph for a Spanish fitness recipe app. Create one high-end editorial food photograph, landscape 4:3 composition. Subject: a home-cooked egg white omelette folded over wilted spinach and a small amount of melted grated low-fat cheese, on a simple warm white matte ceramic plate. The omelette is made with 132g egg whites, one 50g egg, 30g spinach, 20g low-fat cheese, minimal oil, pepper. Show the actual named ingredients, no extra side dishes or ingredients. Warm neutral pale stone tabletop, soft daylight from left, natural food texture, appetizing realistic modest serving, camera 45 degrees, entire plate in the central 75% so responsive crops never cut the dish, tidy composition. Brand mood calm accessible healthy home cooking; no gym objects, no protein powder containers, no text, no logos, no watermark, no cutlery obscuring food. This is an illustrative recipe visual, not a photograph of an actual prepared serving. Return the image and a saved local output file path for use in the project.\n",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 2,
+    "name": "Yogur griego con proteína, moras y chía",
+    "path": "assets/recipes/catalog/2.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Yogur griego con proteína, moras y chía. Ingredients and relative serving quantities: Yogur griego natural bajo en grasa (200 g); Frutos rojos (75 g); Semillas de chía (12 g); Proteína en polvo (whey) (15 g); Canela (1 g). The food must be prepared and plated following: Mezcla el yogur con el scoop de proteína hasta integrar. Agrega las semillas de chía y revuelve. Corona con las moras y canela al gusto.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 3,
+    "name": "Avena proteica con canela y manzana",
+    "path": "assets/recipes/catalog/3.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Avena proteica con canela y manzana. Ingredients and relative serving quantities: Avena en hojuelas (40 g); Proteína en polvo (whey) (25 g); Manzana (70 g); Canela (1 g); Leche descremada (150 g). The food must be prepared and plated following: Cocina la avena con el agua o leche a fuego medio por 5 minutos. Retira del fuego y deja entibiar un poco antes de mezclar el scoop de proteína (para que no se cocine el polvo). Agrega la manzana picada y canela.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 4,
+    "name": "Batido de proteína con plátano y mantequilla de maní light",
+    "path": "assets/recipes/catalog/4.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Batido de proteína con plátano y mantequilla de maní light. Ingredients and relative serving quantities: Proteína en polvo (whey) (30 g); Plátano (60 g); Mantequilla de maní light (8 g); Leche descremada (250 g). The food must be prepared and plated following: Coloca todos los ingredientes en la licuadora. Licúa hasta obtener una textura homogénea. Sirve frío.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 5,
+    "name": "Tostada integral con huevo pochado y aguacate",
+    "path": "assets/recipes/catalog/5.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Tostada integral con huevo pochado y aguacate. Ingredients and relative serving quantities: Pan integral (30 g); Huevo (55 g); Aguacate (40 g); Limón (3 g); Sal, pimienta y especias (2 g). The food must be prepared and plated following: Pocha el huevo en agua hirviendo con un chorrito de vinagre por 3 minutos. Tuesta el pan y machaca el aguacate encima con sal y limón. Corona con el huevo pochado y chile en hojuelas.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 6,
+    "name": "Bowl de requesón con piña y semillas de chía",
+    "path": "assets/recipes/catalog/6.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Bowl de requesón con piña y semillas de chía. Ingredients and relative serving quantities: Requesón bajo en grasa (200 g); Piña (90 g); Semillas de chía (6 g); Vainilla (1 g). The food must be prepared and plated following: Mezcla el requesón con la vainilla. Agrega la piña picada encima. Espolvorea las semillas de chía.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 7,
+    "name": "Panqueques proteicos de avena y claras",
+    "path": "assets/recipes/catalog/7.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Panqueques proteicos de avena y claras. Ingredients and relative serving quantities: Avena en hojuelas (40 g); Clara de huevo (99 g); Proteína en polvo (whey) (25 g); Polvo de hornear (2 g); Canela (1 g). The food must be prepared and plated following: Licúa todos los ingredientes hasta obtener una mezcla homogénea. Cocina pequeñas porciones en sartén antiadherente a fuego medio-bajo, 2 minutos por lado. Sirve con fruta picada si gustas.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 8,
+    "name": "Huevos revueltos con champiñones, espinaca y pavo",
+    "path": "assets/recipes/catalog/8.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Huevos revueltos con champiñones, espinaca y pavo. Ingredients and relative serving quantities: Huevo (100 g); Clara de huevo (66 g); Pechuga de pavo (50 g); Champiñones (120 g); Espinaca (50 g); Sal, pimienta y especias (2 g). The food must be prepared and plated following: Saltea los champiñones y el pavo en sartén antiadherente hasta dorar. Agrega los huevos batidos y revuelve a fuego medio-bajo. Sazona y sirve con perejil fresco.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 33,
+    "name": "Tofu revuelto con cúrcuma y espinaca",
+    "path": "assets/recipes/catalog/33.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Tofu revuelto con cúrcuma y espinaca. Ingredients and relative serving quantities: Tofu firme (160 g); Espinaca (40 g); Levadura nutricional (5 g); Sal, pimienta y especias (3 g); Spray de aceite (1 g). The food must be prepared and plated following: Desmenuza el tofu con las manos y sazónalo con cúrcuma, sal y pimienta. Saltéalo en sartén antiadherente 4-5 minutos. Agrega la espinaca y la levadura nutricional, cocina 2 minutos más.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 34,
+    "name": "Pudín de chía con leche de soya y frutos rojos",
+    "path": "assets/recipes/catalog/34.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Pudín de chía con leche de soya y frutos rojos. Ingredients and relative serving quantities: Semillas de chía (30 g); Leche de soya sin azúcar (250 g); Proteína vegetal en polvo (15 g); Frutos rojos (75 g); Canela (1 g). The food must be prepared and plated following: Mezcla la chía con la leche de soya y la proteína, revuelve bien. Refrigera al menos 4 horas o toda la noche. Sirve con los frutos rojos y canela encima.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 35,
+    "name": "Pan integral con hummus, tomate y semillas de girasol",
+    "path": "assets/recipes/catalog/35.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Pan integral con hummus, tomate y semillas de girasol. Ingredients and relative serving quantities: Pan integral (55 g); Hummus (55 g); Tomate (80 g); Semillas de girasol (8 g); Sal, pimienta y especias (2 g). The food must be prepared and plated following: Tuesta el pan. Unta el hummus generosamente. Coloca el tomate, las semillas y sazona.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 36,
+    "name": "Smoothie verde con proteína vegetal, espinaca y piña",
+    "path": "assets/recipes/catalog/36.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Smoothie verde con proteína vegetal, espinaca y piña. Ingredients and relative serving quantities: Proteína vegetal en polvo (30 g); Espinaca (30 g); Piña (90 g); Bebida vegetal sin azúcar (250 g). The food must be prepared and plated following: Coloca todo en la licuadora. Licúa hasta que quede cremoso. Sirve de inmediato.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 37,
+    "name": "Bowl de yogur de soya con granola sin azúcar y plátano",
+    "path": "assets/recipes/catalog/37.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Bowl de yogur de soya con granola sin azúcar y plátano. Ingredients and relative serving quantities: Yogur de soya natural (200 g); Granola sin azúcar (28 g); Plátano (50 g); Semillas de lino molidas (8 g). The food must be prepared and plated following: Sirve el yogur de soya en un bowl. Agrega la granola y el plátano. Espolvorea las semillas de lino.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 38,
+    "name": "Omelette de harina de garbanzo con pimientos",
+    "path": "assets/recipes/catalog/38.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Omelette de harina de garbanzo con pimientos. Ingredients and relative serving quantities: Harina de garbanzo (55 g); Pimiento (50 g); Sal, pimienta y especias (3 g); Spray de aceite (1 g). The food must be prepared and plated following: Bate la harina de garbanzo con el agua y las especias hasta que no queden grumos. Vierte en sartén antiadherente caliente y reparte el pimiento encima. Cocina 3-4 minutos por lado hasta que cuaje.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 39,
+    "name": "Requesón batido con cacao y fresas",
+    "path": "assets/recipes/catalog/39.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Requesón batido con cacao y fresas. Ingredients and relative serving quantities: Requesón bajo en grasa (200 g); Cacao en polvo sin azúcar (6 g); Fresas (90 g); Edulcorante (1 g). The food must be prepared and plated following: Bate el requesón con el cacao y el edulcorante hasta que quede cremoso. Corta las fresas. Sirve el requesón con las fresas encima.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 40,
+    "name": "Huevos al horno con frijoles y salsa (shakshuka de frijol)",
+    "path": "assets/recipes/catalog/40.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Huevos al horno con frijoles y salsa (shakshuka de frijol). Ingredients and relative serving quantities: Huevo (110 g); Frijoles negros cocidos (90 g); Salsa de tomate natural (120 g); Cebolla (30 g); Hierbas frescas (5 g). The food must be prepared and plated following: Sofríe cebolla y ajo, agrega la salsa, los frijoles y las especias. Haz dos huecos y casca los huevos dentro. Tapa y cocina 6-8 minutos hasta que la clara cuaje. Sirve con cilantro.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 9,
+    "name": "Pechuga de pollo a la plancha con brócoli y camote",
+    "path": "assets/recipes/catalog/9.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Pechuga de pollo a la plancha con brócoli y camote. Ingredients and relative serving quantities: Pechuga de pollo (150 g); Brócoli (220 g); Camote (150 g); Hojas verdes mixtas (80 g); Ajo (5 g); Limón (5 g); Sal, pimienta y especias (2 g). The food must be prepared and plated following: Sazona el pollo con ajo, sal y pimienta, cocina a la plancha 5-6 min por lado. Hornea el camote en cubos a 200°C por 25 minutos. Sirve con el brócoli al vapor y un toque de limón.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 10,
+    "name": "Salmón al horno con espárragos y quinoa",
+    "path": "assets/recipes/catalog/10.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Salmón al horno con espárragos y quinoa. Ingredients and relative serving quantities: Salmón (140 g); Espárragos (150 g); Quinoa cocida (120 g); Limón (5 g); Sal, pimienta y especias (2 g). The food must be prepared and plated following: Hornea el salmón con limón y eneldo a 200°C por 15 minutos. Saltea o hornea los espárragos con sal y un toque de aceite. Sirve todo sobre la quinoa cocida.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 11,
+    "name": "Ensalada de atún con garbanzos y limón",
+    "path": "assets/recipes/catalog/11.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Ensalada de atún con garbanzos y limón. Ingredients and relative serving quantities: Atún en agua (120 g); Garbanzos cocidos (90 g); Lechuga romana (120 g); Tomate (120 g); Pepino (120 g); Pimiento (60 g); Aceite de oliva (5 g); Limón (5 g). The food must be prepared and plated following: Escurre el atún y mézclalo con los garbanzos. Agrega las verduras picadas. Aliña con limón, un chorrito de aceite de oliva y sal.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 12,
+    "name": "Lomo de res magro con ensalada grande de tomate y hojas verdes",
+    "path": "assets/recipes/catalog/12.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Lomo de res magro con ensalada grande de tomate y hojas verdes. Ingredients and relative serving quantities: Lomo de res magro (180 g); Tomate (150 g); Cebolla (40 g); Lechuga romana (120 g); Pepino (100 g); Aceite de oliva (6 g); Limón (5 g); Sal, pimienta y especias (2 g). The food must be prepared and plated following: Sazona el lomo y cocina a la plancha al término deseado. Prepara la ensalada de tomate y cebolla con orégano, limón y sal. Sirve juntos, dejando reposar la carne 3 minutos antes de cortar.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 13,
+    "name": "Pechuga de pavo rellena de espinaca y champiñones",
+    "path": "assets/recipes/catalog/13.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Pechuga de pavo rellena de espinaca y champiñones. Ingredients and relative serving quantities: Pechuga de pavo (200 g); Espinaca (120 g); Champiñones (120 g); Hojas verdes mixtas (60 g); Aceite de oliva (5 g); Ajo (5 g); Sal, pimienta y especias (2 g). The food must be prepared and plated following: Abre la pechuga en mariposa y rellena con la espinaca y champiñones salteados. Cierra con palillos y cocina en sartén tapado a fuego medio, 6-7 min por lado. Retira los palillos antes de servir.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 14,
+    "name": "Camarones salteados con muchos vegetales y arroz integral",
+    "path": "assets/recipes/catalog/14.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Camarones salteados con muchos vegetales y arroz integral. Ingredients and relative serving quantities: Camarones (180 g); Vegetales mixtos (280 g); Arroz integral cocido (110 g); Salsa de soya (12 g); Ajo (5 g); Jengibre (3 g). The food must be prepared and plated following: Saltea el ajo y jengibre, agrega los camarones hasta que estén rosados. Añade los vegetales y saltea 3-4 minutos más. Sirve sobre el arroz integral con un chorrito de salsa de soya.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 15,
+    "name": "Tofu marinado a la plancha con muchos vegetales asados y arroz integral",
+    "path": "assets/recipes/catalog/15.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Tofu marinado a la plancha con muchos vegetales asados y arroz integral. Ingredients and relative serving quantities: Tofu firme (150 g); Vegetales mixtos (280 g); Arroz integral cocido (100 g); Salsa de soya (12 g); Aceite de sésamo (3 g); Ajo (5 g). The food must be prepared and plated following: Marina el tofu en cubos con salsa de soya y ajo por 10 minutos. Cocina el tofu y los vegetales en sartén o al horno hasta dorar. Sirve sobre el arroz integral.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 16,
+    "name": "Chili de pavo molido con frijoles negros y muchas verduras",
+    "path": "assets/recipes/catalog/16.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Chili de pavo molido con frijoles negros y muchas verduras. Ingredients and relative serving quantities: Pavo molido (130 g); Frijoles negros cocidos (110 g); Tomate triturado (180 g); Pimiento (90 g); Champiñones (90 g); Cebolla (40 g); Sal, pimienta y especias (3 g). The food must be prepared and plated following: Dora el pavo molido con cebolla y ajo. Agrega el tomate triturado, los frijoles y las especias. Cocina a fuego medio 15-20 minutos hasta espesar.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 17,
+    "name": "Merluza al horno con puré de coliflor",
+    "path": "assets/recipes/catalog/17.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Merluza al horno con puré de coliflor. Ingredients and relative serving quantities: Pescado blanco (200 g); Coliflor (250 g); Leche descremada (30 g); Aceite de oliva (4 g); Ajo (5 g); Limón (5 g); Sal, pimienta y especias (2 g). The food must be prepared and plated following: Hornea el pescado con limón, ajo, sal y pimienta a 200°C por 15 min. Cocina la coliflor al vapor y hazla puré con un toque de leche descremada, sal y pimienta. Sirve el pescado sobre el puré.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 18,
+    "name": "Wrap integral de pollo con yogur en lugar de mayonesa",
+    "path": "assets/recipes/catalog/18.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Wrap integral de pollo con yogur en lugar de mayonesa. Ingredients and relative serving quantities: Tortilla integral (60 g); Pechuga de pollo (130 g); Lechuga romana (70 g); Tomate (80 g); Pepino (80 g); Zanahoria (50 g); Yogur griego natural bajo en grasa (40 g); Mostaza (5 g). The food must be prepared and plated following: Mezcla el yogur griego con la mostaza para hacer el aderezo. Rellena la tortilla con el pollo, vegetales y el aderezo. Enrolla y corta a la mitad.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 19,
+    "name": "Lentejas guisadas con pechuga de pollo desmenuzada",
+    "path": "assets/recipes/catalog/19.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Lentejas guisadas con pechuga de pollo desmenuzada. Ingredients and relative serving quantities: Lentejas cocidas (170 g); Pechuga de pollo (120 g); Cebolla (30 g); Tomate (100 g); Zanahoria (80 g); Espinaca (60 g); Aceite de oliva (4 g); Sal, pimienta y especias (3 g). The food must be prepared and plated following: Sofríe la cebolla, ajo y zanahoria. Agrega el tomate, las lentejas y un poco de agua o caldo, cocina 10 minutos. Incorpora el pollo desmenuzado y cocina 5 minutos más.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 20,
+    "name": "Bowl de quinoa con garbanzos, pepino y feta bajo en grasa",
+    "path": "assets/recipes/catalog/20.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Bowl de quinoa con garbanzos, pepino y feta bajo en grasa. Ingredients and relative serving quantities: Quinoa cocida (120 g); Garbanzos cocidos (120 g); Pepino (60 g); Tomate (60 g); Queso feta bajo en grasa (30 g); Limón (5 g). The food must be prepared and plated following: Mezcla la quinoa con los garbanzos y vegetales picados. Agrega el queso feta desmenuzado. Aliña con limón, orégano y una pizca de sal.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 21,
+    "name": "Pescado blanco al vapor con muchos vegetales al limón",
+    "path": "assets/recipes/catalog/21.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Pescado blanco al vapor con muchos vegetales al limón. Ingredients and relative serving quantities: Pescado blanco (220 g); Vegetales mixtos (380 g); Aceite de oliva (4 g); Limón (8 g); Sal, pimienta y especias (2 g). The food must be prepared and plated following: Cocina el pescado al vapor con rodajas de limón encima, 10-12 minutos. Cocina los vegetales al vapor por separado. Sirve juntos con un toque de eneldo fresco.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 22,
+    "name": "Albóndigas de pavo en salsa de tomate con zoodles",
+    "path": "assets/recipes/catalog/22.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Albóndigas de pavo en salsa de tomate con zoodles. Ingredients and relative serving quantities: Pavo molido (150 g); Huevo (15 g); Salsa de tomate natural (180 g); Calabacín (280 g); Sal, pimienta y especias (3 g). The food must be prepared and plated following: Mezcla el pavo molido con ajo, perejil, sal y un poco de huevo, forma las albóndigas. Cocina las albóndigas en la salsa de tomate a fuego medio 15 minutos. Saltea los zoodles 2 minutos y sirve con las albóndigas encima.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 23,
+    "name": "Ensalada César grande light con pollo (aderezo de yogur)",
+    "path": "assets/recipes/catalog/23.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Ensalada César grande light con pollo (aderezo de yogur). Ingredients and relative serving quantities: Pechuga de pollo (170 g); Lechuga romana (200 g); Tomate (90 g); Pepino (80 g); Pan integral (20 g); Yogur griego natural bajo en grasa (40 g); Queso parmesano (10 g); Aceite de oliva (4 g); Mostaza (5 g); Limón (5 g). The food must be prepared and plated following: Prepara el aderezo mezclando yogur, ajo, limón, mostaza y sal. Corta el pollo a la plancha en tiras. Mezcla la lechuga con el aderezo y corona con el pollo y un poco de parmesano.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 24,
+    "name": "Curry de pollo bajo en grasa con arroz integral",
+    "path": "assets/recipes/catalog/24.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Curry de pollo bajo en grasa con arroz integral. Ingredients and relative serving quantities: Pechuga de pollo (150 g); Leche de coco light (80 g); Cebolla (30 g); Sal, pimienta y especias (4 g); Arroz integral cocido (150 g). The food must be prepared and plated following: Sofríe la cebolla y el ajo, agrega el pollo hasta sellar. Añade las especias y la leche de coco light, cocina 12-15 minutos. Sirve sobre el arroz integral.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 41,
+    "name": "Curry de garbanzos y espinaca con arroz integral",
+    "path": "assets/recipes/catalog/41.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Curry de garbanzos y espinaca con arroz integral. Ingredients and relative serving quantities: Garbanzos cocidos (130 g); Espinaca (80 g); Tomate triturado (120 g); Leche de coco light (60 g); Cebolla (30 g); Arroz integral cocido (130 g). The food must be prepared and plated following: Sofríe cebolla y ajo, añade el curry. Agrega tomate, garbanzos y leche de coco, cocina 10 minutos. Incorpora la espinaca hasta que se marchite y sirve con el arroz.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 42,
+    "name": "Bowl de lentejas rojas con muchas verduras asadas",
+    "path": "assets/recipes/catalog/42.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Bowl de lentejas rojas con muchas verduras asadas. Ingredients and relative serving quantities: Lentejas cocidas (200 g); Calabacín (130 g); Pimiento (130 g); Champiñones (100 g); Cebolla (40 g); Aceite de oliva (6 g); Limón (5 g). The food must be prepared and plated following: Asa las verduras a 200°C por 20 minutos con especias. Calienta las lentejas con un poco de agua y comino. Sirve las lentejas con las verduras encima, limón y perejil.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 43,
+    "name": "Chili sin carne de frijol y soya texturizada",
+    "path": "assets/recipes/catalog/43.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Chili sin carne de frijol y soya texturizada. Ingredients and relative serving quantities: Soya texturizada hidratada (120 g); Frijoles rojos cocidos (120 g); Tomate triturado (150 g); Cebolla (40 g); Pimiento (50 g); Sal, pimienta y especias (4 g). The food must be prepared and plated following: Sofríe cebolla, ajo y pimiento. Agrega la soya texturizada, los frijoles, el tomate y las especias. Cocina a fuego medio 20 minutos hasta espesar.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 44,
+    "name": "Tacos de tempeh con repollo morado y salsa",
+    "path": "assets/recipes/catalog/44.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Tacos de tempeh con repollo morado y salsa. Ingredients and relative serving quantities: Tempeh (130 g); Tortilla de maíz (50 g); Repollo morado (100 g); Salsa de tomate picante (40 g); Salsa de soya (10 g); Limón (5 g). The food must be prepared and plated following: Marina el tempeh con salsa de soya y comino 10 minutos, luego dóralo en sartén. Calienta las tortillas. Arma los tacos con el tempeh, el repollo, la salsa, limón y cilantro.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 45,
+    "name": "Ensalada grande de quinoa, edamame y aguacate",
+    "path": "assets/recipes/catalog/45.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Ensalada grande de quinoa, edamame y aguacate. Ingredients and relative serving quantities: Quinoa cocida (150 g); Edamame (90 g); Aguacate (45 g); Pepino (120 g); Tomate (120 g); Hojas verdes mixtas (60 g); Salsa de soya (10 g). The food must be prepared and plated following: Mezcla la quinoa fría con el edamame y las verduras. Agrega el aguacate con cuidado. Aliña con limón, salsa de soya y sésamo.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 46,
+    "name": "Pasta integral con lentejas a la boloñesa",
+    "path": "assets/recipes/catalog/46.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Pasta integral con lentejas a la boloñesa. Ingredients and relative serving quantities: Pasta integral (seca) (60 g); Lentejas cocidas (120 g); Tomate triturado (150 g); Cebolla (30 g); Zanahoria (40 g); Aceite de oliva (4 g); Sal, pimienta y especias (3 g). The food must be prepared and plated following: Cocina la pasta al dente. Sofríe cebolla, ajo y zanahoria, agrega tomate y lentejas, cocina 12 minutos. Mezcla la salsa con la pasta y sirve con hierbas.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 47,
+    "name": "Buddha bowl de tofu al horno, brócoli y camote",
+    "path": "assets/recipes/catalog/47.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Buddha bowl de tofu al horno, brócoli y camote. Ingredients and relative serving quantities: Tofu firme (160 g); Brócoli (150 g); Camote (130 g); Tahini (12 g); Salsa de soya (10 g); Limón (5 g). The food must be prepared and plated following: Hornea el tofu y el camote a 200°C por 25 minutos, y el brócoli los últimos 12. Mezcla tahini con limón y agua para el aderezo. Sirve todo en un bowl con el aderezo por encima.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 48,
+    "name": "Hamburguesa de frijol negro con ensalada",
+    "path": "assets/recipes/catalog/48.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Hamburguesa de frijol negro con ensalada. Ingredients and relative serving quantities: Frijoles negros cocidos (150 g); Avena en hojuelas (20 g); Cebolla (20 g); Pan integral (50 g); Lechuga (50 g); Tomate (40 g). The food must be prepared and plated following: Machaca los frijoles con la avena y las especias, forma una hamburguesa. Dórala en sartén 4 minutos por lado. Sirve en el pan integral con la ensalada.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 49,
+    "name": "Salteado de tofu con muchos vegetales y fideos soba",
+    "path": "assets/recipes/catalog/49.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Salteado de tofu con muchos vegetales y fideos soba. Ingredients and relative serving quantities: Tofu firme (150 g); Fideos soba (secos) (35 g); Brócoli (140 g); Zanahoria (80 g); Pimiento (90 g); Champiñones (70 g); Salsa de soya (12 g). The food must be prepared and plated following: Cocina los fideos soba y reserva. Saltea el tofu hasta dorar, agrega los vegetales, ajo y jengibre. Incorpora los fideos y la salsa de soya, saltea 2 minutos y termina con sésamo.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 50,
+    "name": "Sopa espesa de lentejas con muchas verduras",
+    "path": "assets/recipes/catalog/50.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Sopa espesa de lentejas con muchas verduras. Ingredients and relative serving quantities: Lentejas cocidas (200 g); Zanahoria (80 g); Apio (60 g); Cebolla (40 g); Calabacín (100 g); Tomate (100 g); Espinaca (50 g); Aceite de oliva (4 g); Caldo de verduras (250 g). The food must be prepared and plated following: Sofríe la cebolla, el ajo, la zanahoria y el apio. Agrega las lentejas, el tomate, el laurel y el caldo. Cocina 30-35 minutos hasta que las lentejas estén tiernas.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 51,
+    "name": "Berenjena rellena de quinoa y garbanzos",
+    "path": "assets/recipes/catalog/51.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Berenjena rellena de quinoa y garbanzos. Ingredients and relative serving quantities: Berenjena (250 g); Quinoa cocida (100 g); Garbanzos cocidos (100 g); Tomate (60 g); Cebolla (30 g); Aceite de oliva (4 g); Limón (5 g). The food must be prepared and plated following: Hornea la berenjena partida a la mitad 20 minutos y retira parte de la pulpa. Saltea la pulpa con cebolla, ajo, tomate, garbanzos y quinoa. Rellena la berenjena y hornea 12 minutos más.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 52,
+    "name": "Wrap de falafel al horno con salsa de yogur de soya",
+    "path": "assets/recipes/catalog/52.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Wrap de falafel al horno con salsa de yogur de soya. Ingredients and relative serving quantities: Garbanzos cocidos (120 g); Harina de garbanzo (12 g); Tortilla integral (50 g); Lechuga (30 g); Tomate (50 g); Yogur de soya natural (50 g). The food must be prepared and plated following: Procesa los garbanzos con ajo, cebolla, perejil y especias, forma bolitas y hornéalas 20 minutos a 200°C. Prepara la salsa mezclando yogur de soya, limón y pepino. Arma el wrap con los falafel, las verduras y la salsa.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 53,
+    "name": "Pollo al curry rojo con muchas verduras",
+    "path": "assets/recipes/catalog/53.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Pollo al curry rojo con muchas verduras. Ingredients and relative serving quantities: Pechuga de pollo (170 g); Pasta de curry rojo (18 g); Leche de coco light (80 g); Pimiento (120 g); Calabacín (120 g); Champiñones (80 g); Cebolla (30 g). The food must be prepared and plated following: Sella el pollo en la sartén. Agrega la pasta de curry, la leche de coco y las verduras. Cocina 12 minutos y sirve con cilantro y limón.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 54,
+    "name": "Pescado blanco a la plancha con ensalada grande tibia de garbanzo",
+    "path": "assets/recipes/catalog/54.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Pescado blanco a la plancha con ensalada grande tibia de garbanzo. Ingredients and relative serving quantities: Pescado blanco (180 g); Garbanzos cocidos (110 g); Espinaca (120 g); Tomate (120 g); Pepino (80 g); Cebolla (30 g); Aceite de oliva (4 g). The food must be prepared and plated following: Cocina el pescado a la plancha 3-4 minutos por lado. Saltea los garbanzos con cebolla, tomate y comino, agrega la espinaca al final. Sirve el pescado sobre la ensalada tibia con limón.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 55,
+    "name": "Atún sellado con ajonjolí y vegetales salteados",
+    "path": "assets/recipes/catalog/55.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Atún sellado con ajonjolí y vegetales salteados. Ingredients and relative serving quantities: Atún fresco (180 g); Semillas de sésamo (10 g); Acelga (120 g); Zanahoria (50 g); Arroz integral cocido (80 g); Salsa de soya (12 g); Jengibre (3 g). The food must be prepared and plated following: Cubre el atún con ajonjolí y séllalo 1 minuto por lado (interior rosado). Saltea los vegetales con jengibre, ajo y salsa de soya. Corta el atún en láminas y sirve sobre los vegetales.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 56,
+    "name": "Pechuga de pollo BBQ al horno con elote y ensalada grande de repollo",
+    "path": "assets/recipes/catalog/56.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Pechuga de pollo BBQ al horno con elote y ensalada grande de repollo. Ingredients and relative serving quantities: Pechuga de pollo (180 g); Salsa BBQ sin azúcar añadida (28 g); Elote (mazorca) (100 g); Repollo (150 g); Zanahoria (90 g); Pepino (80 g); Limón (5 g). The food must be prepared and plated following: Unta el pollo con la salsa BBQ y hornéalo a 200°C por 22 minutos. Cocina el elote al vapor o hervido. Sirve con la ensalada de repollo aliñada con limón.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 65,
+    "name": "Ensalada gigante de pollo a la plancha",
+    "path": "assets/recipes/catalog/65.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Ensalada gigante de pollo a la plancha. Ingredients and relative serving quantities: Pechuga de pollo (160 g); Lechuga romana (150 g); Hojas verdes mixtas (80 g); Tomate (120 g); Pepino (120 g); Pimiento (80 g); Zanahoria (60 g); Aceite de oliva (6 g); Limón (6 g). The food must be prepared and plated following: Cocina la pechuga a la plancha con sal y pimienta y córtala en tiras. Trocea todas las verduras en un bol grande. Aliña con el aceite, el limón y sal; corona con el pollo.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 66,
+    "name": "Sopa de verduras con pollo desmenuzado",
+    "path": "assets/recipes/catalog/66.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Sopa de verduras con pollo desmenuzado. Ingredients and relative serving quantities: Pechuga de pollo (130 g); Caldo de pollo desgrasado (350 g); Calabacín (120 g); Zanahoria (90 g); Apio (60 g); Champiñones (90 g); Espinaca (60 g); Cebolla (40 g); Ajo (5 g). The food must be prepared and plated following: Cuece la pechuga en el caldo, retírala y desménuzala. En el mismo caldo cocina la cebolla, la zanahoria, el apio, el calabacín y los champiñones 12-15 minutos. Devuelve el pollo, añade la espinaca y sirve bien caliente.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 67,
+    "name": "Salteado grande de vegetales con camarones",
+    "path": "assets/recipes/catalog/67.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Salteado grande de vegetales con camarones. Ingredients and relative serving quantities: Camarones (170 g); Brócoli (150 g); Pimiento (120 g); Champiñones (120 g); Calabacín (120 g); Judías verdes (100 g); Salsa de soya (12 g); Ajo (6 g); Jengibre (4 g). The food must be prepared and plated following: Saltea el ajo y el jengibre en un wok bien caliente. Agrega los camarones hasta que estén rosados y retíralos. Saltea todas las verduras 5-6 minutos, devuelve los camarones y termina con la salsa de soya.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 68,
+    "name": "Ensalada gigante de atún y huevo",
+    "path": "assets/recipes/catalog/68.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Ensalada gigante de atún y huevo. Ingredients and relative serving quantities: Atún en agua (120 g); Huevo (50 g); Lechuga romana (150 g); Tomate (120 g); Pepino (120 g); Pimiento (70 g); Rábano (40 g); Aceite de oliva (5 g); Limón (5 g). The food must be prepared and plated following: Escurre el atún y pica el huevo duro. Monta un bol grande con la lechuga y todas las verduras. Reparte el atún y el huevo por encima y aliña con aceite, limón y sal.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 69,
+    "name": "Wok de tofu y muchos vegetales (sin arroz)",
+    "path": "assets/recipes/catalog/69.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Wok de tofu y muchos vegetales (sin arroz). Ingredients and relative serving quantities: Tofu firme (170 g); Repollo (120 g); Brócoli (120 g); Pimiento (120 g); Zanahoria (90 g); Champiñones (100 g); Judías verdes (90 g); Salsa de soya (14 g); Aceite de sésamo (2 g); Jengibre (4 g). The food must be prepared and plated following: Dora el tofu en cubos en el wok y resérvalo. Saltea a fuego alto el repollo, el brócoli, el pimiento, la zanahoria, los champiñones y las judías 6-8 minutos. Devuelve el tofu, añade la salsa de soya, el jengibre y el aceite de sésamo y saltea 1 minuto más.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 25,
+    "name": "Plato grande de crudités con hummus",
+    "path": "assets/recipes/catalog/25.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Plato grande de crudités con hummus. Ingredients and relative serving quantities: Zanahoria (120 g); Pepino (150 g); Apio (80 g); Pimiento (80 g); Hummus (45 g). The food must be prepared and plated following: Corta las verduras en bastones. Sirve con el hummus para acompañar.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 26,
+    "name": "Yogur griego natural con nueces",
+    "path": "assets/recipes/catalog/26.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Yogur griego natural con nueces. Ingredients and relative serving quantities: Yogur griego natural bajo en grasa (150 g); Nueces (12 g). The food must be prepared and plated following: Sirve el yogur en un bowl. Agrega las nueces picadas encima.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 27,
+    "name": "Claras de huevo duras",
+    "path": "assets/recipes/catalog/27.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Claras de huevo duras. Ingredients and relative serving quantities: Clara de huevo (132 g); Sal, pimienta y especias (1 g). The food must be prepared and plated following: Hierve los huevos 9-10 minutos. Pela, separa las claras y sazona al gusto.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 28,
+    "name": "Batido proteico simple",
+    "path": "assets/recipes/catalog/28.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Batido proteico simple. Ingredients and relative serving quantities: Proteína en polvo (whey) (30 g). The food must be prepared and plated following: Licúa o agita bien el scoop con el agua y hielo. Sirve inmediatamente.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 29,
+    "name": "Requesón con canela y un toque de miel",
+    "path": "assets/recipes/catalog/29.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Requesón con canela y un toque de miel. Ingredients and relative serving quantities: Requesón bajo en grasa (150 g); Canela (1 g); Miel (7 g). The food must be prepared and plated following: Mezcla el requesón con la canela. Agrega la miel por encima.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 30,
+    "name": "Edamame al vapor con sal",
+    "path": "assets/recipes/catalog/30.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Edamame al vapor con sal. Ingredients and relative serving quantities: Edamame (100 g); Sal, pimienta y especias (1 g). The food must be prepared and plated following: Cocina el edamame al vapor o hervido 5 minutos. Escurre y espolvorea sal marina.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 31,
+    "name": "Rodajas de manzana con mantequilla de maní light",
+    "path": "assets/recipes/catalog/31.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Rodajas de manzana con mantequilla de maní light. Ingredients and relative serving quantities: Manzana (150 g); Mantequilla de maní light (16 g). The food must be prepared and plated following: Corta la manzana en rodajas. Sirve con la mantequilla de maní para acompañar.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 32,
+    "name": "Atún en agua con galletas de arroz",
+    "path": "assets/recipes/catalog/32.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Atún en agua con galletas de arroz. Ingredients and relative serving quantities: Atún en agua (80 g); Galletas de arroz (18 g); Limón (3 g). The food must be prepared and plated following: Escurre bien el atún y sazona con limón y pimienta. Sirve sobre las galletas de arroz.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 57,
+    "name": "Garbanzos tostados crujientes con especias",
+    "path": "assets/recipes/catalog/57.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Garbanzos tostados crujientes con especias. Ingredients and relative serving quantities: Garbanzos cocidos (100 g); Aceite de oliva (4 g); Sal, pimienta y especias (2 g). The food must be prepared and plated following: Seca bien los garbanzos y mézclalos con el aceite y las especias. Hornéalos a 200°C por 25-30 minutos, agitando a la mitad. Deja enfriar para que queden crujientes.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 58,
+    "name": "Hummus de edamame con crudités",
+    "path": "assets/recipes/catalog/58.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Hummus de edamame con crudités. Ingredients and relative serving quantities: Edamame (80 g); Tahini (10 g); Zanahoria (50 g); Apio (40 g); Limón (5 g). The food must be prepared and plated following: Procesa el edamame con tahini, ajo, limón, comino y un poco de agua. Sirve el puré en un bowl. Acompaña con los bastones de verdura.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 59,
+    "name": "Batido de proteína vegetal con plátano",
+    "path": "assets/recipes/catalog/59.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Batido de proteína vegetal con plátano. Ingredients and relative serving quantities: Proteína vegetal en polvo (25 g); Plátano (60 g); Bebida vegetal sin azúcar (250 g); Canela (1 g). The food must be prepared and plated following: Coloca todo en la licuadora. Licúa hasta que quede homogéneo. Sirve frío.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 60,
+    "name": "Galleta de arroz con crema de cacahuate y plátano",
+    "path": "assets/recipes/catalog/60.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Galleta de arroz con crema de cacahuate y plátano. Ingredients and relative serving quantities: Galletas de arroz (18 g); Crema de cacahuate natural (12 g); Plátano (60 g); Canela (1 g). The food must be prepared and plated following: Unta la crema de cacahuate sobre las galletas. Coloca las rodajas de plátano. Espolvorea canela.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 61,
+    "name": "Bocaditos de avena, dátil y proteína vegetal",
+    "path": "assets/recipes/catalog/61.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Bocaditos de avena, dátil y proteína vegetal. Ingredients and relative serving quantities: Avena en hojuelas (18 g); Dátil (15 g); Proteína vegetal en polvo (12 g); Crema de cacahuate natural (8 g). The food must be prepared and plated following: Procesa todos los ingredientes hasta formar una masa moldeable. Forma bolitas con las manos. Refrigera 30 minutos antes de comer.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 62,
+    "name": "Queso cottage con piña y semillas de calabaza",
+    "path": "assets/recipes/catalog/62.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Queso cottage con piña y semillas de calabaza. Ingredients and relative serving quantities: Queso cottage bajo en grasa (130 g); Piña (80 g); Semillas de calabaza (8 g). The food must be prepared and plated following: Sirve el cottage en un bowl. Agrega la piña y las semillas de calabaza.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 63,
+    "name": "Huevo duro con aguacate y crudités",
+    "path": "assets/recipes/catalog/63.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Huevo duro con aguacate y crudités. Ingredients and relative serving quantities: Huevo (100 g); Aguacate (25 g); Pepino (100 g); Tomate (80 g); Rábano (40 g); Semillas de sésamo (3 g); Sal, pimienta y especias (1 g). The food must be prepared and plated following: Parte los huevos duros a la mitad. Machaca el aguacate y colócalo encima. Sirve con los bastones de pepino, el tomate y los rábanos; espolvorea sésamo y sal.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 64,
+    "name": "Yogur islandés (skyr) con frutos rojos",
+    "path": "assets/recipes/catalog/64.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Yogur islandés (skyr) con frutos rojos. Ingredients and relative serving quantities: Yogur islandés (skyr) natural (170 g); Frutos rojos (75 g); Canela (1 g). The food must be prepared and plated following: Sirve el skyr en un bowl. Agrega los frutos rojos y la canela.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 72,
+    "name": "Gelatina sin azúcar con fresas y yogur",
+    "path": "assets/recipes/catalog/72.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Gelatina sin azúcar con fresas y yogur. Ingredients and relative serving quantities: Gelatina sin azúcar (200 g); Fresas (100 g); Yogur griego natural bajo en grasa (80 g). The food must be prepared and plated following: Prepara la gelatina sin azúcar según el sobre y déjala cuajar. Trocéala en un bol y añade las fresas en rodajas. Corona con una cucharada de yogur griego.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 73,
+    "name": "Sandía con queso cottage y menta",
+    "path": "assets/recipes/catalog/73.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Sandía con queso cottage y menta. Ingredients and relative serving quantities: Sandía (200 g); Queso cottage bajo en grasa (120 g); Hierbas frescas (3 g). The food must be prepared and plated following: Corta la sandía en cubos grandes. Sírvela con el queso cottage a un lado. Termina con unas hojas de menta fresca.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  },
+  {
+    "id": 74,
+    "name": "Crudités gigantes con dip de yogur y eneldo",
+    "path": "assets/recipes/catalog/74.webp",
+    "origin": "OpenAI ImageGen, built-in tool",
+    "illustrative": true,
+    "prompt": "Use case: photorealistic-natural. Asset type: final recipe illustration for the Spanish fitness PWA noventa. Create ONE premium editorial food photograph, landscape 4:3 framing. Exact dish: Crudités gigantes con dip de yogur y eneldo. Ingredients and relative serving quantities: Pepino (120 g); Zanahoria (100 g); Pimiento (100 g); Apio (80 g); Rábano (50 g); Yogur griego natural bajo en grasa (100 g); Mostaza (5 g). The food must be prepared and plated following: Corta todas las verduras en bastones. Mezcla el yogur con la mostaza, eneldo, sal y pimienta para el dip. Sirve las verduras alrededor del dip.. Show only this finished recipe and its ingredients, no added toppings or unrelated sides; omit optional ingredients not in the list. Protein powder and other mixed-in ingredients should be incorporated, not shown as separate powder or packaging. Match dairy-free/plant-based recipes without eggs, dairy, or meat. Warm neutral pale stone tabletop, simple warm white matte ceramic plate/bowl or clear unbranded glass as appropriate, soft window daylight from the left, clean natural home cooking, realistic textures and modest portions. Camera 45 degrees, entire dish central with 15% margin around it, suitable for mobile crops; no collage or multiple dishes. Same calm cohesive visual style across the recipe catalog. No text, no watermark, no brands, no people, no scattered decorative ingredients. This is a generated illustrative depiction, never a claim of an actual measured serving. Return the final image and local saved file path.",
+    "width": 960,
+    "height": 720
+  }
+]
