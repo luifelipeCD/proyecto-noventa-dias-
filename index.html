@@ -2137,27 +2137,43 @@ function authShell(contenido){
   return `<div class="auth-shell">${authGuiaHTML()}<div class="auth-main">${contenido}</div></div>`;
 }
 
+let envioLinkPendiente = false;
+
+async function fetchConTiempo(url, opciones = {}, milisegundos = 15000){
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), milisegundos);
+  try { return await fetch(url, { ...opciones, signal: controller.signal }); }
+  finally { clearTimeout(timeout); }
+}
+
+function correoDisponible(){
+  return !disponibilidadError && disponibilidad && disponibilidad.correo === true;
+}
+function avisoCorreoHTML(){
+  if(disponibilidadError) return '<div class="auth-tip">No pudimos comprobar el servicio de acceso. Revisa tu conexión y <button class="btn-link" type="button" onclick="reintentarDisponibilidad()">reintenta</button>.</div>';
+  if(!disponibilidad) return '<div class="auth-tip">Comprobando el servicio de acceso…</div>';
+  if(!correoDisponible()) return '<div class="auth-tip">El envío de enlaces no está disponible en este momento. <button class="btn-link" type="button" onclick="reintentarDisponibilidad()">Reintentar</button>.</div>';
+  return '';
+}
+function actualizarDisponibilidadAuth(){
+  const aviso = document.getElementById('auth-disponibilidad');
+  const btn = document.getElementById('auth-enviar');
+  if(aviso) aviso.innerHTML = avisoCorreoHTML();
+  if(btn) btn.disabled = envioLinkPendiente || !correoDisponible();
+}
 function authFormularioHTML(mensaje){
-  // No se promete el envío de correo si el Worker no tiene Resend configurado, ni se
-  // afirma que está disponible si no se pudo comprobar (falla de red): se ofrece reintentar.
-  const correoAviso = disponibilidadError
-    ? `<div class="auth-tip">No pudimos comprobar si el envío de correos está disponible. <button class="btn-link" type="button" onclick="reintentarDisponibilidad()">Reintentar</button></div>`
-    : (disponibilidad && disponibilidad.correo === false
-      ? `<div class="auth-tip">El envío de correos todavía no está configurado. Vuelve pronto.</div>`
-      : '');
-  const correoNoDisponible = !disponibilidadError && disponibilidad && disponibilidad.correo === false;
   return authShell(`
     <div class="auth-topline">INICIAR SESIÓN</div>
     <h2 id="auth-title">Entra con tu correo.</h2>
-    <p class="hint">Te mandamos un link de acceso. Ábrelo en este dispositivo y listo.</p>
-    ${correoAviso}
+    <p class="hint">Pide un enlace de acceso. Caduca en 15 minutos y solo sirve una vez.</p>
+    <div id="auth-disponibilidad" role="status">${avisoCorreoHTML()}</div>
     <div class="field">
       <label for="auth-email">Correo electrónico</label>
-      <input type="email" id="auth-email" placeholder="tu@correo.com" autocomplete="email" inputmode="email" ${correoNoDisponible ? 'disabled' : ''}
+      <input type="email" id="auth-email" placeholder="tu@correo.com" autocomplete="email" inputmode="email" maxlength="254"
              onkeydown="if(event.key==='Enter'){event.preventDefault();solicitarLink();}">
     </div>
     <div id="auth-estado" aria-live="polite">${mensaje || ''}</div>
-    <div class="auth-actions"><button class="btn-primary" id="auth-enviar" type="button" onclick="solicitarLink()" ${correoNoDisponible ? 'disabled' : ''}>Enviarme el link →</button></div>
+    <div class="auth-actions"><button class="btn-primary" id="auth-enviar" type="button" onclick="solicitarLink()" ${envioLinkPendiente || !correoDisponible() ? 'disabled' : ''}>Enviarme el link →</button></div>
     <p class="privacy-note auth-privacy">◈ Solo usamos tu correo para tu cuenta. Sin suscripción.</p>`);
 }
 
@@ -2166,7 +2182,7 @@ function authEnviadoHTML(email, nota){
     <div class="auth-sent-mark" aria-hidden="true">${MAIL_ICON}</div>
     <div class="auth-topline">LINK ENVIADO</div>
     <h2 id="auth-title">Revisa tu correo.</h2>
-    <p class="hint">Te mandamos un link a <b>${esc(email)}</b>. Ábrelo desde este mismo dispositivo para entrar — caduca en 15 minutos.</p>
+    <p class="hint">El servicio de correo aceptó el enlace para <b>${esc(email)}</b>. Ábrelo para entrar; caduca en 15 minutos.</p>
     <div class="auth-tip">¿No llega? Revisa las carpetas de spam o promociones.</div>
     ${nota}
     <div class="auth-actions">
@@ -2233,16 +2249,22 @@ async function solicitarLink(){
   const input = document.getElementById('auth-email');
   const btn = document.getElementById('auth-enviar');
   const estado = document.getElementById('auth-estado');
-  if(!input || !estado) return;
+  if(!input || !btn || !estado || envioLinkPendiente) return;
   const email = input.value.trim();
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
     estado.innerHTML = `<div class="auth-msg is-error">Escribe un correo válido.</div>`;
     return;
   }
+  if(!correoDisponible()){
+    actualizarDisponibilidadAuth();
+    estado.innerHTML = '<div class="auth-msg is-error">El servicio de acceso todavía no está disponible. Reintenta la comprobación antes de pedir el enlace.</div>';
+    return;
+  }
+  envioLinkPendiente = true;
   btn.disabled = true;
   estado.innerHTML = `<div class="auth-msg">Enviando tu link…</div>`;
   try{
-    const resp = await fetch(IA_WORKER_URL + '/auth/solicitar-link', {
+    const resp = await fetchConTiempo(IA_WORKER_URL + '/auth/solicitar-link', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })
@@ -2250,19 +2272,26 @@ async function solicitarLink(){
     const data = await resp.json().catch(() => ({}));
     if(!resp.ok || !data.ok){
       estado.innerHTML = `<div class="auth-msg is-error">${esc(data.error || 'No se pudo enviar el link. Intenta de nuevo.')}</div>`;
-      btn.disabled = false;
+      return;
+    }
+    if(document.getElementById('auth-email') !== input) return;
+    const pruebaLocal = ['localhost','127.0.0.1'].includes(location.hostname) && data.dev_link;
+    if(data.enviado !== true && !pruebaLocal){
+      estado.innerHTML = '<div class="auth-msg is-error">El servicio no confirmó el envío del enlace. Inténtalo de nuevo más tarde.</div>';
       return;
     }
     // Solo en local sin RESEND_API_KEY configurado: el Worker devuelve el link para
     // poder probar el flujo sin depender de un correo real (ver README-worker.md).
-    const nota = (data.dev_link && /^https?:\/\//i.test(data.dev_link))
+    const nota = (pruebaLocal && /^https?:\/\//i.test(data.dev_link))
       ? `<div class="auth-tip">Modo desarrollo (sin Resend configurado):
           <a href="${esc(data.dev_link)}">abrir el link de acceso</a>.</div>`
       : '';
     document.getElementById('auth-modal-body').innerHTML = authEnviadoHTML(email, nota);
   }catch(e){
-    estado.innerHTML = `<div class="auth-msg is-error">No se pudo contactar el servicio. Revisa tu conexión e inténtalo de nuevo.</div>`;
-    btn.disabled = false;
+    estado.innerHTML = `<div class="auth-msg is-error">No pudimos confirmar el envío. Revisa tu conexión e inténtalo de nuevo.</div>`;
+  }finally{
+    envioLinkPendiente = false;
+    actualizarDisponibilidadAuth();
   }
 }
 
@@ -2341,7 +2370,7 @@ let disponibilidadError = false; // true si la última consulta falló
 
 async function cargarDisponibilidad(){
   try{
-    const resp = await fetch(IA_WORKER_URL + '/config');
+    const resp = await fetchConTiempo(IA_WORKER_URL + '/config', {}, 8000);
     const data = await resp.json().catch(() => ({}));
     if(resp.ok && data.ok && data.disponible){
       disponibilidad = data.disponible;
@@ -2352,13 +2381,15 @@ async function cargarDisponibilidad(){
   }catch(e){
     disponibilidadError = true;
   }
+  if(disponibilidadError) disponibilidad = null;
+  actualizarDisponibilidadAuth();
 }
 
 // Reintenta comprobar disponibilidad y refresca lo que esté visible en pantalla.
 async function reintentarDisponibilidad(){
   await cargarDisponibilidad();
   if(document.getElementById('auth-modal')?.classList.contains('open')){
-    document.getElementById('auth-modal-body').innerHTML = sesion ? authCuentaHTML() : authFormularioHTML();
+    if(sesion) document.getElementById('auth-modal-body').innerHTML = authCuentaHTML();
   }
   aplicarGatingPremium();
 }

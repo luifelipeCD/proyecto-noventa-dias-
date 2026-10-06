@@ -30,12 +30,11 @@ database_id = "e1fb6282-6a08-4744-bc6d-2e4a59f32c3b"
 # SESSION_SECRET (secret, obligatorio): clave para firmar el token de sesión (HMAC-SHA256).
 #   npx wrangler secret put SESSION_SECRET --config worker/wrangler.toml
 # RESEND_API_KEY (secret, opcional en local): API key de https://resend.com para enviar el
-#   correo con el link. Sin ella, el Worker NO envía el correo pero sigue funcionando en local:
-#   registra el link en los logs (`wrangler tail`) para poder probarlo a mano.
+#   correo con el link. Producción requiere esta clave y un remitente propio verificado.
+#   Los enlaces de prueba se devuelven solo con DEV_MODE explícito en un origen local; no se registran.
 #   npx wrangler secret put RESEND_API_KEY --config worker/wrangler.toml
-# RESEND_FROM (var, opcional): remitente del correo. Por defecto usa el dominio de pruebas
-# de Resend (onboarding@resend.dev), que solo entrega a la cuenta dueña de la API key —
-# para mandar a cualquier usuario hace falta verificar un dominio propio en Resend.
+# RESEND_FROM (var, obligatoria en producción): remitente de un dominio propio verificado
+# para envío en Resend. El dominio de pruebas resend.dev no permite cuentas públicas.
 
 # --- SUSCRIPCIÓN (Stripe) ---
 # STRIPE_SECRET_KEY y STRIPE_WEBHOOK_SECRET van como secret (nunca en este archivo):

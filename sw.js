@@ -2,7 +2,7 @@
  * App shell cacheada para carga instantánea y uso offline.
  * No toca las peticiones POST (p. ej. el Worker de recetas con IA).
  */
-const VERSION = 'v12-catalogo-72';
+const VERSION = 'v13-acceso-correo';
 const CACHE = 'transforma90-' + VERSION;
 const FONT_CACHE = 'transforma90-fonts-' + VERSION;
 

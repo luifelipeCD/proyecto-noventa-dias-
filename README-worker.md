@@ -328,3 +328,9 @@ APP_URL conserva la ruta de GitHub Pages en el correo, Checkout y portal. Cambia
 `GET /config` publica solo indicadores booleanos. Todos los servicios requieren DB y SESSION_SECRET; correo requiere RESEND_API_KEY y RESEND_FROM; IA requiere ANTHROPIC_API_KEY y TURNSTILE_SECRET_KEY; pagos requieren STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET y el identificador del precio correspondiente. Esto verifica presencia de configuración, no validez de cuentas, dominio, tablas o credenciales: probar los flujos externos antes de vender. El checkout rechaza una configuración sin webhook.
 
 El formato nuevo de `rp90_ejercicios_hechos` es `{ "AAAA-MM-DD": { "sesiones": { "0": [0,1], "1": [2] } } }`; los días 0–6 se conservan por separado. También se aceptan las copias anteriores con `dia` y `hechos`. No requiere una tabla adicional: forma parte del JSON de user_progress.
+
+### Reparación del acceso por correo (5 de octubre de 2026)
+
+El acceso público requiere un RESEND_FROM de un dominio propio verificado para envío en Resend. Ya no se recurre a onboarding@resend.dev en producción. La respuesta de /auth/solicitar-link es 200 con enviado:true únicamente cuando Resend acepta el mensaje y devuelve su ID; fallos devuelven 503 y los límites 429 con Retry-After. El enlace local de desarrollo requiere DEV_MODE explícito y nunca representa correo enviado. Consulta docs/REPARACION-ACCESO.md.
+
+Para actualizar el servidor, comprobar primero la versión activa y conservar sus variables y secretos. Subir main a GitHub no despliega el Worker. Después del despliegue verificar /config con el Origin del sitio y realizar una prueba de envío y apertura autorizada, sin registrar tokens en los logs.
