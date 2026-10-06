@@ -428,10 +428,10 @@
   .modal-card .macros .mc b{color:var(--mc-c,var(--ink));}
   .modal-card .macros b{color:var(--ink);}
   .ing-hint{font-weight:400;color:var(--ink-var);font-size:11.5px;}
-  .modal-card ul.ing-list{list-style:none;padding:0;margin:var(--space-xs) 0;}
-  .modal-card ul.ing-list li{display:flex;justify-content:space-between;gap:var(--space-xs);flex-wrap:wrap;
+  ul.ing-list{list-style:none;padding:0;margin:var(--space-xs) 0;}
+  ul.ing-list li{display:flex;justify-content:space-between;gap:var(--space-xs);flex-wrap:wrap;
     padding:var(--space-2xs) 0;border-bottom:1px solid var(--outline-soft);font-size:12.5px;}
-  .modal-card ul.ing-list li:last-child{border-bottom:none;}
+  ul.ing-list li:last-child{border-bottom:none;}
   .ing-name{color:var(--ink);}
   .ing-macros{color:var(--ink-var);font-size:11.5px;white-space:nowrap;}
   .modal-head{display:flex;align-items:flex-start;gap:var(--space-sm);}
@@ -623,6 +623,27 @@
   .move-count{font-size:12.5px;color:var(--ink-var);margin-top:var(--space-xs);}
   .move-count b{color:var(--ink);}
   .move-grid{grid-template-columns:repeat(7,1fr);margin-top:var(--space-xs);}
+
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+
+  /* Progreso de la sesión de hoy (ejercicios marcados como hechos) */
+  .session-progress{margin:var(--space-sm) 0;}
+  .session-progress-label{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-var);margin-bottom:var(--space-2xs);}
+  .session-progress-label b{color:var(--ink);}
+
+  /* Marcar un ejercicio como hecho */
+  .ex-done-btn{width:100%;margin-top:var(--space-sm);}
+  .ex-done-btn.on{background:var(--container-high);color:var(--primary-bright);border:1px solid var(--primary-line);}
+  .ex-card.done>summary .ex-sum-name::after{content:' ✓';color:var(--fat);}
+
+  /* Temporizador de descanso: accesible, controlado con botones grandes */
+  .rest-timer{background:var(--container-high);border:1px solid var(--outline-soft);border-radius:14px;padding:var(--space-md);margin:var(--space-sm) 0 var(--space-md);}
+  .rest-timer-display{font-family:var(--font-head);font-weight:800;font-size:40px;letter-spacing:-0.02em;color:var(--ink);text-align:center;margin-bottom:var(--space-sm);}
+  .rest-timer-presets{display:flex;gap:var(--space-2xs);flex-wrap:wrap;margin-bottom:var(--space-sm);}
+  .rest-timer-presets button{flex:1;min-width:64px;}
+  .rest-timer-presets button.active{background:var(--primary);color:var(--on-primary);border-color:var(--primary);}
+  .rest-timer-actions{display:flex;gap:var(--space-xs);}
+  .rest-timer-actions>button{flex:1;}
 
   /* Conversor de pasos a calorías */
   .steps-conv{display:flex;flex-direction:column;gap:var(--space-xs);margin-bottom:var(--space-2xs);}
@@ -951,6 +972,24 @@
           </button>
         </div>
       </div>
+      <div class="field">
+        <label id="dieta-label">Preferencia alimentaria</label>
+        <div class="goal-toggle" id="dieta-toggle" role="group" aria-labelledby="dieta-label">
+          <button type="button" class="goal-opt active" data-dieta="omnivora" aria-pressed="true" onclick="setDieta('omnivora')">
+            <span class="goal-t">🍗 Omnívora</span>
+            <span class="goal-d">Incluye todo tipo de alimentos: carnes, pescado, lácteos y vegetales.</span>
+          </button>
+          <button type="button" class="goal-opt" data-dieta="vegetariana" aria-pressed="false" onclick="setDieta('vegetariana')">
+            <span class="goal-t">🥚 Vegetariana</span>
+            <span class="goal-d">Sin carne ni pescado. Incluye huevo y lácteos.</span>
+          </button>
+          <button type="button" class="goal-opt" data-dieta="vegana" aria-pressed="false" onclick="setDieta('vegana')">
+            <span class="goal-t">🌱 Vegana</span>
+            <span class="goal-d">Sin ningún producto de origen animal.</span>
+          </button>
+        </div>
+        <p class="hint" style="margin-top:8px;">Tu menú automático y el generador con IA usarán solo recetas de esta preferencia. No reemplaza una evaluación de alergias o restricciones médicas: si tienes alguna, revisa cada receta igual.</p>
+      </div>
       </div><p id="wizard-error" class="form-error" role="alert" hidden></p>
       <div class="wizard-actions"><button class="btn-secondary" id="wizard-back" onclick="goWizard(wizardStep-1)" hidden>← Atrás</button><button class="btn-primary" id="wizard-next" onclick="goWizard(wizardStep+1)">Continuar →</button><button class="btn-primary" id="wizard-submit" onclick="finishPlan()" hidden>Calcular mi plan →</button></div>
       </div>
@@ -975,6 +1014,10 @@
       <div class="meal-layout" id="content-midia"><div class="meal-content"><div class="section-heading"><div><span class="eyebrow">A DISFRUTAR</span><h2>Tus comidas de hoy</h2></div><button class="btn-secondary" onclick="setTab('recetario')">Explorar recetas ↗</button></div>
       <p class="hint">Abre un plato para ver la preparación. Márcalo después de comer.</p>
       <div id="plan-dia"><p class="section-sub" style="margin-top:10px;">Calcula tu plan (paso 1) para generar tu menú de 90 días.</p></div>
+      <details class="more" id="shopping-more" ontoggle="if(this.open)renderListaCompras()">
+        <summary>🛒 Lista de compras de los próximos días</summary>
+        <div class="more-body" id="shopping-panel"></div>
+      </details>
       </div><aside class="meal-summary"><span class="eyebrow">LO QUE LLEVAS HOY</span><h3>Tu balance diario</h3>
       <div id="mi-dia-bars"></div>
       <button class="btn-secondary" style="width:100%;margin-top:14px;" onclick="setTab('recetario')"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v17H6.5A2.5 2.5 0 0 0 4 22Z"/><path d="M20 5.5A2.5 2.5 0 0 0 17.5 3H12v17h5.5a2.5 2.5 0 0 1 2.5 2Z"/></svg>Ver todas las recetas</button>
@@ -1101,6 +1144,23 @@
       <p class="section-sub">Un grupo muscular por día, con descanso el fin de semana. Abre cada ejercicio para ver dos posiciones del movimiento, el equipo y las series. Las fotos son una referencia visual.</p>
       <div class="day-tabs" id="move-day-tabs"></div>
       <div id="move-rutina"></div>
+
+      <h3>Temporizador de descanso</h3>
+      <p class="section-sub">Úsalo entre series. Elige los segundos de descanso e inicia la cuenta regresiva.</p>
+      <div class="rest-timer" id="rest-timer">
+        <div class="rest-timer-display" id="rest-timer-display" aria-hidden="true">01:30</div>
+        <p class="sr-only" id="rest-timer-status" aria-live="polite"></p>
+        <div class="rest-timer-presets" role="group" aria-label="Duración del descanso">
+          <button type="button" class="btn-secondary" data-seg="30" onclick="setRestTimerDuracion(30)" aria-pressed="false">30 s</button>
+          <button type="button" class="btn-secondary" data-seg="60" onclick="setRestTimerDuracion(60)" aria-pressed="false">60 s</button>
+          <button type="button" class="btn-secondary active" data-seg="90" onclick="setRestTimerDuracion(90)" aria-pressed="true">90 s</button>
+          <button type="button" class="btn-secondary" data-seg="120" onclick="setRestTimerDuracion(120)" aria-pressed="false">120 s</button>
+        </div>
+        <div class="rest-timer-actions">
+          <button type="button" class="btn-primary" id="rest-timer-toggle" onclick="toggleRestTimer()">▶ Iniciar descanso</button>
+          <button type="button" class="btn-secondary" onclick="reiniciarRestTimer()">Reiniciar</button>
+        </div>
+      </div>
 
       <h3>¿Hiciste la rutina?</h3>
       <button class="btn-primary" id="move-today-btn" onclick="marcarRutinaHoy()">✓ Marcar rutina de hoy</button>
@@ -1989,7 +2049,8 @@ const LS = {
   mov:'rp90_mov',          // días (ISO) en que se hizo la rutina de fuerza
   pasosCal:'rp90_pasos_cal', // último valor del conversor de pasos a calorías
   favIng:'rp90_fav_ing',   // ingredientes favoritos para el generador con IA
-  sesion:'rp90_sesion'     // { token, email } de la cuenta con la que se inició sesión
+  sesion:'rp90_sesion',    // { token, email } de la cuenta con la que se inició sesión
+  ejercicios:'rp90_ejercicios_hechos' // {fechaISO: {dia:0-6, hechos:[índices de ejercicio]}}
 };
 
 function lsGet(key, fallback){
@@ -2003,6 +2064,7 @@ function lsSet(key, val){
 let genero = null;
 let objetivo = 'bajar'; // 'bajar' (déficit) | 'subir' (superávit +10%) | 'mantener' (TDEE)
 let intensidad = 0.25;  // solo aplica a 'bajar': 0.20 (suave) | 0.25 (medio) | 0.30 (agresivo)
+let dieta = 'omnivora'; // 'omnivora' | 'vegetariana' | 'vegana' — preferencia declarada, no alergias
 let plan = lsGet(LS.plan, null); // {calorias, proteina, carbos, grasa}
 let datos = lsGet(LS.datos, null); // {peso, altura, edad, genero, actividad, intensidad, objetivo}
 let checkins = lsGet(LS.checkins, []); // [{fecha:'YYYY-MM-DD', peso, plan:{...}}]
@@ -2011,6 +2073,7 @@ let planDias = lsGet(LS.planDias, null);           // plan de comidas fijo, gene
 let planStart = lsGet(LS.planStart, null);         // fecha ISO del día 1 del plan
 let comidasMarcadas = lsGet(LS.comidas, {});       // comidas marcadas como "comidas", por fecha
 let diasTerminados = lsGet(LS.diasTerminados, {}); // resumen de cada día que se "terminó"
+let ejerciciosHechos = lsGet(LS.ejercicios, {});   // {fechaISO: {dia, hechos:[índices]}} — ver RUTINA_SEMANAL
 
 // --- Generador de recetas con IA (backend: Cloudflare Worker, ver README-worker.md) ---
 // URL del Worker desplegado. Si algún día cambia el nombre/subdominio, actualízala aquí.
@@ -2073,17 +2136,26 @@ function authShell(contenido){
 }
 
 function authFormularioHTML(mensaje){
+  // No se promete el envío de correo si el Worker no tiene Resend configurado, ni se
+  // afirma que está disponible si no se pudo comprobar (falla de red): se ofrece reintentar.
+  const correoAviso = disponibilidadError
+    ? `<div class="auth-tip">No pudimos comprobar si el envío de correos está disponible. <button class="btn-link" type="button" onclick="reintentarDisponibilidad()">Reintentar</button></div>`
+    : (disponibilidad && disponibilidad.correo === false
+      ? `<div class="auth-tip">El envío de correos todavía no está configurado. Vuelve pronto.</div>`
+      : '');
+  const correoNoDisponible = !disponibilidadError && disponibilidad && disponibilidad.correo === false;
   return authShell(`
     <div class="auth-topline">INICIAR SESIÓN</div>
     <h2 id="auth-title">Entra con tu correo.</h2>
     <p class="hint">Te mandamos un link de acceso. Ábrelo en este dispositivo y listo.</p>
+    ${correoAviso}
     <div class="field">
       <label for="auth-email">Correo electrónico</label>
-      <input type="email" id="auth-email" placeholder="tu@correo.com" autocomplete="email" inputmode="email"
+      <input type="email" id="auth-email" placeholder="tu@correo.com" autocomplete="email" inputmode="email" ${correoNoDisponible ? 'disabled' : ''}
              onkeydown="if(event.key==='Enter'){event.preventDefault();solicitarLink();}">
     </div>
     <div id="auth-estado" aria-live="polite">${mensaje || ''}</div>
-    <div class="auth-actions"><button class="btn-primary" id="auth-enviar" type="button" onclick="solicitarLink()">Enviarme el link →</button></div>
+    <div class="auth-actions"><button class="btn-primary" id="auth-enviar" type="button" onclick="solicitarLink()" ${correoNoDisponible ? 'disabled' : ''}>Enviarme el link →</button></div>
     <p class="privacy-note auth-privacy">◈ Solo usamos tu correo para tu cuenta. Sin suscripción.</p>`);
 }
 
@@ -2114,14 +2186,7 @@ function authCuentaHTML(){
 
   const planes = activa ? '' : `
     <p class="hint" style="margin:18px 0 10px;">Desbloquea tu plan automático de 90 días, Progreso, Movimiento y el generador de recetas con IA.</p>
-    <div class="premium-plans">
-      <button class="plan-card recommended" type="button" onclick="iniciarCheckout('mensual')">
-        <span class="plan-name">Mensual</span><span class="plan-price">${PRECIOS.mensual}</span><span class="plan-note">7 días gratis</span>
-      </button>
-      <button class="plan-card" type="button" onclick="iniciarCheckout('anual')">
-        <span class="plan-name">Anual</span><span class="plan-price">${PRECIOS.anual}</span><span class="plan-note">7 días gratis</span>
-      </button>
-    </div>`;
+    ${planesDisponiblesHTML()}`;
 
   return authShell(`
     <div class="auth-account-head">
@@ -2235,22 +2300,88 @@ async function verificarLoginDesdeURL(){
   }
 }
 
+// true si la última comprobación de /me falló (red u otro error): el paywall lo usa para
+// avisar en vez de fingir que no hay suscripción, y NUNCA para activar premium sin red.
+let cuentaVerificacionError = false;
+
 // Refresca el estado de la cuenta contra el Worker. Si la sesión ya no es válida
 // (revocada, vencida), la borra localmente sin mostrar ningún error al usuario.
 async function cargarCuenta(){
-  if(!sesion){ aplicarGatingPremium(); renderTrialBanner(); return; }
+  if(!sesion){ cuentaVerificacionError = false; aplicarGatingPremium(); renderTrialBanner(); return; }
   try{
     const resp = await fetch(IA_WORKER_URL + '/me', {
       headers: { Authorization: 'Bearer ' + sesion.token }
     });
-    if(resp.status === 401){ borrarSesion(); renderAuthArea(); aplicarGatingPremium(); renderTrialBanner(); return; }
+    if(resp.status === 401){ borrarSesion(); cuentaVerificacionError = false; renderAuthArea(); aplicarGatingPremium(); renderTrialBanner(); return; }
     const data = await resp.json().catch(() => ({}));
-    if(resp.ok && data.ok) cuenta = { email: data.email, subscription: data.subscription };
+    if(resp.ok && data.ok){ cuenta = { email: data.email, subscription: data.subscription }; cuentaVerificacionError = false; }
+    else { cuentaVerificacionError = true; }
   }catch(e){
-    // Sin conexión: no borramos la sesión, seguimos con lo que ya había en localStorage.
+    // Sin conexión: no borramos la sesión ni activamos premium; se avisa en el paywall.
+    cuentaVerificacionError = true;
   }
   aplicarGatingPremium();
   renderTrialBanner();
+  if(sesion && document.getElementById('auth-modal')?.classList.contains('open')){
+    document.getElementById('auth-modal-body').innerHTML = authCuentaHTML();
+  }
+}
+
+// ============================================================
+// DISPONIBILIDAD DE SERVICIOS — lectura pública y segura de qué está configurado en el
+// Worker (GET /config nunca devuelve claves ni valores privados, solo booleanos). Evita
+// anunciar cobro o prueba gratis si el servicio no está listo; si la consulta falla por
+// red, se avisa con un estado comprensible y un botón para reintentar (nunca se asume
+// que está disponible).
+// ============================================================
+let disponibilidad = null;       // { correo, generacionIA, pagos:{mensual,anual} } o null si no se ha comprobado
+let disponibilidadError = false; // true si la última consulta falló
+
+async function cargarDisponibilidad(){
+  try{
+    const resp = await fetch(IA_WORKER_URL + '/config');
+    const data = await resp.json().catch(() => ({}));
+    if(resp.ok && data.ok && data.disponible){
+      disponibilidad = data.disponible;
+      disponibilidadError = false;
+    } else {
+      disponibilidadError = true;
+    }
+  }catch(e){
+    disponibilidadError = true;
+  }
+}
+
+// Reintenta comprobar disponibilidad y refresca lo que esté visible en pantalla.
+async function reintentarDisponibilidad(){
+  await cargarDisponibilidad();
+  if(document.getElementById('auth-modal')?.classList.contains('open')){
+    document.getElementById('auth-modal-body').innerHTML = sesion ? authCuentaHTML() : authFormularioHTML();
+  }
+  aplicarGatingPremium();
+}
+
+// Tarjetas de los planes de pago, o un aviso si todavía no están configurados o no se
+// pudo comprobar su disponibilidad (nunca se muestra "prueba gratis" sin confirmarlo).
+function planesDisponiblesHTML(){
+  if(disponibilidadError){
+    return `<div class="note">No pudimos comprobar si los pagos están disponibles. <button class="btn-link" type="button" onclick="reintentarDisponibilidad()">Reintentar →</button></div>`;
+  }
+  if(!disponibilidad){
+    return `<div class="note">Comprobando los planes disponibles…</div>`;
+  }
+  const pagos = disponibilidad.pagos;
+  if(!pagos || (!pagos.mensual && !pagos.anual)){
+    return `<div class="note">Los pagos todavía no están disponibles. Vuelve pronto.</div>`;
+  }
+  return `<div class="premium-plans">
+    ${pagos.mensual ? `<button class="plan-card recommended" type="button" onclick="iniciarCheckout('mensual')">
+      <span class="plan-name">Mensual</span><span class="plan-price">${PRECIOS.mensual}</span><span class="plan-note">7 días gratis</span>
+    </button>` : ''}
+    ${pagos.anual ? `<button class="plan-card" type="button" onclick="iniciarCheckout('anual')">
+      <span class="plan-name">Anual</span><span class="plan-price">${PRECIOS.anual}</span><span class="plan-note">7 días gratis</span>
+    </button>` : ''}
+  </div>`;
 }
 
 // ============================================================
@@ -2281,18 +2412,44 @@ function premiumGateHTML(desc){
       <button class="btn-primary" type="button" onclick="abrirAuth()">Iniciar sesión →</button>
     </div>`;
   }
+  // Falla de red al comprobar /me: no se autoriza premium sin confirmarlo, se avisa y se
+  // ofrece reintentar en vez de mostrar el paywall normal como si no hubiera suscripción.
+  if(cuentaVerificacionError){
+    return `<div class="premium-gate">
+      <span class="premium-gate-icon" aria-hidden="true">⚠</span>
+      <h3>No pudimos comprobar tu suscripción</h3>
+      <p>Parece que no hay conexión. No activamos funciones premium sin confirmarlo primero.</p>
+      <button class="btn-primary" type="button" onclick="cargarCuenta()">Reintentar →</button>
+    </div>`;
+  }
+  if(disponibilidadError){
+    return `<div class="premium-gate">
+      <span class="premium-gate-icon" aria-hidden="true">⚠</span>
+      <h3>No pudimos comprobar los planes</h3>
+      <p>Revisa tu conexión e inténtalo de nuevo.</p>
+      <button class="btn-primary" type="button" onclick="reintentarDisponibilidad()">Reintentar →</button>
+    </div>`;
+  }
+  if(!disponibilidad){
+    return `<div class="premium-gate">
+      <span class="premium-gate-icon" aria-hidden="true">✦</span>
+      <h3>Comprobando disponibilidad…</h3>
+      <p>${desc}</p>
+    </div>`;
+  }
+  const pagos = disponibilidad.pagos;
+  if(!pagos || (!pagos.mensual && !pagos.anual)){
+    return `<div class="premium-gate">
+      <span class="premium-gate-icon" aria-hidden="true">✦</span>
+      <h3>Todavía no disponible</h3>
+      <p>${desc} Los pagos no están configurados todavía; vuelve pronto.</p>
+    </div>`;
+  }
   return `<div class="premium-gate">
     <span class="premium-gate-icon" aria-hidden="true">✦</span>
     <h3>Necesitas una suscripción activa</h3>
     <p>${desc} Empieza tu prueba gratis de 7 días — cancela cuando quieras.</p>
-    <div class="premium-plans">
-      <button class="plan-card recommended" type="button" onclick="iniciarCheckout('mensual')">
-        <span class="plan-name">Mensual</span><span class="plan-price">${PRECIOS.mensual}</span><span class="plan-note">7 días gratis</span>
-      </button>
-      <button class="plan-card" type="button" onclick="iniciarCheckout('anual')">
-        <span class="plan-name">Anual</span><span class="plan-price">${PRECIOS.anual}</span><span class="plan-note">7 días gratis</span>
-      </button>
-    </div>
+    ${planesDisponiblesHTML()}
   </div>`;
 }
 
@@ -2421,6 +2578,7 @@ async function verificarCheckoutDesdeURL(){
 if(datos && datos.genero) genero = datos.genero;
 if(datos && datos.objetivo) objetivo = datos.objetivo;
 if(datos && datos.intensidad != null) intensidad = parseFloat(datos.intensidad);
+if(datos && ['omnivora','vegetariana','vegana'].includes(datos.dieta)) dieta = datos.dieta; // datos antiguos sin dieta -> se queda 'omnivora'
 
 function getReceta(id){ return RECETAS.find(r => r.id === id) || recetasIA.find(r => r.id === id); }
 
@@ -2456,6 +2614,33 @@ function setIntensidad(v){
   intensidad = parseFloat(v);
   document.querySelectorAll('#deficit-toggle .def-opt').forEach(b =>
     b.classList.toggle('active', parseFloat(b.dataset.def) === intensidad));
+}
+
+// Preferencia alimentaria declarada por el usuario (paso 3). Filtra el menú automático,
+// las sustituciones y lo que recibe el generador de IA. No es una declaración de alergias.
+const DIETAS = ['omnivora', 'vegetariana', 'vegana'];
+const DIETA_LABEL = { omnivora: 'Omnívora', vegetariana: 'Vegetariana', vegana: 'Vegana' };
+function setDieta(d){
+  if(!DIETAS.includes(d)) return;
+  dieta = d;
+  document.querySelectorAll('#dieta-toggle .goal-opt').forEach(b => {
+    const activo = b.dataset.dieta === d;
+    b.classList.toggle('active', activo);
+    b.setAttribute('aria-pressed', String(activo));
+  });
+}
+// Recetas que respetan una preferencia alimentaria: vegana solo ve veganas; vegetariana ve
+// vegetarianas + veganas (sin carne ni pescado); omnívora ve todo el catálogo.
+function recetasParaDieta(d){
+  if(d === 'vegana') return RECETAS.filter(r => r.dieta === 'vegana');
+  if(d === 'vegetariana') return RECETAS.filter(r => r.dieta === 'vegetariana' || r.dieta === 'vegana');
+  return RECETAS;
+}
+// ¿Las recetas ya asignadas en `pd` (un planDias) respetan la preferencia `d`?
+function planDiasCompatibleConDieta(pd, d){
+  if(!pd) return true;
+  const permitidos = new Set(recetasParaDieta(d).map(r => r.id));
+  return pd.every(dia => MEAL_ORDER.every(m => permitidos.has(dia[m])));
 }
 
 // ---------- Fórmula del plan (pura, reutilizable en cada check-in) ----------
@@ -2569,7 +2754,8 @@ function calcular(){
     genero: genero,
     objetivo: objetivo,
     actividad: parseFloat(document.getElementById('actividad').value),
-    intensidad: intensidad
+    intensidad: intensidad,
+    dieta: dieta
   };
 
   if(!nuevosDatos.peso || !nuevosDatos.altura || !nuevosDatos.edad || !genero){
@@ -2587,6 +2773,17 @@ function calcular(){
   if(nuevosDatos.edad < 14 || nuevosDatos.edad > 90){
     alert('Ingresa una edad válida en años (entre 14 y 90).');
     return;
+  }
+
+  // Si ya había un menú generado y tiene platillos que no respetan la nueva preferencia
+  // alimentaria, se avisa antes de reemplazarlo. El historial de días terminados y
+  // check-ins no se borra: solo se regenera el menú de los 90 días.
+  if(planDias && !planDiasCompatibleConDieta(planDias, nuevosDatos.dieta)){
+    const seguir = confirm(
+      'Tu menú guardado tiene platillos que no son "' + DIETA_LABEL[nuevosDatos.dieta] + '". ' +
+      '¿Generamos un nuevo menú de 90 días con tu preferencia actual? Tu historial de días terminados y check-ins se conserva.'
+    );
+    if(!seguir) return;
   }
 
   datos = nuevosDatos;
@@ -2642,10 +2839,11 @@ function crearBolsa(ids){
 }
 
 // Recetas de una categoría, acotadas a las más cercanas a la meta calórica
-// de esa comida (para respetar el objetivo) y con más peso a "alto volumen"
-// cuando el déficit es alto (más saciedad con menos calorías).
-function poolCategoria(categoriaReceta, metaKcal, priorizarVolumen){
-  const base = RECETAS.filter(r => r.categoria === categoriaReceta);
+// de esa comida (para respetar el objetivo), que respeten la preferencia alimentaria,
+// y con más peso a "alto volumen" cuando el déficit es alto (más saciedad con menos calorías).
+function poolCategoria(categoriaReceta, metaKcal, priorizarVolumen, dietaFiltro){
+  const permitidas = new Set(recetasParaDieta(dietaFiltro || 'omnivora').map(r => r.id));
+  const base = RECETAS.filter(r => r.categoria === categoriaReceta && permitidas.has(r.id));
   const ordenadas = [...base].sort((a,b) => Math.abs(a.kcal - metaKcal) - Math.abs(b.kcal - metaKcal));
   const zonaN = Math.min(ordenadas.length, Math.max(10, Math.ceil(ordenadas.length * 0.6)));
   const zona = ordenadas.slice(0, zonaN);
@@ -2670,9 +2868,9 @@ function generarPlanDias(dias){
   const metaMerienda = plan.calorias * MEAL_PCT.merienda;
   const metaComida = (metaAlmuerzo + metaCena) / 2;
 
-  const bagDesayuno = crearBolsa(poolCategoria('desayuno', metaDesayuno, false));
-  const bagComida = crearBolsa(poolCategoria('comida', metaComida, deficitAlto));
-  const bagSnack = crearBolsa(poolCategoria('snack', metaMerienda, deficitAlto));
+  const bagDesayuno = crearBolsa(poolCategoria('desayuno', metaDesayuno, false, dieta));
+  const bagComida = crearBolsa(poolCategoria('comida', metaComida, deficitAlto, dieta));
+  const bagSnack = crearBolsa(poolCategoria('snack', metaMerienda, deficitAlto, dieta));
 
   const resultado = [];
   let prevDesayuno = null, prevCena = null, prevMerienda = null;
@@ -2975,6 +3173,14 @@ async function generarRecetaIA(){
     estado.innerHTML = `<div class="ia-msg">La generación con IA todavía no está configurada. Sigue los pasos de <b>README-worker.md</b> y pon la URL de tu Worker en <code>IA_WORKER_URL</code>.</div>`;
     return;
   }
+  if(disponibilidadError){
+    estado.innerHTML = `<div class="ia-msg ia-error">No pudimos comprobar si el generador está disponible. <button class="btn-link" type="button" onclick="reintentarDisponibilidad()">Reintentar</button></div>`;
+    return;
+  }
+  if(disponibilidad && disponibilidad.generacionIA === false){
+    estado.innerHTML = `<div class="ia-msg">El generador de recetas con IA todavía no está configurado. Vuelve pronto.</div>`;
+    return;
+  }
 
   // Token del captcha invisible (Turnstile). Suele estar listo a los ~1–2 s de cargar la página.
   const token = window.turnstileToken || (window.turnstile ? (turnstile.getResponse() || '') : '');
@@ -2992,7 +3198,7 @@ async function generarRecetaIA(){
     const resp = await fetch(IA_WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ingredientes: favIng, turnstileToken: token })
+      body: JSON.stringify({ ingredientes: favIng, turnstileToken: token, dieta })
     });
     const data = await resp.json().catch(() => ({}));
     // Captcha rechazado: aviso amigable, no error feo
@@ -3289,6 +3495,93 @@ function renderPlanDia(){
     + '</div>';
 
   actualizarFab();
+  const shoppingDetails = document.getElementById('shopping-more');
+  if(shoppingDetails && shoppingDetails.open) renderListaCompras();
+}
+
+// ============================================================
+// LISTA DE COMPRAS — ingredientes agrupados de los próximos días del menú
+// (hasta 7, menos si el programa de 90 días está por terminar), sumando los
+// gramos de las porciones realmente usadas (ya ajustadas a la meta de cada comida).
+// ============================================================
+const DIAS_LISTA_COMPRAS = 7;
+
+// Cuántos días hay que incluir desde `idx` (0-based) sin pasarnos de `totalDias` ni de `max`.
+function diasRestantesParaLista(totalDias, idx, max){
+  return Math.max(0, Math.min(max, totalDias - idx));
+}
+
+// Agrega los ingredientes de `dias` días de `planDias` a partir de `idx`, sumando gramos
+// por nombre de ingrediente. `recetaFn(meal, id)` debe devolver la receta ya escalada a la
+// porción real de esa comida (ver recetaParaComida).
+function agregarIngredientesDias(planDiasArr, idx, dias, recetaFn){
+  const mapa = new Map();
+  for(let i = 0; i < dias; i++){
+    const diaPlan = planDiasArr[idx + i];
+    if(!diaPlan) continue;
+    MEAL_ORDER.forEach(m => {
+      const r = recetaFn(m, diaPlan[m]);
+      if(!r || !Array.isArray(r.ingredientes)) return;
+      r.ingredientes.forEach(ing => {
+        const nombre = ingNombre(ing);
+        const key = normaliza(nombre);
+        const gramos = (typeof ing === 'string' || ing.g == null) ? 0 : ing.g;
+        if(!mapa.has(key)) mapa.set(key, { nombre, g: 0 });
+        mapa.get(key).g += gramos;
+      });
+    });
+  }
+  return [...mapa.values()].sort((a,b) => a.nombre.localeCompare(b.nombre, 'es'));
+}
+
+let listaComprasTexto = '';
+
+function renderListaCompras(){
+  const panel = document.getElementById('shopping-panel');
+  if(!panel) return;
+  if(!plan || !planDias || !planStart){
+    panel.innerHTML = emptyStateHTML('Calcula tu plan para ver la lista de compras de tu menú.');
+    listaComprasTexto = '';
+    return;
+  }
+  const idx = diaIndexActual();
+  const dias = diasRestantesParaLista(planDias.length, idx, DIAS_LISTA_COMPRAS);
+  if(dias === 0){
+    panel.innerHTML = emptyStateHTML('Llegaste al final del programa de 90 días: no quedan más días para agrupar en una lista de compras.');
+    listaComprasTexto = '';
+    return;
+  }
+  const items = agregarIngredientesDias(planDias, idx, dias, recetaParaComida);
+  const fmt = d => d.toLocaleDateString('es-EC', {day:'numeric', month:'short'});
+  const inicio = new Date(); const fin = new Date(); fin.setDate(fin.getDate() + dias - 1);
+  const periodo = dias === 1
+    ? `Para hoy, ${fmt(inicio)}`
+    : `Del ${fmt(inicio)} al ${fmt(fin)} (${dias} días${dias < DIAS_LISTA_COMPRAS ? ' — tu programa termina pronto' : ''})`;
+
+  const filas = items.map(it => `<li><span class="ing-name">${esc(it.nombre)}</span>${it.g > 0 ? `<span class="ing-macros">${Math.round(it.g)} g</span>` : ''}</li>`).join('');
+  panel.innerHTML = `
+    <div class="note" style="margin:0 0 var(--space-sm);">${esc(periodo)} · ${items.length} ingrediente${items.length === 1 ? '' : 's'}, sumando las porciones reales de tu menú.</div>
+    <ul class="ing-list">${filas}</ul>
+    <button class="btn-secondary" type="button" onclick="copiarListaCompras()">Copiar lista</button>
+  `;
+  listaComprasTexto = `Lista de compras — ${periodo}\n` + items.map(it => `- ${it.nombre}${it.g > 0 ? `: ${Math.round(it.g)} g` : ''}`).join('\n');
+}
+
+async function copiarListaCompras(){
+  if(!listaComprasTexto){ toast('No hay nada para copiar.'); return; }
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      await navigator.clipboard.writeText(listaComprasTexto);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = listaComprasTexto; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+    }
+    toast('Lista copiada.');
+  }catch(e){
+    toast('No se pudo copiar. Selecciona el texto manualmente.');
+  }
 }
 
 function actualizarFab(){
@@ -4076,7 +4369,12 @@ function renderRutinaMov(){
   }
 
   const peso = pesoUsuario();
+  const hechos = sesionEjercicios(hoyISO(), diaMovActivo);
   let html = cab + ` — ${r.grupo}<small>${r.ejercicios.length} ejercicios · Series y repeticiones en cada tarjeta</small></div>`;
+  html += `<div class="session-progress">
+    <div class="session-progress-label"><span>Avance de la sesión</span><b>${hechos.length} / ${r.ejercicios.length}</b></div>
+    <div class="bar-track"><div class="bar-fill" style="width:${Math.round(hechos.length / r.ejercicios.length * 100)}%"></div></div>
+  </div>`;
   if(peso == null){
     html += '<div class="move-need-weight">Calcula tu plan en la calculadora (paso 1) para ver las calorías estimadas de cada ejercicio.</div>';
   }
@@ -4095,13 +4393,15 @@ function renderRutinaMov(){
           <div class="ex-fig-wrap" hidden>${e.fig}</div>
         </div>`
       : e.fig;
-    html += `<details class="ex-card" ${indice === 0 ? 'open' : ''}>
+    const hecho = hechos.includes(indice);
+    html += `<details class="ex-card ${hecho ? 'done' : ''}" ${indice === 0 ? 'open' : ''}>
       <summary>${fotos ? `<img class="ex-thumb" src="${fotos[0]}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true">` : ''}<span class="ex-sum-copy"><span class="ex-sum-name">${e.nombre}</span><span class="ex-sum-series">${e.series} <span aria-hidden="true">·</span> ${equipo}</span></span></summary>
       <div class="ex-body">
         ${ilustracion}
         <p class="ex-photo-hint">Dos posiciones del movimiento. Toca una foto para ampliarla.</p>
         <div class="ex-meta"><b>Equipo:</b> ${equipo}<br><b>Músculo principal:</b> ${e.musculo}<br><b>Series × repeticiones:</b> ${e.series}</div>
         ${kc != null ? `<div class="ex-kcal"><span class="n">≈ ${kc} kcal</span><span class="aprox">Aproximado, varía según intensidad, descansos y técnica.</span></div>` : ''}
+        <button type="button" class="btn-secondary ex-done-btn ${hecho ? 'on' : ''}" aria-pressed="${hecho}" onclick="toggleEjercicioHecho(${diaMovActivo},${indice})">${hecho ? '✓ Hecho hoy' : '☐ Marcar hecho'}</button>
       </div>
     </details>`;
   });
@@ -4112,7 +4412,97 @@ function renderRutinaMov(){
   cont.innerHTML = html;
 }
 
+// Ejercicios marcados como hechos para una fecha + día de rutina concretos. Si la fecha
+// ya tenía una sesión marcada para OTRO día de rutina, no se mezclan (se considera otra sesión).
+function sesionEjercicios(iso, dia){
+  const s = ejerciciosHechos[iso];
+  return (s && s.dia === dia) ? s.hechos : [];
+}
+
+function toggleEjercicioHecho(dia, indice){
+  const iso = hoyISO();
+  let s = ejerciciosHechos[iso];
+  if(!s || s.dia !== dia) s = { dia, hechos: [] };
+  const pos = s.hechos.indexOf(indice);
+  if(pos >= 0) s.hechos.splice(pos, 1); else s.hechos.push(indice);
+  ejerciciosHechos[iso] = s;
+  lsSet(LS.ejercicios, ejerciciosHechos);
+  renderRutinaMov();
+}
+
 function setDiaMov(d){ diaMovActivo = d; renderRutinaMov(); }
+
+// ============================================================
+// TEMPORIZADOR DE DESCANSO — accesible (iniciar/pausar/reiniciar), vive fuera de
+// renderRutinaMov() para que cambiar de pestaña de día no lo reinicie a mitad de cuenta.
+// ============================================================
+let restTimerDuracion = 90;
+let restTimerRestante = 90;
+let restTimerIntervalo = null;
+let restTimerCorriendo = false;
+
+function fmtMMSS(s){
+  const m = Math.floor(s / 60), ss = s % 60;
+  return String(m).padStart(2, '0') + ':' + String(ss).padStart(2, '0');
+}
+
+function renderRestTimer(anuncio){
+  const disp = document.getElementById('rest-timer-display');
+  if(disp) disp.textContent = fmtMMSS(Math.max(0, restTimerRestante));
+  const toggle = document.getElementById('rest-timer-toggle');
+  if(toggle) toggle.textContent = restTimerCorriendo
+    ? '⏸ Pausar'
+    : (restTimerRestante === restTimerDuracion ? '▶ Iniciar descanso' : '▶ Reanudar');
+  const status = document.getElementById('rest-timer-status');
+  if(status && anuncio) status.textContent = anuncio;
+}
+
+function setRestTimerDuracion(segundos){
+  pausarRestTimer();
+  restTimerDuracion = segundos;
+  restTimerRestante = segundos;
+  document.querySelectorAll('.rest-timer-presets button').forEach(b => {
+    const activo = parseInt(b.dataset.seg, 10) === segundos;
+    b.classList.toggle('active', activo);
+    b.setAttribute('aria-pressed', String(activo));
+  });
+  renderRestTimer('Descanso ajustado a ' + segundos + ' segundos.');
+}
+
+function toggleRestTimer(){
+  if(restTimerCorriendo) pausarRestTimer(); else iniciarRestTimer();
+}
+
+function iniciarRestTimer(){
+  if(restTimerCorriendo) return;
+  if(restTimerRestante <= 0) restTimerRestante = restTimerDuracion;
+  restTimerCorriendo = true;
+  renderRestTimer('Descanso iniciado: ' + fmtMMSS(restTimerRestante) + '.');
+  restTimerIntervalo = setInterval(() => {
+    restTimerRestante -= 1;
+    if(restTimerRestante <= 0){
+      restTimerRestante = 0;
+      pausarRestTimer();
+      renderRestTimer('Descanso terminado.');
+      toast('Descanso terminado.');
+      return;
+    }
+    renderRestTimer();
+  }, 1000);
+}
+
+function pausarRestTimer(){
+  const estabaCorriendo = restTimerCorriendo;
+  restTimerCorriendo = false;
+  if(restTimerIntervalo){ clearInterval(restTimerIntervalo); restTimerIntervalo = null; }
+  if(estabaCorriendo) renderRestTimer('Descanso en pausa.');
+}
+
+function reiniciarRestTimer(){
+  pausarRestTimer();
+  restTimerRestante = restTimerDuracion;
+  renderRestTimer('Descanso reiniciado.');
+}
 
 // Si una de las fotos del ejercicio no carga, ocultamos el par y mostramos el diagrama SVG.
 function exFotoFalla(img){
@@ -4430,6 +4820,9 @@ document.addEventListener('DOMContentLoaded', () => {
   aplicarGatingPremium();
   renderAuthArea();
   verificarLoginDesdeURL().then(() => verificarCheckoutDesdeURL()).then(cargarCuenta);
+  // En paralelo: disponibilidad pública del Worker (correo, IA, planes). No bloquea el
+  // inicio de sesión; cuando responde, refresca el paywall para no prometer de más.
+  cargarDisponibilidad().then(aplicarGatingPremium);
   document.getElementById('intro-date').textContent = new Date().toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long'});
   document.getElementById('ai-details').addEventListener('toggle',function(){document.getElementById('ai-toggle').setAttribute('aria-expanded',String(this.open));});
   const focusOrigins = new WeakMap();
@@ -4487,6 +4880,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if(datos.genero) setGender(datos.genero);
       if(datos.intensidad != null) setIntensidad(datos.intensidad);
       if(datos.objetivo) setObjetivo(datos.objetivo);
+      setDieta(datos.dieta || 'omnivora');
       document.getElementById('actividad').value = datos.actividad;
     }
     pintarResultado(

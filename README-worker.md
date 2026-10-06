@@ -209,12 +209,28 @@ O desde el panel: **Cloudflare → Storage & Databases → KV → `RATE_LIMIT`**
 
 ## Qué hace el Worker (resumen)
 
-- Solo `POST` con `{ "ingredientes": string[], "turnstileToken": string }` desde el origen del sitio.
+- Solo `POST` con `{ "ingredientes": string[], "turnstileToken": string, "dieta"?: "omnivora"|"vegetariana"|"vegana" }`
+  desde el origen del sitio. `dieta` es opcional y es la preferencia alimentaria que el
+  usuario declaró en su plan; si llega un valor inválido o no llega, se usa "omnivora".
+  Nunca se trata como una alergia ni una restricción médica.
 - Valida la entrada → límite por IP → Turnstile → llama a `claude-haiku-4-5` pidiendo **una**
   receta alta en proteína en el formato del sitio (`nombre`, `categoria`, `dieta`, `kcal`,
   `proteina`, `carbos`, `grasa`, `ingredientes[]`, `pasos[]`), **solo JSON**.
 - Valida y normaliza la respuesta. Si algo falla → `{ "ok": false, "error": "mensaje claro" }`.
 - Cada respuesta OK trae `"restantes": N`.
+
+## Disponibilidad de servicios (GET /config)
+
+Lectura pública (sin sesión) de qué está configurado en el Worker — nunca claves ni
+valores, solo booleanos:
+
+```json
+{ "ok": true, "disponible": { "correo": false, "generacionIA": true, "pagos": { "mensual": false, "anual": false } } }
+```
+
+El frontend la consulta al cargar para no anunciar cobro, prueba gratis o generación con
+IA si el servicio correspondiente no está configurado, y para no activar nada si la
+consulta falla por red (en ese caso muestra un aviso con botón para reintentar).
 
 ## Cuentas de usuario (magic link)
 

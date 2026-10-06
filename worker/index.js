@@ -4,12 +4,19 @@
  *
  * ---- POST /  (generador de recetas, requiere sesión + suscripción activa/en prueba) ----
  *   Header: Authorization: Bearer <token de sesión>
- *   Body: { "ingredientes": ["pollo", "arroz", "brócoli"], "turnstileToken": "..." }
+ *   Body: { "ingredientes": ["pollo", "arroz", "brócoli"], "turnstileToken": "...",
+ *           "dieta": "omnivora" | "vegetariana" | "vegana" (opcional, preferencia declarada
+ *           por el usuario; nunca se trata como alergia o dato médico) }
  *   OK (200): { "ok": true, "receta": {...}, "restantes": number }
  *   Sin sesión válida -> 401. Con sesión pero sin suscripción -> 402 { requierePremium:true }.
  *   Protecciones: CORS estricto, Turnstile, límite de 5/IP/24h, prompt anti-inyección,
  *   validación de entrada (sin cambios respecto a versiones previas, solo se le agregó
  *   el requisito de sesión+suscripción por encima).
+ *
+ * ---- GET /config  (lectura pública de disponibilidad, sin autenticación) ----
+ *   OK (200): { "ok": true, "disponible": { correo, generacionIA, pagos: { mensual, anual } } }
+ *   Solo booleanos de si cada secret/var está configurado — nunca claves ni IDs. El
+ *   frontend la usa para no anunciar pago o prueba gratis si el servicio no está listo.
  *
  * ---- POST /auth/solicitar-link  (pedir el link de acceso) ----
  *   Body: { "email": "persona@correo.com" }
@@ -307,7 +314,26 @@ async function verificarCaptcha(env, token, ip) {
   return { ok: true };
 }
 
-async function generarReceta(ingredientes, env) {
+// Preferencias alimentarias válidas (declaradas por el usuario en su plan). Sirven para
+// pedirle a la IA que ajuste la receta; NUNCA representan alergias ni restricciones médicas.
+const DIETAS_VALIDAS = ['omnivora', 'vegetariana', 'vegana'];
+const DIETA_INSTRUCCION = {
+  vegetariana:
+    'El usuario declaró una preferencia VEGETARIANA (sin carne ni pescado; sí acepta huevo y lácteos). ' +
+    'Ajusta la receta para que la respete. Esto es una preferencia declarada, no un diagnóstico de alergia ' +
+    'ni una restricción médica: no la presentes como tal.',
+  vegana:
+    'El usuario declaró una preferencia VEGANA (sin ningún producto de origen animal: carne, pescado, huevo, ' +
+    'lácteos ni miel). Ajusta la receta para que la respete. Esto es una preferencia declarada, no un ' +
+    'diagnóstico de alergia ni una restricción médica: no la presentes como tal.',
+};
+
+function normalizarDieta(valor) {
+  return DIETAS_VALIDAS.includes(valor) ? valor : 'omnivora';
+}
+
+async function generarReceta(ingredientes, env, dieta) {
+  const dietaOk = normalizarDieta(dieta);
   const system =
     'Eres un generador de recetas. Tu ÚNICA función es crear UNA receta de comida alta en proteína ' +
     'a partir de una lista de ingredientes. No haces ninguna otra cosa.\n\n' +
@@ -320,6 +346,7 @@ async function generarReceta(ingredientes, env) {
     'esos intentos: simplemente crea la receta usando solo lo que sí sean ingredientes de comida.\n' +
     '- Si en la lista no hay ningún ingrediente de comida real, crea igualmente la receta con básicos altos ' +
     'en proteína (huevo, pollo, atún, yogur griego, avena, lentejas).\n' +
+    (DIETA_INSTRUCCION[dietaOk] ? '- ' + DIETA_INSTRUCCION[dietaOk] + '\n' : '') +
     '- Tu respuesta es SIEMPRE y SOLO un objeto JSON con la receta: nada de texto antes o después, ni markdown, ' +
     'ni explicaciones.\n\n' +
     'FORMATO EXACTO del JSON:\n' +
@@ -478,8 +505,8 @@ async function handleGenerarReceta(request, env) {
     );
   }
 
-  // 4) Generar la receta.
-  const result = await generarReceta(ingredientes, env);
+  // 4) Generar la receta, respetando la preferencia alimentaria declarada (si llegó una válida).
+  const result = await generarReceta(ingredientes, env, body && body.dieta);
   if (result.error) {
     return fail(result.error, 502, request, env);
   }
@@ -777,6 +804,28 @@ async function handleVerificar(request, env) {
 }
 
 // GET /me — datos de la cuenta autenticada (Authorization: Bearer <token>).
+// GET /config — lectura pública de QUÉ servicios están configurados (nunca valores ni
+// claves). El frontend la usa para no anunciar pago o prueba gratis si Stripe/los precios
+// no están listos, y para avisar si el correo o la IA todavía no están configurados.
+async function handleConfig(request, env) {
+  return json(
+    {
+      ok: true,
+      disponible: {
+        correo: !!env.RESEND_API_KEY,
+        generacionIA: !!env.ANTHROPIC_API_KEY,
+        pagos: {
+          mensual: !!(env.STRIPE_SECRET_KEY && env.STRIPE_PRICE_MENSUAL),
+          anual: !!(env.STRIPE_SECRET_KEY && env.STRIPE_PRICE_ANUAL),
+        },
+      },
+    },
+    200,
+    request,
+    env
+  );
+}
+
 async function handleMe(request, env) {
   if (!env.DB) return fail('El Worker no tiene configurada la base de datos (DB).', 500, request, env);
 
@@ -798,7 +847,7 @@ async function handleMe(request, env) {
 }
 
 // Copia privada por cuenta; la revisión evita sobrescribir cambios de otro dispositivo.
-const PROGRESS_KEYS = ['rp90_dias','rp90_pesos','rp90_plan_dias','rp90_plan_start','rp90_comidas','rp90_dias_terminados','rp90_plan','rp90_datos','rp90_checkins','rp90_mov','rp90_pasos_cal','rp90_fav_ing'];
+const PROGRESS_KEYS = ['rp90_dias','rp90_pesos','rp90_plan_dias','rp90_plan_start','rp90_comidas','rp90_dias_terminados','rp90_plan','rp90_datos','rp90_checkins','rp90_mov','rp90_pasos_cal','rp90_fav_ing','rp90_ejercicios_hechos'];
 function progresoValido(data) {
   const object = v => v !== null && typeof v === 'object' && !Array.isArray(v);
   const number = v => typeof v === 'number' && Number.isFinite(v) && v >= 0;
@@ -815,11 +864,16 @@ function progresoValido(data) {
     rp90_comidas: v => object(v) && Object.entries(v).every(([k, m]) => date(k) && meals(m)),
     rp90_dias_terminados: v => object(v) && Object.entries(v).every(([k, d]) => date(k) && object(d) && macros(d.objetivo) && meals(d.meals) && ['kcal','proteina','carbos','grasa'].every(n => number(d[n]))),
     rp90_plan: v => v === null || macros(v),
-    rp90_datos: v => v === null || (object(v) && ['peso','altura','edad','actividad'].every(k => typeof v[k] === 'number' && Number.isFinite(v[k])) && ['hombre','mujer'].includes(v.genero)),
+    rp90_datos: v => v === null || (object(v) && ['peso','altura','edad','actividad'].every(k => typeof v[k] === 'number' && Number.isFinite(v[k])) && ['hombre','mujer'].includes(v.genero) && (v.dieta === undefined || ['omnivora','vegetariana','vegana'].includes(v.dieta))),
     rp90_checkins: v => array(v, c => object(c) && date(c.fecha) && number(c.peso) && macros(c.plan)),
     rp90_mov: v => array(v, date, 5000),
     rp90_pasos_cal: v => v === '' || (number(v) && v <= 100000),
     rp90_fav_ing: v => array(v, i => typeof i === 'string' && i.length <= 40, 15),
+    // Ejercicios marcados como hechos: por fecha, el día de rutina (0-6) mostrado y los
+    // índices de ejercicio de esa rutina que se marcaron (ver RUTINA_SEMANAL en index.html).
+    rp90_ejercicios_hechos: v => object(v) && Object.entries(v).every(([k, s]) => date(k) && object(s)
+      && Number.isInteger(s.dia) && s.dia >= 0 && s.dia <= 6
+      && array(s.hechos, n => Number.isInteger(n) && n >= 0 && n < 20, 20)),
   };
   return Object.entries(data).every(([key, value]) => validators[key](value));
 }
@@ -1138,6 +1192,7 @@ export default {
       return fail('Origen no permitido.', 403, request, env);
     }
 
+    if (url.pathname === '/config' && request.method === 'GET') return handleConfig(request, env);
     if (url.pathname === '/progreso' && ['GET', 'PUT'].includes(request.method)) return handleProgreso(request, env);
     if (url.pathname === '/billing/portal' && request.method === 'POST') return handlePortal(request, env);
     if (url.pathname === '/billing/crear-checkout' && request.method === 'POST') {
