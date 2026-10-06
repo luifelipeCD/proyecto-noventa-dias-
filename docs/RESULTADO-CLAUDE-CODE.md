@@ -127,5 +127,6 @@ eso se resuelve, pero no reemplaza esas tareas.
 
 Cambios en: `index.html`, `worker/index.js`, `README-worker.md`, `tests/regression.test.mjs`.
 No se modificaron imágenes, archivos de catálogo de recetas, ni la configuración de
-`.github/workflows` (sigue como plantilla en `docs/github-checks.yml`). El SHA subido a
-`origin/stripe-suscripcion` queda registrado en el mensaje del commit correspondiente.
+`.github/workflows` (sigue como plantilla en `docs/github-checks.yml`).
+
+Commit subido a `origin/stripe-suscripcion`: `c30d74d` (fast-forward desde `7a81cf7`).
