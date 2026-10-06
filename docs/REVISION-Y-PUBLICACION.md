@@ -2,6 +2,20 @@
 
 Fecha: 5 de octubre de 2026. Revisión del código local y de la vista de demostración. Las pruebas de Stripe usan respuestas simuladas; no se han realizado cobros ni desplegado el Worker. El servicio publicado `/me` responde 401 sin credenciales, como corresponde. No se verificaron sus secretos ni las condiciones de una cuenta comercial.
 
+## Actualización de esta entrega
+
+Claude Code implementó y subió el lote funcional a `stripe-suscripcion` (commits `c30d74d` y `eb8d933`). Después se revisaron e integraron 72 imágenes específicas de recetas, 52 fotos WebP de ejercicios e iconos de noventa. Las 15 fotos anteriores se conservan con su licencia como archivo, pero no se utilizan en la interfaz del catálogo.
+
+El menú de 90 días ahora respeta la preferencia omnívora, vegetariana o vegana. Se incluye lista de compras para los días restantes, hasta siete, con las cantidades del menú (incluidas las referencias a ingredientes cocidos). El entrenamiento permite marcar ejercicios por fecha y rutina, y cuenta con descanso temporizado. La biblioteca amplia con cargas y series se está trabajando por separado en otra rama.
+
+La revisión final corrigió la sesión ausente en solicitudes de IA, escapó los errores del servicio, conservó los ejercicios al cambiar de rutina, ajustó el reloj al tiempo realmente transcurrido y evitó anunciar disponibilidad con claves incompletas. `/config` refleja configuración, no demuestra que el proveedor externo haya aprobado o probado el servicio. El checkout se rechaza si falta el webhook.
+
+Validación final: 24 pruebas automatizadas aprobadas, sintaxis y diferencias revisadas, catálogo completo con archivos comprobados y sitio público generado en `dist/`. En una vista local aislada de 390 px se creó un plan vegano con datos ficticios, se abrió la lista de compras, se marcaron ejercicios y se comprobó su persistencia tras recargar. El menú y la rutina no desbordaron la pantalla. Se revisaron visualmente las 72 ilustraciones. Los avisos del captcha de Cloudflare en localhost y los servicios reales requieren verificación en el dominio publicado; no se realizaron pruebas de cobro, correo o IA reales.
+
+GitHub Pages sigue publicando `main`, desde la raíz. Esta subida prepara una versión revisable, sin cambiar todavía el sitio público. Hay ramas posteriores de Paddle y entrenamiento que deben compararse e integrarse antes de publicar para evitar precios o pasarelas contradictorios. El informe de continuidad está en `docs/ENTREGA-NOVENTA.md`.
+
+Las secciones siguientes conservan la revisión inicial; las referencias a 15 fotos, ausencia de preferencias y falta de lista de compras quedaron resueltas por esta actualización. Los pendientes de cobros, perfiles, privacidad y revisión del contenido siguen vigentes.
+
 ## Lo que funciona como base de producto
 
 La aplicación reúne cálculo de metas, 72 recetas, menú para 90 días, progreso y rutina semanal. El diseño es coherente, la navegación es sencilla y se puede instalar como aplicación web. El proyecto real conserva el control de acceso; la cuenta ficticia utilizada para mostrarlo solo existe en una carpeta local ignorada por Git.

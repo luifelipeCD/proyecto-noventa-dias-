@@ -1,0 +1,314 @@
+[
+  {
+    "source": "assets/exercises/Arnold_Dumbbell_Press/0.jpg",
+    "path": "assets/exercises-webp/Arnold_Dumbbell_Press/0.webp",
+    "originalBytes": 54330,
+    "optimizedBytes": 44942
+  },
+  {
+    "source": "assets/exercises/Arnold_Dumbbell_Press/1.jpg",
+    "path": "assets/exercises-webp/Arnold_Dumbbell_Press/1.webp",
+    "originalBytes": 55084,
+    "optimizedBytes": 44942
+  },
+  {
+    "source": "assets/exercises/Barbell_Bench_Press_-_Medium_Grip/0.jpg",
+    "path": "assets/exercises-webp/Barbell_Bench_Press_-_Medium_Grip/0.webp",
+    "originalBytes": 72816,
+    "optimizedBytes": 63722
+  },
+  {
+    "source": "assets/exercises/Barbell_Bench_Press_-_Medium_Grip/1.jpg",
+    "path": "assets/exercises-webp/Barbell_Bench_Press_-_Medium_Grip/1.webp",
+    "originalBytes": 72202,
+    "optimizedBytes": 63108
+  },
+  {
+    "source": "assets/exercises/Barbell_Curl/0.jpg",
+    "path": "assets/exercises-webp/Barbell_Curl/0.webp",
+    "originalBytes": 60608,
+    "optimizedBytes": 45726
+  },
+  {
+    "source": "assets/exercises/Barbell_Curl/1.jpg",
+    "path": "assets/exercises-webp/Barbell_Curl/1.webp",
+    "originalBytes": 62920,
+    "optimizedBytes": 48080
+  },
+  {
+    "source": "assets/exercises/Barbell_Deadlift/0.jpg",
+    "path": "assets/exercises-webp/Barbell_Deadlift/0.webp",
+    "originalBytes": 69854,
+    "optimizedBytes": 61182
+  },
+  {
+    "source": "assets/exercises/Barbell_Deadlift/1.jpg",
+    "path": "assets/exercises-webp/Barbell_Deadlift/1.webp",
+    "originalBytes": 67563,
+    "optimizedBytes": 56454
+  },
+  {
+    "source": "assets/exercises/Barbell_Squat/0.jpg",
+    "path": "assets/exercises-webp/Barbell_Squat/0.webp",
+    "originalBytes": 72823,
+    "optimizedBytes": 60900
+  },
+  {
+    "source": "assets/exercises/Barbell_Squat/1.jpg",
+    "path": "assets/exercises-webp/Barbell_Squat/1.webp",
+    "originalBytes": 71334,
+    "optimizedBytes": 57794
+  },
+  {
+    "source": "assets/exercises/Bent_Over_Barbell_Row/0.jpg",
+    "path": "assets/exercises-webp/Bent_Over_Barbell_Row/0.webp",
+    "originalBytes": 64589,
+    "optimizedBytes": 49594
+  },
+  {
+    "source": "assets/exercises/Bent_Over_Barbell_Row/1.jpg",
+    "path": "assets/exercises-webp/Bent_Over_Barbell_Row/1.webp",
+    "originalBytes": 66556,
+    "optimizedBytes": 52878
+  },
+  {
+    "source": "assets/exercises/Concentration_Curls/0.jpg",
+    "path": "assets/exercises-webp/Concentration_Curls/0.webp",
+    "originalBytes": 65228,
+    "optimizedBytes": 57748
+  },
+  {
+    "source": "assets/exercises/Concentration_Curls/1.jpg",
+    "path": "assets/exercises-webp/Concentration_Curls/1.webp",
+    "originalBytes": 64253,
+    "optimizedBytes": 56860
+  },
+  {
+    "source": "assets/exercises/Dips_-_Chest_Version/0.jpg",
+    "path": "assets/exercises-webp/Dips_-_Chest_Version/0.webp",
+    "originalBytes": 73206,
+    "optimizedBytes": 66506
+  },
+  {
+    "source": "assets/exercises/Dips_-_Chest_Version/1.jpg",
+    "path": "assets/exercises-webp/Dips_-_Chest_Version/1.webp",
+    "originalBytes": 72525,
+    "optimizedBytes": 66346
+  },
+  {
+    "source": "assets/exercises/Dumbbell_Flyes/0.jpg",
+    "path": "assets/exercises-webp/Dumbbell_Flyes/0.webp",
+    "originalBytes": 63679,
+    "optimizedBytes": 55222
+  },
+  {
+    "source": "assets/exercises/Dumbbell_Flyes/1.jpg",
+    "path": "assets/exercises-webp/Dumbbell_Flyes/1.webp",
+    "originalBytes": 63977,
+    "optimizedBytes": 55346
+  },
+  {
+    "source": "assets/exercises/Dumbbell_Lunges/0.jpg",
+    "path": "assets/exercises-webp/Dumbbell_Lunges/0.webp",
+    "originalBytes": 55460,
+    "optimizedBytes": 45244
+  },
+  {
+    "source": "assets/exercises/Dumbbell_Lunges/1.jpg",
+    "path": "assets/exercises-webp/Dumbbell_Lunges/1.webp",
+    "originalBytes": 61678,
+    "optimizedBytes": 54052
+  },
+  {
+    "source": "assets/exercises/Front_Dumbbell_Raise/0.jpg",
+    "path": "assets/exercises-webp/Front_Dumbbell_Raise/0.webp",
+    "originalBytes": 51985,
+    "optimizedBytes": 40712
+  },
+  {
+    "source": "assets/exercises/Front_Dumbbell_Raise/1.jpg",
+    "path": "assets/exercises-webp/Front_Dumbbell_Raise/1.webp",
+    "originalBytes": 51321,
+    "optimizedBytes": 40366
+  },
+  {
+    "source": "assets/exercises/Hammer_Curls/0.jpg",
+    "path": "assets/exercises-webp/Hammer_Curls/0.webp",
+    "originalBytes": 51669,
+    "optimizedBytes": 39620
+  },
+  {
+    "source": "assets/exercises/Hammer_Curls/1.jpg",
+    "path": "assets/exercises-webp/Hammer_Curls/1.webp",
+    "originalBytes": 52323,
+    "optimizedBytes": 39774
+  },
+  {
+    "source": "assets/exercises/Incline_Dumbbell_Press/0.jpg",
+    "path": "assets/exercises-webp/Incline_Dumbbell_Press/0.webp",
+    "originalBytes": 61978,
+    "optimizedBytes": 56552
+  },
+  {
+    "source": "assets/exercises/Incline_Dumbbell_Press/1.jpg",
+    "path": "assets/exercises-webp/Incline_Dumbbell_Press/1.webp",
+    "originalBytes": 61629,
+    "optimizedBytes": 54356
+  },
+  {
+    "source": "assets/exercises/Leg_Extensions/0.jpg",
+    "path": "assets/exercises-webp/Leg_Extensions/0.webp",
+    "originalBytes": 81219,
+    "optimizedBytes": 73628
+  },
+  {
+    "source": "assets/exercises/Leg_Extensions/1.jpg",
+    "path": "assets/exercises-webp/Leg_Extensions/1.webp",
+    "originalBytes": 82758,
+    "optimizedBytes": 74696
+  },
+  {
+    "source": "assets/exercises/Leg_Press/0.jpg",
+    "path": "assets/exercises-webp/Leg_Press/0.webp",
+    "originalBytes": 84753,
+    "optimizedBytes": 80124
+  },
+  {
+    "source": "assets/exercises/Leg_Press/1.jpg",
+    "path": "assets/exercises-webp/Leg_Press/1.webp",
+    "originalBytes": 83900,
+    "optimizedBytes": 79296
+  },
+  {
+    "source": "assets/exercises/Leverage_Iso_Row/0.jpg",
+    "path": "assets/exercises-webp/Leverage_Iso_Row/0.webp",
+    "originalBytes": 57969,
+    "optimizedBytes": 51732
+  },
+  {
+    "source": "assets/exercises/Leverage_Iso_Row/1.jpg",
+    "path": "assets/exercises-webp/Leverage_Iso_Row/1.webp",
+    "originalBytes": 61444,
+    "optimizedBytes": 54388
+  },
+  {
+    "source": "assets/exercises/Lying_Leg_Curls/0.jpg",
+    "path": "assets/exercises-webp/Lying_Leg_Curls/0.webp",
+    "originalBytes": 77402,
+    "optimizedBytes": 72784
+  },
+  {
+    "source": "assets/exercises/Lying_Leg_Curls/1.jpg",
+    "path": "assets/exercises-webp/Lying_Leg_Curls/1.webp",
+    "originalBytes": 87755,
+    "optimizedBytes": 86158
+  },
+  {
+    "source": "assets/exercises/Lying_Triceps_Press/0.jpg",
+    "path": "assets/exercises-webp/Lying_Triceps_Press/0.webp",
+    "originalBytes": 52086,
+    "optimizedBytes": 42878
+  },
+  {
+    "source": "assets/exercises/Lying_Triceps_Press/1.jpg",
+    "path": "assets/exercises-webp/Lying_Triceps_Press/1.webp",
+    "originalBytes": 50140,
+    "optimizedBytes": 41586
+  },
+  {
+    "source": "assets/exercises/Pullups/0.jpg",
+    "path": "assets/exercises-webp/Pullups/0.webp",
+    "originalBytes": 42281,
+    "optimizedBytes": 30592
+  },
+  {
+    "source": "assets/exercises/Pullups/1.jpg",
+    "path": "assets/exercises-webp/Pullups/1.webp",
+    "originalBytes": 40018,
+    "optimizedBytes": 29132
+  },
+  {
+    "source": "assets/exercises/Pushups/0.jpg",
+    "path": "assets/exercises-webp/Pushups/0.webp",
+    "originalBytes": 66786,
+    "optimizedBytes": 62130
+  },
+  {
+    "source": "assets/exercises/Pushups/1.jpg",
+    "path": "assets/exercises-webp/Pushups/1.webp",
+    "originalBytes": 64283,
+    "optimizedBytes": 60698
+  },
+  {
+    "source": "assets/exercises/Reverse_Flyes/0.jpg",
+    "path": "assets/exercises-webp/Reverse_Flyes/0.webp",
+    "originalBytes": 56640,
+    "optimizedBytes": 48800
+  },
+  {
+    "source": "assets/exercises/Reverse_Flyes/1.jpg",
+    "path": "assets/exercises-webp/Reverse_Flyes/1.webp",
+    "originalBytes": 58189,
+    "optimizedBytes": 53570
+  },
+  {
+    "source": "assets/exercises/Seated_Cable_Rows/0.jpg",
+    "path": "assets/exercises-webp/Seated_Cable_Rows/0.webp",
+    "originalBytes": 65319,
+    "optimizedBytes": 57796
+  },
+  {
+    "source": "assets/exercises/Seated_Cable_Rows/1.jpg",
+    "path": "assets/exercises-webp/Seated_Cable_Rows/1.webp",
+    "originalBytes": 65659,
+    "optimizedBytes": 58488
+  },
+  {
+    "source": "assets/exercises/Side_Lateral_Raise/0.jpg",
+    "path": "assets/exercises-webp/Side_Lateral_Raise/0.webp",
+    "originalBytes": 57101,
+    "optimizedBytes": 46220
+  },
+  {
+    "source": "assets/exercises/Side_Lateral_Raise/1.jpg",
+    "path": "assets/exercises-webp/Side_Lateral_Raise/1.webp",
+    "originalBytes": 56355,
+    "optimizedBytes": 45478
+  },
+  {
+    "source": "assets/exercises/Standing_Calf_Raises/0.jpg",
+    "path": "assets/exercises-webp/Standing_Calf_Raises/0.webp",
+    "originalBytes": 60966,
+    "optimizedBytes": 52020
+  },
+  {
+    "source": "assets/exercises/Standing_Calf_Raises/1.jpg",
+    "path": "assets/exercises-webp/Standing_Calf_Raises/1.webp",
+    "originalBytes": 59984,
+    "optimizedBytes": 51646
+  },
+  {
+    "source": "assets/exercises/Standing_Military_Press/0.jpg",
+    "path": "assets/exercises-webp/Standing_Military_Press/0.webp",
+    "originalBytes": 56692,
+    "optimizedBytes": 46568
+  },
+  {
+    "source": "assets/exercises/Standing_Military_Press/1.jpg",
+    "path": "assets/exercises-webp/Standing_Military_Press/1.webp",
+    "originalBytes": 60380,
+    "optimizedBytes": 50340
+  },
+  {
+    "source": "assets/exercises/Triceps_Pushdown/0.jpg",
+    "path": "assets/exercises-webp/Triceps_Pushdown/0.webp",
+    "originalBytes": 77630,
+    "optimizedBytes": 69394
+  },
+  {
+    "source": "assets/exercises/Triceps_Pushdown/1.jpg",
+    "path": "assets/exercises-webp/Triceps_Pushdown/1.webp",
+    "originalBytes": 78235,
+    "optimizedBytes": 69442
+  }
+]

@@ -112,7 +112,7 @@ test('el calendario conserva la fecha local de Ecuador después de las 19:00', (
 
 test('las fotos incluidas en la caché existen y todos los scripts son válidos', () => {
   const sw = readFileSync(new URL('../sw.js', import.meta.url), 'utf8');
-  const images = [...sw.matchAll(/'\.\/(assets\/exercises\/[^']+\.jpg)'/g)]; assert.equal(images.length, 52);
+  const images = [...sw.matchAll(/'\.\/(assets\/exercises-webp\/[^']+\.webp)'/g)]; assert.equal(images.length, 52);
   for (const [, path] of images) assert.equal(existsSync(new URL('../' + path, import.meta.url)), true);
   const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
   for (const [, script] of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/g)) new vm.Script(script);
@@ -145,6 +145,7 @@ test('el progreso acepta ejercicios marcados como hechos y una preferencia alime
 
 test('GET /config expone solo disponibilidad (booleanos), nunca claves, y no requiere sesión', async () => {
   let response = await worker.default.fetch(request('/config'), {
+    DB: memoryDB(), SESSION_SECRET: 'test-only', RESEND_FROM: 'test@example.com', TURNSTILE_SECRET_KEY: 'test-only', STRIPE_WEBHOOK_SECRET: 'test-only',
     RESEND_API_KEY: 'x', ANTHROPIC_API_KEY: 'y', STRIPE_SECRET_KEY: 'z',
     STRIPE_PRICE_MENSUAL: 'price_1', STRIPE_PRICE_ANUAL: 'price_2',
   });
@@ -157,7 +158,7 @@ test('GET /config expone solo disponibilidad (booleanos), nunca claves, y no req
   assert.deepEqual(data.disponible, { correo: false, generacionIA: false, pagos: { mensual: false, anual: false } });
 
   // Stripe configurado pero falta el precio del plan anual: ese plan no cuenta como disponible.
-  response = await worker.default.fetch(request('/config'), { STRIPE_SECRET_KEY: 'z', STRIPE_PRICE_MENSUAL: 'price_1' });
+  response = await worker.default.fetch(request('/config'), { DB: memoryDB(), SESSION_SECRET: 'test-only', STRIPE_WEBHOOK_SECRET: 'test-only', STRIPE_SECRET_KEY: 'z', STRIPE_PRICE_MENSUAL: 'price_1' });
   data = await response.json();
   assert.equal(data.disponible.pagos.mensual, true);
   assert.equal(data.disponible.pagos.anual, false);

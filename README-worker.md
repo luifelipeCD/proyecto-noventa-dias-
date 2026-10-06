@@ -322,3 +322,9 @@ Antes de cobrar: completar STRIPE_PRICE_MENSUAL y STRIPE_PRICE_ANUAL con los pre
 ## Correcciones para publicar
 
 APP_URL conserva la ruta de GitHub Pages en el correo, Checkout y portal. Cambiarla si se cambia el dominio o la carpeta. Los errores al procesar un webhook devuelven 503 para permitir reintentos. Ejecutar `npm test` antes de publicar. Consultar `docs/REVISION-Y-PUBLICACION.md` para los pendientes y límites de esta versión.
+
+### Disponibilidad revisada
+
+`GET /config` publica solo indicadores booleanos. Todos los servicios requieren DB y SESSION_SECRET; correo requiere RESEND_API_KEY y RESEND_FROM; IA requiere ANTHROPIC_API_KEY y TURNSTILE_SECRET_KEY; pagos requieren STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET y el identificador del precio correspondiente. Esto verifica presencia de configuración, no validez de cuentas, dominio, tablas o credenciales: probar los flujos externos antes de vender. El checkout rechaza una configuración sin webhook.
+
+El formato nuevo de `rp90_ejercicios_hechos` es `{ "AAAA-MM-DD": { "sesiones": { "0": [0,1], "1": [2] } } }`; los días 0–6 se conservan por separado. También se aceptan las copias anteriores con `dia` y `hechos`. No requiere una tabla adicional: forma parte del JSON de user_progress.

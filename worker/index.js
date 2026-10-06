@@ -808,15 +808,17 @@ async function handleVerificar(request, env) {
 // claves). El frontend la usa para no anunciar pago o prueba gratis si Stripe/los precios
 // no están listos, y para avisar si el correo o la IA todavía no están configurados.
 async function handleConfig(request, env) {
+  const cuentaConfigurada = !!(env.DB && env.SESSION_SECRET);
+  const pagosConfigurados = cuentaConfigurada && !!(env.STRIPE_SECRET_KEY && env.STRIPE_WEBHOOK_SECRET);
   return json(
     {
       ok: true,
       disponible: {
-        correo: !!env.RESEND_API_KEY,
-        generacionIA: !!env.ANTHROPIC_API_KEY,
+        correo: cuentaConfigurada && !!(env.RESEND_API_KEY && env.RESEND_FROM),
+        generacionIA: cuentaConfigurada && !!(env.ANTHROPIC_API_KEY && env.TURNSTILE_SECRET_KEY),
         pagos: {
-          mensual: !!(env.STRIPE_SECRET_KEY && env.STRIPE_PRICE_MENSUAL),
-          anual: !!(env.STRIPE_SECRET_KEY && env.STRIPE_PRICE_ANUAL),
+          mensual: pagosConfigurados && !!env.STRIPE_PRICE_MENSUAL,
+          anual: pagosConfigurados && !!env.STRIPE_PRICE_ANUAL,
         },
       },
     },
@@ -871,9 +873,14 @@ function progresoValido(data) {
     rp90_fav_ing: v => array(v, i => typeof i === 'string' && i.length <= 40, 15),
     // Ejercicios marcados como hechos: por fecha, el día de rutina (0-6) mostrado y los
     // índices de ejercicio de esa rutina que se marcaron (ver RUTINA_SEMANAL en index.html).
-    rp90_ejercicios_hechos: v => object(v) && Object.entries(v).every(([k, s]) => date(k) && object(s)
-      && Number.isInteger(s.dia) && s.dia >= 0 && s.dia <= 6
-      && array(s.hechos, n => Number.isInteger(n) && n >= 0 && n < 20, 20)),
+    rp90_ejercicios_hechos: v => object(v) && Object.keys(v).length <= 5000 && Object.entries(v).every(([k, s]) => {
+      if(!date(k) || !object(s)) return false;
+      const indices = a => array(a, n => Number.isInteger(n) && n >= 0 && n < 20, 20) && new Set(a).size === a.length;
+      if(s.sesiones !== undefined) return Object.keys(s).length === 1 && object(s.sesiones)
+        && Object.entries(s.sesiones).every(([dia, hechos]) => /^[0-6]$/.test(dia) && indices(hechos));
+      return Object.keys(s).every(key => ['dia','hechos'].includes(key))
+        && Number.isInteger(s.dia) && s.dia >= 0 && s.dia <= 6 && indices(s.hechos);
+    }),
   };
   return Object.entries(data).every(([key, value]) => validators[key](value));
 }
@@ -982,7 +989,7 @@ async function obtenerOCrearCliente(env, user) {
 // POST /billing/crear-checkout { plan: 'mensual' | 'anual' } — requiere sesión.
 async function handleCrearCheckout(request, env) {
   if (!env.DB) return fail('El Worker no tiene configurada la base de datos (DB).', 500, request, env);
-  if (!env.STRIPE_SECRET_KEY) return fail('El Worker no tiene configurado Stripe (STRIPE_SECRET_KEY).', 500, request, env);
+  if (!env.STRIPE_SECRET_KEY || !env.STRIPE_WEBHOOK_SECRET) return fail('Los pagos todavía no están disponibles.', 503, request, env);
 
   const payload = await usuarioDesdeRequest(request, env);
   if (!payload || !payload.sub) return fail('Inicia sesión para elegir un plan.', 401, request, env);

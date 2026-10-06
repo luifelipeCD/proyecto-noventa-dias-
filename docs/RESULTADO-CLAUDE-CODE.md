@@ -119,7 +119,7 @@ scripts de importación de imágenes ni el manifiesto de generación (trabajo de
 
 Sigue vigente lo que ya señalaba `docs/REVISION-Y-PUBLICACION.md`: precios de Stripe
 vacíos, país del negocio sin confirmar, Resend sin remitente verificado, migración de
-`user_progress`/`ejercicios_hechos` pendiente de aplicar en D1 remoto, y el Worker sin
+`user_progress` pendiente de aplicar en D1 remoto, y el Worker sin
 desplegar. El nuevo endpoint `/config` ayuda a que la interfaz no anuncie de más mientras
 eso se resuelve, pero no reemplaza esas tareas.
 
@@ -130,3 +130,5 @@ No se modificaron imágenes, archivos de catálogo de recetas, ni la configuraci
 `.github/workflows` (sigue como plantilla en `docs/github-checks.yml`).
 
 Commit subido a `origin/stripe-suscripcion`: `c30d74d` (fast-forward desde `7a81cf7`).
+
+Nota de revisión posterior: Codex integró las imágenes y corrigió sesión de IA, disponibilidad completa, persistencia de varias rutinas por fecha y temporizador. La validación conjunta pasa 24 pruebas; consulta `docs/ENTREGA-NOVENTA.md`.

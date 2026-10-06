@@ -29,6 +29,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@700;800&display=swap" rel="stylesheet">
 <!-- Cloudflare Turnstile (captcha invisible) para el generador de recetas con IA -->
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script src="assets/recipes/catalog.js"></script>
 <script>
   // El widget entrega el token aquí (se define antes de nada por si Turnstile carga temprano).
   window.turnstileToken = '';
@@ -844,6 +845,7 @@
 </style>
 <link rel="stylesheet" href="redesign.css">
 <link rel="stylesheet" href="interface.css?v=training-photos-1">
+<link rel="stylesheet" href="assets/brand/catalog-media.css">
 </head>
 <body>
 <!-- BARRA SUPERIOR -->
@@ -2393,7 +2395,7 @@ const PRECIOS = { mensual: '$9.99/mes', anual: '$79/año' };
 
 function tienePremium(){
   const status = cuenta && cuenta.subscription && cuenta.subscription.status;
-  return /^(active|trialing)$/i.test(String(status || ''));
+  return !cuentaVerificacionError && /^(active|trialing)$/i.test(String(status || ''));
 }
 
 function fmtFechaCorta(epochMs){
@@ -3045,23 +3047,20 @@ function fotoTipoURL(info, width){
 
 // Foto representativa + respaldo automático al glifo SVG si la imagen no carga (sin internet, CDN bloqueado, etc.)
 function recetaMediaHTML(r){
-  const info = fotoTipoInfo(r);
-  const url = fotoTipoURL(info);
-  return `<div class="rc-media">
-    <img class="rc-photo-img" src="${url}" alt="Foto ilustrativa del tipo de plato: ${esc(r.nombre)}" loading="lazy" decoding="async"
+  const image = FOTOS_RECETAS[r.id];
+  if(!image) return recetaThumb(r);
+  return `<div class="rc-media rc-media-generated">
+    <img class="rc-photo-img" src="${image.path}" width="${image.width}" height="${image.height}" alt="Imagen ilustrativa de ${esc(r.nombre)}" loading="lazy" decoding="async"
          onerror="this.parentElement.classList.add('foto-error');">
     <div class="rc-thumb-fallback">${recetaThumb(r)}</div>
-    <span class="rc-photo-tag">Foto ilustrativa</span>
+    <span class="rc-photo-tag">Imagen ilustrativa</span>
   </div>`;
 }
 
 function renderCreditosFotos(){
   const panel = document.getElementById('credits-panel');
   if(!panel) return;
-  panel.innerHTML = `<div class="note" style="margin:0 0 var(--space-xs);">Las fotos de los platos son representativas del tipo de comida (no son fotos exactas de cada receta). Vienen de Wikimedia Commons con licencia abierta.</div>
-  <ul class="photo-credits" style="list-style:none;padding:0;margin:0;">
-    ${Object.values(TIPO_FOTO).map(info => `<li style="margin-bottom:var(--space-2xs);">${info.artist} — ${info.license} — <a href="${info.page}" target="_blank" rel="noopener noreferrer">ver en Wikimedia Commons</a></li>`).join('')}
-  </ul>`;
+  panel.innerHTML = '<div class="note" style="margin:0;">Las imágenes del catálogo fueron generadas con IA para ilustrar cada receta. El aspecto y la porción del plato preparado pueden variar. Las fotografías de ejercicios provienen de Free Exercise DB; sus créditos están en Rutina.</div>';
 }
 
 function renderRecetaCard(r){
@@ -3173,6 +3172,14 @@ async function generarRecetaIA(){
     estado.innerHTML = `<div class="ia-msg">La generación con IA todavía no está configurada. Sigue los pasos de <b>README-worker.md</b> y pon la URL de tu Worker en <code>IA_WORKER_URL</code>.</div>`;
     return;
   }
+  if(!sesion || !tienePremium()){
+    estado.innerHTML = '<div class="ia-msg">Inicia sesión con una suscripción activa para generar recetas.</div>';
+    return;
+  }
+  if(!disponibilidad && !disponibilidadError){
+    estado.innerHTML = '<div class="ia-msg">Estamos comprobando la disponibilidad. Inténtalo en un momento.</div>';
+    return;
+  }
   if(disponibilidadError){
     estado.innerHTML = `<div class="ia-msg ia-error">No pudimos comprobar si el generador está disponible. <button class="btn-link" type="button" onclick="reintentarDisponibilidad()">Reintentar</button></div>`;
     return;
@@ -3197,22 +3204,22 @@ async function generarRecetaIA(){
   try{
     const resp = await fetch(IA_WORKER_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + sesion.token },
       body: JSON.stringify({ ingredientes: favIng, turnstileToken: token, dieta })
     });
     const data = await resp.json().catch(() => ({}));
     // Captcha rechazado: aviso amigable, no error feo
     if(resp.status === 403 && data.captcha){
-      estado.innerHTML = `<div class="ia-msg ia-limit">🔒 ${data.error || 'No pudimos verificar que eres una persona. Recarga la página e inténtalo de nuevo.'}</div>`;
+      estado.innerHTML = `<div class="ia-msg ia-limit">🔒 ${esc(data.error || 'No pudimos verificar que eres una persona. Recarga la página e inténtalo de nuevo.')}</div>`;
       return;
     }
     // Límite diario alcanzado: aviso tranquilo, no error
     if(resp.status === 429 || data.limited){
-      estado.innerHTML = `<div class="ia-msg ia-limit">⏳ ${data.error || 'Ya generaste el máximo de recetas con IA por hoy. Vuelve mañana.'}</div>`;
+      estado.innerHTML = `<div class="ia-msg ia-limit">⏳ ${esc(data.error || 'Ya generaste el máximo de recetas con IA por hoy. Vuelve mañana.')}</div>`;
       return;
     }
     if(!resp.ok || !data.ok || !data.receta){
-      estado.innerHTML = `<div class="ia-msg ia-error">${data.error || 'No se pudo generar la receta. Intenta de nuevo en un momento.'}</div>`;
+      estado.innerHTML = `<div class="ia-msg ia-error">${esc(data.error || 'No se pudo generar la receta. Intenta de nuevo en un momento.')}</div>`;
       return;
     }
     const r = data.receta;
@@ -3544,7 +3551,7 @@ function renderListaCompras(){
     listaComprasTexto = '';
     return;
   }
-  const idx = diaIndexActual();
+  const idx = Math.max(0, diasEntre(planStart, hoyISO()));
   const dias = diasRestantesParaLista(planDias.length, idx, DIAS_LISTA_COMPRAS);
   if(dias === 0){
     panel.innerHTML = emptyStateHTML('Llegaste al final del programa de 90 días: no quedan más días para agrupar en una lista de compras.');
@@ -4192,34 +4199,34 @@ const FIG = {
 // incluida en assets/exercises. Si una imagen no carga en el navegador,
 // la tarjeta cae automáticamente al diagrama SVG de FIG (ver exFotoFalla).
 // ============================================================
-const EX_FOTO_BASE = 'assets/exercises/';
+const EX_FOTO_BASE = 'assets/exercises-webp/';
 const EX_FOTOS = {
-  bench:      ["Barbell_Bench_Press_-_Medium_Grip/0.jpg", "Barbell_Bench_Press_-_Medium_Grip/1.jpg"],  // Barbell Bench Press - Medium Grip
-  incline:    ["Incline_Dumbbell_Press/0.jpg", "Incline_Dumbbell_Press/1.jpg"],  // Incline Dumbbell Press
-  fly:        ["Dumbbell_Flyes/0.jpg", "Dumbbell_Flyes/1.jpg"],  // Dumbbell Flyes
-  dips:       ["Dips_-_Chest_Version/0.jpg", "Dips_-_Chest_Version/1.jpg"],  // Dips - Chest Version
-  pushup:     ["Pushups/0.jpg", "Pushups/1.jpg"],  // Pushups
-  pullup:     ["Pullups/0.jpg", "Pullups/1.jpg"],  // Pullups
-  bbrow:      ["Bent_Over_Barbell_Row/0.jpg", "Bent_Over_Barbell_Row/1.jpg"],  // Bent Over Barbell Row
-  cablerow:   ["Seated_Cable_Rows/0.jpg", "Seated_Cable_Rows/1.jpg"],  // Seated Cable Rows
-  deadlift:   ["Barbell_Deadlift/0.jpg", "Barbell_Deadlift/1.jpg"],  // Barbell Deadlift
-  machrow:    ["Leverage_Iso_Row/0.jpg", "Leverage_Iso_Row/1.jpg"],  // Leverage Iso Row
-  squat:      ["Barbell_Squat/0.jpg", "Barbell_Squat/1.jpg"],  // Barbell Squat
-  legpress:   ["Leg_Press/0.jpg", "Leg_Press/1.jpg"],  // Leg Press
-  lunge:      ["Dumbbell_Lunges/0.jpg", "Dumbbell_Lunges/1.jpg"],  // Dumbbell Lunges
-  legcurl:    ["Lying_Leg_Curls/0.jpg", "Lying_Leg_Curls/1.jpg"],  // Lying Leg Curls
-  legext:     ["Leg_Extensions/0.jpg", "Leg_Extensions/1.jpg"],  // Leg Extensions
-  calf:       ["Standing_Calf_Raises/0.jpg", "Standing_Calf_Raises/1.jpg"],  // Standing Calf Raises
-  ohp:        ["Standing_Military_Press/0.jpg", "Standing_Military_Press/1.jpg"],  // Standing Military Press
-  latraise:   ["Side_Lateral_Raise/0.jpg", "Side_Lateral_Raise/1.jpg"],  // Side Lateral Raise
-  frontraise: ["Front_Dumbbell_Raise/0.jpg", "Front_Dumbbell_Raise/1.jpg"],  // Front Dumbbell Raise
-  reardelt:   ["Reverse_Flyes/0.jpg", "Reverse_Flyes/1.jpg"],  // Reverse Flyes
-  arnold:     ["Arnold_Dumbbell_Press/0.jpg", "Arnold_Dumbbell_Press/1.jpg"],  // Arnold Dumbbell Press
-  bbcurl:     ["Barbell_Curl/0.jpg", "Barbell_Curl/1.jpg"],  // Barbell Curl
-  hammer:     ["Hammer_Curls/0.jpg", "Hammer_Curls/1.jpg"],  // Hammer Curls
-  skull:      ["Lying_Triceps_Press/0.jpg", "Lying_Triceps_Press/1.jpg"],  // Lying Triceps Press
-  pushdown:   ["Triceps_Pushdown/0.jpg", "Triceps_Pushdown/1.jpg"],  // Triceps Pushdown
-  conccurl:   ["Concentration_Curls/0.jpg", "Concentration_Curls/1.jpg"],  // Concentration Curls
+  bench:      ["Barbell_Bench_Press_-_Medium_Grip/0.webp", "Barbell_Bench_Press_-_Medium_Grip/1.webp"],  // Barbell Bench Press - Medium Grip
+  incline:    ["Incline_Dumbbell_Press/0.webp", "Incline_Dumbbell_Press/1.webp"],  // Incline Dumbbell Press
+  fly:        ["Dumbbell_Flyes/0.webp", "Dumbbell_Flyes/1.webp"],  // Dumbbell Flyes
+  dips:       ["Dips_-_Chest_Version/0.webp", "Dips_-_Chest_Version/1.webp"],  // Dips - Chest Version
+  pushup:     ["Pushups/0.webp", "Pushups/1.webp"],  // Pushups
+  pullup:     ["Pullups/0.webp", "Pullups/1.webp"],  // Pullups
+  bbrow:      ["Bent_Over_Barbell_Row/0.webp", "Bent_Over_Barbell_Row/1.webp"],  // Bent Over Barbell Row
+  cablerow:   ["Seated_Cable_Rows/0.webp", "Seated_Cable_Rows/1.webp"],  // Seated Cable Rows
+  deadlift:   ["Barbell_Deadlift/0.webp", "Barbell_Deadlift/1.webp"],  // Barbell Deadlift
+  machrow:    ["Leverage_Iso_Row/0.webp", "Leverage_Iso_Row/1.webp"],  // Leverage Iso Row
+  squat:      ["Barbell_Squat/0.webp", "Barbell_Squat/1.webp"],  // Barbell Squat
+  legpress:   ["Leg_Press/0.webp", "Leg_Press/1.webp"],  // Leg Press
+  lunge:      ["Dumbbell_Lunges/0.webp", "Dumbbell_Lunges/1.webp"],  // Dumbbell Lunges
+  legcurl:    ["Lying_Leg_Curls/0.webp", "Lying_Leg_Curls/1.webp"],  // Lying Leg Curls
+  legext:     ["Leg_Extensions/0.webp", "Leg_Extensions/1.webp"],  // Leg Extensions
+  calf:       ["Standing_Calf_Raises/0.webp", "Standing_Calf_Raises/1.webp"],  // Standing Calf Raises
+  ohp:        ["Standing_Military_Press/0.webp", "Standing_Military_Press/1.webp"],  // Standing Military Press
+  latraise:   ["Side_Lateral_Raise/0.webp", "Side_Lateral_Raise/1.webp"],  // Side Lateral Raise
+  frontraise: ["Front_Dumbbell_Raise/0.webp", "Front_Dumbbell_Raise/1.webp"],  // Front Dumbbell Raise
+  reardelt:   ["Reverse_Flyes/0.webp", "Reverse_Flyes/1.webp"],  // Reverse Flyes
+  arnold:     ["Arnold_Dumbbell_Press/0.webp", "Arnold_Dumbbell_Press/1.webp"],  // Arnold Dumbbell Press
+  bbcurl:     ["Barbell_Curl/0.webp", "Barbell_Curl/1.webp"],  // Barbell Curl
+  hammer:     ["Hammer_Curls/0.webp", "Hammer_Curls/1.webp"],  // Hammer Curls
+  skull:      ["Lying_Triceps_Press/0.webp", "Lying_Triceps_Press/1.webp"],  // Lying Triceps Press
+  pushdown:   ["Triceps_Pushdown/0.webp", "Triceps_Pushdown/1.webp"],  // Triceps Pushdown
+  conccurl:   ["Concentration_Curls/0.webp", "Concentration_Curls/1.webp"],  // Concentration Curls
 };
 const EX_EQUIPO = {"bench": "Barra y banco plano", "incline": "Mancuernas y banco inclinado", "fly": "Mancuernas y banco plano", "dips": "Paralelas", "pushup": "Peso corporal", "pullup": "Barra de dominadas", "bbrow": "Barra", "cablerow": "Polea", "deadlift": "Barra", "machrow": "Máquina", "squat": "Barra y soporte", "legpress": "Máquina", "lunge": "Mancuernas", "legcurl": "Máquina", "legext": "Máquina", "calf": "Máquina", "ohp": "Barra", "latraise": "Mancuernas", "frontraise": "Mancuernas", "reardelt": "Mancuernas y banco inclinado", "arnold": "Mancuernas y banco", "bbcurl": "Barra", "hammer": "Mancuernas", "skull": "Barra Z y banco", "pushdown": "Polea", "conccurl": "Mancuerna y banco"};
 // Índice inverso valor-de-FIG -> clave, para elegir las fotos por ejercicio sin tocar RUTINA_SEMANAL.
@@ -4413,19 +4420,25 @@ function renderRutinaMov(){
 }
 
 // Ejercicios marcados como hechos para una fecha + día de rutina concretos. Si la fecha
-// ya tenía una sesión marcada para OTRO día de rutina, no se mezclan (se considera otra sesión).
+// conserva por separado cada día de rutina y admite las copias antiguas con dia/hechos.
 function sesionEjercicios(iso, dia){
   const s = ejerciciosHechos[iso];
+  if(s && s.sesiones) return s.sesiones[String(dia)] || [];
   return (s && s.dia === dia) ? s.hechos : [];
 }
 
 function toggleEjercicioHecho(dia, indice){
   const iso = hoyISO();
-  let s = ejerciciosHechos[iso];
-  if(!s || s.dia !== dia) s = { dia, hechos: [] };
-  const pos = s.hechos.indexOf(indice);
-  if(pos >= 0) s.hechos.splice(pos, 1); else s.hechos.push(indice);
-  ejerciciosHechos[iso] = s;
+  const anterior = ejerciciosHechos[iso];
+  const sesiones = anterior && anterior.sesiones ? anterior.sesiones : {};
+  if(anterior && !anterior.sesiones && Array.isArray(anterior.hechos)){
+    sesiones[String(anterior.dia)] = [...anterior.hechos];
+  }
+  const hechos = [...(sesiones[String(dia)] || [])];
+  const pos = hechos.indexOf(indice);
+  if(pos >= 0) hechos.splice(pos, 1); else hechos.push(indice);
+  sesiones[String(dia)] = hechos;
+  ejerciciosHechos[iso] = { sesiones };
   lsSet(LS.ejercicios, ejerciciosHechos);
   renderRutinaMov();
 }
@@ -4440,6 +4453,7 @@ let restTimerDuracion = 90;
 let restTimerRestante = 90;
 let restTimerIntervalo = null;
 let restTimerCorriendo = false;
+let restTimerHasta = 0;
 
 function fmtMMSS(s){
   const m = Math.floor(s / 60), ss = s % 60;
@@ -4476,10 +4490,11 @@ function toggleRestTimer(){
 function iniciarRestTimer(){
   if(restTimerCorriendo) return;
   if(restTimerRestante <= 0) restTimerRestante = restTimerDuracion;
+  restTimerHasta = Date.now() + restTimerRestante * 1000;
   restTimerCorriendo = true;
   renderRestTimer('Descanso iniciado: ' + fmtMMSS(restTimerRestante) + '.');
   restTimerIntervalo = setInterval(() => {
-    restTimerRestante -= 1;
+    restTimerRestante = Math.max(0, Math.ceil((restTimerHasta - Date.now()) / 1000));
     if(restTimerRestante <= 0){
       restTimerRestante = 0;
       pausarRestTimer();
@@ -4488,11 +4503,12 @@ function iniciarRestTimer(){
       return;
     }
     renderRestTimer();
-  }, 1000);
+  }, 250);
 }
 
 function pausarRestTimer(){
   const estabaCorriendo = restTimerCorriendo;
+  if(estabaCorriendo) restTimerRestante = Math.max(0, Math.ceil((restTimerHasta - Date.now()) / 1000));
   restTimerCorriendo = false;
   if(restTimerIntervalo){ clearInterval(restTimerIntervalo); restTimerIntervalo = null; }
   if(estabaCorriendo) renderRestTimer('Descanso en pausa.');
