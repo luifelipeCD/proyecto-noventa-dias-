@@ -20,7 +20,8 @@
  *
  * ---- POST /auth/solicitar-link  (pedir el link de acceso) ----
  *   Body: { "email": "persona@correo.com" }
- *   Siempre responde 200 con un mensaje genérico (no delata si el correo existe).
+ *   Confirma únicamente si el proveedor aceptó el envío; 503 si falla el correo y
+ *   429 si se alcanzó el límite, sin consultar si el destinatario ya tiene cuenta.
  *   Crea un token de un solo uso en D1 (tabla magic_links, expira a los 15 min) y lo
  *   manda por correo con Resend. Límite: 8 solicitudes/IP y 3/correo cada hora.
  *
@@ -136,6 +137,7 @@ function json(body, status, request, env) {
     status,
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-store',
       ...corsHeaders(request, env),
     },
   });
@@ -528,6 +530,7 @@ const MAGIC_LINK_TTL_MS = 15 * 60 * 1000; // el link caduca a los 15 minutos
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000; // la sesión dura 30 días
 const LIMITE_AUTH_IP = 8; // máx. solicitudes de link por IP cada hora
 const LIMITE_AUTH_EMAIL = 3; // máx. solicitudes de link por correo cada hora
+const LIMITE_AUTH_INTENTOS_IP = 20; // también limita intentos fallidos sin consumir la cuota de envíos
 const VENTANA_AUTH_MS = 60 * 60 * 1000;
 const RESEND_URL = 'https://api.resend.com/emails';
 
@@ -622,44 +625,62 @@ async function usuarioDesdeRequest(request, env) {
 }
 
 // ---------- correo transaccional (Resend) ----------
-// Sin RESEND_API_KEY no se envía nada, pero el Worker sigue funcionando: registra el
-// link en los logs (visible con `wrangler tail`) para poder probar el flujo en local
-// sin depender de una cuenta de Resend real (mismo criterio que TURNSTILE_SECRET_KEY).
-// Envío genérico por Resend. Sin RESEND_API_KEY no se manda nada, pero el Worker sigue
-// funcionando (se registra en los logs) — mismo criterio que TURNSTILE_SECRET_KEY.
-async function enviarCorreo(env, email, subject, html, { linkParaLogs } = {}) {
+// Resend exige un dominio propio verificado para enviar a usuarios reales.
+// La presencia de un remitente válido no demuestra que Resend haya verificado el dominio.
+function remitenteCorreo(env) {
+  const from = String(env.RESEND_FROM || '').trim();
+  if(/[\r\n]/.test(from)) return '';
+  const address = (from.match(/<([^<>]+)>$/) || [null, from])[1];
+  if(!emailValido(address) || /@resend\.dev$/i.test(address)) return '';
+  return from;
+}
+
+// Nunca se registran el enlace, el token, el destinatario ni el cuerpo del proveedor.
+async function enviarCorreo(env, email, subject, html, { text, local = false } = {}) {
   if (!env.RESEND_API_KEY) {
     console.error('Resend: falta RESEND_API_KEY — correo NO enviado.');
     return { ok: false, sinConfigurar: true };
   }
-  const from = env.RESEND_FROM || 'Transforma tu Cuerpo <onboarding@resend.dev>';
+  const from = remitenteCorreo(env) || (local ? 'noventa <onboarding@resend.dev>' : '');
+  if(!from) return { ok: false, sinConfigurar: true };
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
   try {
     const resp = await fetch(RESEND_URL, {
       method: 'POST',
+      signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + String(env.RESEND_API_KEY).trim(),
       },
-      body: JSON.stringify({ from, to: [email], subject, html }),
+      body: JSON.stringify({ from, to: [email], subject, html, ...(text ? { text } : {}) }),
     });
     if (!resp.ok) {
-      const detalle = await resp.text().catch(() => '');
-      console.error('Resend error', resp.status, detalle.slice(0, 300));
+      console.error('email_delivery_rejected', resp.status);
+      return { ok: false, rechazado: true };
+    }
+    const data = await resp.json().catch(() => null);
+    if(!data || typeof data.id !== 'string' || !data.id.trim()) {
+      console.error('email_delivery_unconfirmed');
       return { ok: false };
     }
     return { ok: true };
   } catch (e) {
-    console.error('Resend: error de red', e && e.message);
+    console.error('email_delivery_unconfirmed', e && e.name === 'AbortError' ? 'timeout' : 'network');
     return { ok: false };
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
-async function enviarMagicLinkEmail(env, email, link) {
+async function enviarMagicLinkEmail(env, email, link, local) {
   const html =
     '<p>Toca el siguiente link para entrar a tu cuenta. Caduca en 15 minutos y solo sirve una vez:</p>' +
     `<p><a href="${link}">${link}</a></p>` +
     '<p>Si no pediste este correo, ignóralo — no se hizo ningún cambio en tu cuenta.</p>';
-  return enviarCorreo(env, email, 'Tu link para entrar a Transforma tu Cuerpo en 90 Días', html, { linkParaLogs: link });
+  return enviarCorreo(env, email, 'Tu enlace para entrar a noventa', html, {
+    local, text: 'Abre este enlace para entrar a noventa (caduca en 15 minutos y solo sirve una vez):\n' + link + '\nSi no lo pediste, ignora este correo.',
+  });
 }
 
 // Aviso de fin de prueba (disparado por el webhook invoice.upcoming de Stripe).
@@ -681,11 +702,11 @@ function estadoSuscripcion(user) {
 }
 
 // POST /auth/solicitar-link { email } — crea un magic link y lo manda por correo.
-// Siempre responde 200 con el mismo mensaje genérico, exista o no esa cuenta y esté o
-// no limitada, para no delatar por temporización/respuesta qué correos están registrados.
+// El resultado del envío no depende de si existe una cuenta. Una falla del proveedor
+// se comunica como tal: no se muestra "enviado" ni se devuelven enlaces en producción.
 async function handleSolicitarLink(request, env) {
-  if (!env.DB) return fail('El Worker no tiene configurada la base de datos (DB).', 500, request, env);
-  if (!env.RESEND_API_KEY && !desarrolloLocal(request, env)) {
+  const local = desarrolloLocal(request, env);
+  if (!env.DB || !env.SESSION_SECRET || ((!env.RESEND_API_KEY || !remitenteCorreo(env)) && !local)) {
     return fail('El acceso por correo todavía no está disponible. Intenta más tarde.', 503, request, env);
   }
 
@@ -706,16 +727,28 @@ async function handleSolicitarLink(request, env) {
   const emailHash = await sha256Hex(email);
   const claveIp = 'rl:auth:ip:' + ip;
   const claveEmail = 'rl:auth:email:' + emailHash;
+  const claveIntentos = 'rl:auth:intentos:ip:' + ip;
 
   const limiteIp = await leerLimite(env, claveIp, VENTANA_AUTH_MS);
   const limiteEmail = await leerLimite(env, claveEmail, VENTANA_AUTH_MS);
-  const limitado = (limiteIp && limiteIp.count >= LIMITE_AUTH_IP) || (limiteEmail && limiteEmail.count >= LIMITE_AUTH_EMAIL);
+  const limiteIntentos = await leerLimite(env, claveIntentos, VENTANA_AUTH_MS);
+  const bloqueados = [[limiteIp, LIMITE_AUTH_IP], [limiteEmail, LIMITE_AUTH_EMAIL], [limiteIntentos, LIMITE_AUTH_INTENTOS_IP]]
+    .filter(([limite, max]) => limite && limite.count >= max).map(([limite]) => limite);
+  const limitado = bloqueados.length > 0;
 
-  const mensajeGenerico = { ok: true, mensaje: 'Si el correo es válido, te llegará un link para entrar en unos minutos.' };
+  const mensajeGenerico = { ok: true, enviado: true, mensaje: 'El proveedor aceptó el envío. Revisa tu correo y la carpeta de spam.' };
 
   if (limitado) {
     console.log('auth_rate_limit_exceeded');
-    return json(mensajeGenerico, 200, request, env);
+    const segundos = Math.max(1, Math.ceil((Math.max(...bloqueados.map(limite => limite.resetAt)) - Date.now()) / 1000));
+    const response = json({ ok: false, error: 'Has pedido varios enlaces. Espera antes de intentarlo de nuevo.', reintentarEn: segundos }, 429, request, env);
+    response.headers.set('Retry-After', String(segundos));
+    return response;
+  }
+
+  if(limiteIntentos) {
+    limiteIntentos.count += 1;
+    await guardarLimite(env, claveIntentos, limiteIntentos);
   }
 
   const token = generarTokenAleatorio();
@@ -735,16 +768,24 @@ async function handleSolicitarLink(request, env) {
   // `wrangler dev` local, a donde sea que estés probando el frontend).
   const link = appBaseURL(request, env) + '?login_token=' + token;
 
-  const envio = await enviarMagicLinkEmail(env, email, link);
+  const envio = await enviarMagicLinkEmail(env, email, link, local);
+  if(!envio.ok && !(envio.sinConfigurar && local && !env.RESEND_API_KEY)) {
+    if(envio.rechazado) {
+      try { await env.DB.prepare('DELETE FROM magic_links WHERE token_hash = ? AND used_at IS NULL').bind(tokenHash).run(); }
+      catch { console.error('email_rejected_token_cleanup_failed'); }
+    }
+    return fail('No pudimos enviar el enlace de acceso. Inténtalo más tarde; el servicio de correo necesita atención.', 503, request, env);
+  }
 
   if (limiteIp) { limiteIp.count += 1; await guardarLimite(env, claveIp, limiteIp); }
   if (limiteEmail) { limiteEmail.count += 1; await guardarLimite(env, claveEmail, limiteEmail); }
 
   const resp = { ...mensajeGenerico };
-  if (envio.sinConfigurar && desarrolloLocal(request, env)) {
+  if (envio.sinConfigurar && local) {
     // Solo ocurre cuando falta RESEND_API_KEY (siempre el caso en local sin configurarla).
     // Nunca se agrega este campo si el secret está puesto, así que no puede colarse en producción.
     resp.dev_link = link;
+    resp.enviado = false;
   }
   return json(resp, 200, request, env);
 }
@@ -814,7 +855,7 @@ async function handleConfig(request, env) {
     {
       ok: true,
       disponible: {
-        correo: cuentaConfigurada && !!(env.RESEND_API_KEY && env.RESEND_FROM),
+        correo: cuentaConfigurada && !!(env.RESEND_API_KEY && remitenteCorreo(env)),
         generacionIA: cuentaConfigurada && !!(env.ANTHROPIC_API_KEY && env.TURNSTILE_SECRET_KEY),
         pagos: {
           mensual: pagosConfigurados && !!env.STRIPE_PRICE_MENSUAL,
