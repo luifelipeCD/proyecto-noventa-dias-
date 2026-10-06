@@ -13,7 +13,7 @@ cuidando la masa muscular.
 - **Genera recetas con IA** a partir de tus ingredientes favoritos (backend seguro en Cloudflare Worker — ver [`README-worker.md`](README-worker.md)).
 - **Sigue tu avance**: calendario de 90 días, peso semanal y check-in de recálculo cada 2 semanas.
 - **Movimiento diario**: pasos recomendados según tu actividad + rutina de fuerza con peso corporal.
-- Todo se guarda en tu navegador (`localStorage`). Sin cuenta y sin servidor para el sitio.
+- El progreso se guarda en el navegador; desde Tu cuenta puedes guardar y cargar una copia privada en Cloudflare D1. El guardado en la cuenta es manual.
 
 ## Estructura
 
@@ -39,3 +39,11 @@ completa y funciona sin conexión una vez abierto).
 
 Material educativo. No reemplaza la consulta con un médico o nutricionista.
 Los cálculos de calorías y proteína son estimaciones generales.
+
+Las 52 fotografías de entrenamiento están incluidas en `assets/exercises/`, con la licencia del catálogo. Se guardan en la caché de la PWA para uso sin conexión después de la primera carga. Cada tarjeta incluye miniatura, dos posiciones ampliables, equipo y series.
+
+Se incluyen 15 fotos ilustrativas de comida en `assets/recipes/`, con sus créditos en `sources.json` y en el recetario.
+
+## Comprobar y preparar la publicación
+
+Ejecuta `npm test` (Node 22 o posterior). La plantilla [docs/github-checks.yml](docs/github-checks.yml) permite activar comprobaciones automáticas al copiarla a `.github/workflows/checks.yml` con una conexión autorizada para gestionar workflows. La revisión de producto, los pendientes de suscripción y los pasos de publicación están en [docs/REVISION-Y-PUBLICACION.md](docs/REVISION-Y-PUBLICACION.md). Subir el código no despliega el Worker ni activa cobros reales.

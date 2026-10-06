@@ -91,10 +91,30 @@ function originPermitido(request, env) {
   return !!origin && allowedOrigins(env).includes(origin);
 }
 
+// Conservar la carpeta de GitHub Pages al regresar del correo o de Stripe.
+function appBaseURL(request, env) {
+  const origin = request.headers.get('Origin');
+  const base = allowedOrigins(env).includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  if (env.APP_URL) {
+    const configured = new URL(env.APP_URL);
+    if (configured.origin === base) {
+      configured.search = '';
+      configured.hash = '';
+      return configured.href.replace(/\/?$/, '/');
+    }
+  }
+  return base + (base === ALLOWED_ORIGINS[0] ? '/proyecto-noventa-dias-/' : '/');
+}
+
+function desarrolloLocal(request, env) {
+  const origin = request.headers.get('Origin');
+  return env.DEV_MODE === 'true' && /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin || '');
+}
+
 function corsHeaders(request, env) {
   const origin = request.headers.get('Origin') || '';
   const headers = {
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Access-Control-Max-Age': '86400',
     Vary: 'Origin',
@@ -582,7 +602,7 @@ async function usuarioDesdeRequest(request, env) {
 // funcionando (se registra en los logs) — mismo criterio que TURNSTILE_SECRET_KEY.
 async function enviarCorreo(env, email, subject, html, { linkParaLogs } = {}) {
   if (!env.RESEND_API_KEY) {
-    console.error('Resend: falta RESEND_API_KEY — correo NO enviado.', linkParaLogs ? 'Link (solo pruebas locales): ' + linkParaLogs : subject);
+    console.error('Resend: falta RESEND_API_KEY — correo NO enviado.');
     return { ok: false, sinConfigurar: true };
   }
   const from = env.RESEND_FROM || 'Transforma tu Cuerpo <onboarding@resend.dev>';
@@ -638,6 +658,9 @@ function estadoSuscripcion(user) {
 // no limitada, para no delatar por temporización/respuesta qué correos están registrados.
 async function handleSolicitarLink(request, env) {
   if (!env.DB) return fail('El Worker no tiene configurada la base de datos (DB).', 500, request, env);
+  if (!env.RESEND_API_KEY && !desarrolloLocal(request, env)) {
+    return fail('El acceso por correo todavía no está disponible. Intenta más tarde.', 503, request, env);
+  }
 
   const contentLength = Number(request.headers.get('Content-Length') || 0);
   if (contentLength > MAX_BODY_BYTES) return fail('El cuerpo de la petición es demasiado grande.', 413, request, env);
@@ -683,9 +706,7 @@ async function handleSolicitarLink(request, env) {
 
   // El link apunta al origen que hizo la petición (el sitio real en producción; en
   // `wrangler dev` local, a donde sea que estés probando el frontend).
-  const origin = request.headers.get('Origin');
-  const base = allowedOrigins(env).includes(origin) ? origin : ALLOWED_ORIGINS[0];
-  const link = base + '/?login_token=' + token;
+  const link = appBaseURL(request, env) + '?login_token=' + token;
 
   const envio = await enviarMagicLinkEmail(env, email, link);
 
@@ -693,7 +714,7 @@ async function handleSolicitarLink(request, env) {
   if (limiteEmail) { limiteEmail.count += 1; await guardarLimite(env, claveEmail, limiteEmail); }
 
   const resp = { ...mensajeGenerico };
-  if (envio.sinConfigurar) {
+  if (envio.sinConfigurar && desarrolloLocal(request, env)) {
     // Solo ocurre cuando falta RESEND_API_KEY (siempre el caso en local sin configurarla).
     // Nunca se agrega este campo si el secret está puesto, así que no puede colarse en producción.
     resp.dev_link = link;
@@ -774,6 +795,70 @@ async function handleMe(request, env) {
   if (!user) return fail('No autenticado.', 401, request, env);
 
   return json({ ok: true, email: user.email, subscription: estadoSuscripcion(user) }, 200, request, env);
+}
+
+// Copia privada por cuenta; la revisión evita sobrescribir cambios de otro dispositivo.
+const PROGRESS_KEYS = ['rp90_dias','rp90_pesos','rp90_plan_dias','rp90_plan_start','rp90_comidas','rp90_dias_terminados','rp90_plan','rp90_datos','rp90_checkins','rp90_mov','rp90_pasos_cal','rp90_fav_ing'];
+function progresoValido(data) {
+  const object = v => v !== null && typeof v === 'object' && !Array.isArray(v);
+  const number = v => typeof v === 'number' && Number.isFinite(v) && v >= 0;
+  const date = v => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v);
+  const macros = v => object(v) && ['calorias','proteina','carbos','grasa'].every(k => number(v[k]));
+  const meals = v => object(v) && Object.entries(v).every(([k, value]) => ['desayuno','almuerzo','cena','merienda'].includes(k) && typeof value === 'boolean');
+  if (!object(data) || Object.keys(data).some(k => !PROGRESS_KEYS.includes(k))) return false;
+  const array = (v, check, max = 1000) => Array.isArray(v) && v.length <= max && v.every(check);
+  const validators = {
+    rp90_dias: v => array(v, n => Number.isInteger(n) && n >= 1 && n <= 90, 90),
+    rp90_pesos: v => array(v, p => object(p) && Number.isInteger(p.semana) && p.semana >= 1 && p.semana <= 13 && number(p.peso), 13),
+    rp90_plan_dias: v => v === null || array(v, d => object(d) && ['desayuno','almuerzo','cena','merienda'].every(k => Number.isInteger(d[k]) && d[k] > 0), 90),
+    rp90_plan_start: v => v === null || date(v),
+    rp90_comidas: v => object(v) && Object.entries(v).every(([k, m]) => date(k) && meals(m)),
+    rp90_dias_terminados: v => object(v) && Object.entries(v).every(([k, d]) => date(k) && object(d) && macros(d.objetivo) && meals(d.meals) && ['kcal','proteina','carbos','grasa'].every(n => number(d[n]))),
+    rp90_plan: v => v === null || macros(v),
+    rp90_datos: v => v === null || (object(v) && ['peso','altura','edad','actividad'].every(k => typeof v[k] === 'number' && Number.isFinite(v[k])) && ['hombre','mujer'].includes(v.genero)),
+    rp90_checkins: v => array(v, c => object(c) && date(c.fecha) && number(c.peso) && macros(c.plan)),
+    rp90_mov: v => array(v, date, 5000),
+    rp90_pasos_cal: v => v === '' || (number(v) && v <= 100000),
+    rp90_fav_ing: v => array(v, i => typeof i === 'string' && i.length <= 40, 15),
+  };
+  return Object.entries(data).every(([key, value]) => validators[key](value));
+}
+async function handleProgreso(request, env) {
+  if (!env.DB) return fail('Base de datos no configurada.', 503, request, env);
+  const payload = await usuarioDesdeRequest(request, env);
+  if (!payload?.sub) return fail('Inicia sesión.', 401, request, env);
+  try {
+    const user = await env.DB.prepare('SELECT id FROM users WHERE id = ?').bind(payload.sub).first();
+    if (!user) return fail('Inicia sesión.', 401, request, env);
+    if (request.method === 'GET') {
+      const row = await env.DB.prepare('SELECT data, revision FROM user_progress WHERE user_id = ?').bind(payload.sub).first();
+      return json({ ok: true, data: row ? JSON.parse(row.data) : null, revision: row?.revision || 0 }, 200, request, env);
+    }
+    const raw = await request.text();
+    if (new TextEncoder().encode(raw).length > 500000) return fail('El progreso supera el tamaño permitido.', 413, request, env);
+    let body;
+    try { body = JSON.parse(raw); } catch { return fail('Datos inválidos.', 400, request, env); }
+    if (!body || !progresoValido(body.data) || !Number.isSafeInteger(body.revision) || body.revision < 0) return fail('La copia contiene datos inválidos. Revisa tu progreso antes de guardar.', 400, request, env);
+    const statement = body.revision === 0
+      ? env.DB.prepare('INSERT INTO user_progress (user_id, data, revision) VALUES (?, ?, 1) ON CONFLICT(user_id) DO NOTHING').bind(payload.sub, JSON.stringify(body.data))
+      : env.DB.prepare('UPDATE user_progress SET data = ?, revision = revision + 1 WHERE user_id = ? AND revision = ?').bind(JSON.stringify(body.data), payload.sub, body.revision);
+    const result = await statement.run();
+    const changes = result.meta.changes;
+    if (!changes) return fail('Hay una copia más reciente. Cárgala antes de guardar.', 409, request, env);
+    return json({ ok: true, revision: body.revision + 1 }, 200, request, env);
+  } catch { return fail('No se pudo guardar o cargar el progreso.', 503, request, env); }
+}
+
+async function handlePortal(request, env) {
+  if (!env.DB || !env.STRIPE_SECRET_KEY) return fail('Pagos todavía no configurados.', 503, request, env);
+  const payload = await usuarioDesdeRequest(request, env);
+  if (!payload?.sub) return fail('Inicia sesión.', 401, request, env);
+  try {
+    const user = await env.DB.prepare('SELECT stripe_customer_id FROM users WHERE id = ?').bind(payload.sub).first();
+    if (!user?.stripe_customer_id) return fail('Todavía no tienes una suscripción para gestionar.', 400, request, env);
+    const session = await stripeRequest(env, 'POST', '/billing_portal/sessions', { customer: user.stripe_customer_id, return_url: appBaseURL(request, env) });
+    return json({ ok: true, url: session.url }, 200, request, env);
+  } catch { return fail('No se pudo abrir la gestión de pagos. Intenta más tarde.', 503, request, env); }
 }
 
 // ============================================================
@@ -871,8 +956,7 @@ async function handleCrearCheckout(request, env) {
     return fail('Ya tienes una suscripción activa.', 400, request, env);
   }
 
-  const origin = request.headers.get('Origin');
-  const base = allowedOrigins(env).includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  const base = appBaseURL(request, env);
 
   try {
     const customerId = await obtenerOCrearCliente(env, user);
@@ -882,8 +966,8 @@ async function handleCrearCheckout(request, env) {
       client_reference_id: String(user.id),
       line_items: [{ price: priceId, quantity: 1 }],
       subscription_data: { trial_period_days: 7, metadata: { user_id: String(user.id) } },
-      success_url: base + '/?checkout=success',
-      cancel_url: base + '/?checkout=cancel',
+      success_url: base + '?checkout=success',
+      cancel_url: base + '?checkout=cancel',
     });
     return json({ ok: true, url: session.url }, 200, request, env);
   } catch (e) {
@@ -957,8 +1041,7 @@ async function handleWebhook(request, env) {
     }
   } catch (e) {
     console.error('D1 webhook_events error', e && e.message);
-    // Si D1 falla no podemos garantizar idempotencia, pero mejor procesar de más que
-    // dejar de actualizar el estado de la suscripción.
+    return new Response('No se pudo registrar el evento. Reintenta.', { status: 503 });
   }
 
   try {
@@ -1020,8 +1103,9 @@ async function handleWebhook(request, env) {
     }
   } catch (e) {
     console.error('Error procesando webhook de Stripe', evento.type, e && e.message);
-    // Devolvemos 200 igual: si el problema es nuestro (no de la firma), preferimos que
-    // Stripe no reintente indefinidamente; queda registrado en los logs para revisarlo.
+    try { await env.DB.prepare('DELETE FROM webhook_events WHERE id = ?').bind(evento.id).run(); }
+    catch { console.error('No se pudo liberar el evento fallido.'); }
+    return new Response('No se pudo actualizar la suscripción. Reintenta.', { status: 503 });
   }
 
   return new Response(JSON.stringify({ received: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
@@ -1054,6 +1138,8 @@ export default {
       return fail('Origen no permitido.', 403, request, env);
     }
 
+    if (url.pathname === '/progreso' && ['GET', 'PUT'].includes(request.method)) return handleProgreso(request, env);
+    if (url.pathname === '/billing/portal' && request.method === 'POST') return handlePortal(request, env);
     if (url.pathname === '/billing/crear-checkout' && request.method === 'POST') {
       return handleCrearCheckout(request, env);
     }

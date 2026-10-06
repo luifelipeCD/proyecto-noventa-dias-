@@ -9,7 +9,7 @@
      declaran por <meta> (los navegadores los ignoran fuera de una cabecera HTTP real), así que no
      se incluyen aquí para no dar una falsa sensación de protección; si se necesita esa protección
      anti-clickjacking habría que servir el sitio desde un host que permita cabeceras propias. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://commons.wikimedia.org https://cdn.jsdelivr.net; connect-src 'self' https://recetario-ia.recetario90.workers.dev; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://commons.wikimedia.org https://upload.wikimedia.org https://thumb.wikimedia.org; connect-src 'self' https://recetario-ia.recetario90.workers.dev; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; form-action 'self'; manifest-src 'self'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Transforma tu Cuerpo en 90 Días</title>
 <meta name="description" content="Calcula tus calorías y tu proteína según tu objetivo —bajar de peso, mantener o ganar músculo—, recibe un menú automático con más de 70 recetas altas en proteína y sigue tu avance durante 90 días. Todo funciona en tu navegador, sin cuenta.">
@@ -822,7 +822,7 @@
   .plan-card.recommended{border-color:var(--primary-line);background:var(--primary-soft);}
 </style>
 <link rel="stylesheet" href="redesign.css">
-<link rel="stylesheet" href="interface.css">
+<link rel="stylesheet" href="interface.css?v=training-photos-1">
 </head>
 <body>
 <!-- BARRA SUPERIOR -->
@@ -880,7 +880,7 @@
 
     <!-- 1 · CALCULADORA -->
     <section class="panel side-panel" data-panel="calculadora" id="panel-calculadora">
-      <div class="plan-shell"><aside class="plan-guide"><span class="eyebrow">HECHO PARA TI</span><h2>El primer paso<br>es conocerte.</h2><p>Unos pocos datos para organizar tu alimentación de los próximos 90 días.</p><ol class="wizard-steps" aria-label="Pasos de configuración"><li data-wizard-indicator="1" class="current"><span>1</span><div>Tu objetivo<small>¿Qué quieres conseguir?</small></div></li><li data-wizard-indicator="2"><span>2</span><div>Sobre ti<small>Tu punto de partida</small></div></li><li data-wizard-indicator="3"><span>3</span><div>Tu ritmo<small>Actividad y preferencias</small></div></li></ol><div class="privacy-note">◈ Tus datos se quedan en este navegador.<br>Sin cuenta. Sin suscripción.</div></aside>
+      <div class="plan-shell"><aside class="plan-guide"><span class="eyebrow">HECHO PARA TI</span><h2>El primer paso<br>es conocerte.</h2><p>Unos pocos datos para organizar tu alimentación de los próximos 90 días.</p><ol class="wizard-steps" aria-label="Pasos de configuración"><li data-wizard-indicator="1" class="current"><span>1</span><div>Tu objetivo<small>¿Qué quieres conseguir?</small></div></li><li data-wizard-indicator="2"><span>2</span><div>Sobre ti<small>Tu punto de partida</small></div></li><li data-wizard-indicator="3"><span>3</span><div>Tu ritmo<small>Actividad y preferencias</small></div></li></ol><div class="privacy-note">◈ Tus datos se guardan en este navegador.<br>Puedes guardar una copia opcional en tu cuenta.</div></aside>
       <div class="plan-workspace"><div id="wizard-editor"><div class="wizard-topline"><span id="wizard-step-label">PASO 1 DE 3</span><span>Tu plan personal</span></div>
       <div class="wizard-page" data-wizard-page="1"><h2>¿Qué te gustaría lograr?</h2><p class="hint">Elige un objetivo. Puedes cambiarlo más adelante.</p>
       <div class="field">
@@ -1098,7 +1098,7 @@
       </div>
 
       <h3>Rutina de gimnasio</h3>
-      <p class="section-sub">Bro split: un grupo muscular grande por día. Sábado y domingo, descanso o cardio suave. Toca un ejercicio para ver la técnica y las calorías estimadas.</p>
+      <p class="section-sub">Un grupo muscular por día, con descanso el fin de semana. Abre cada ejercicio para ver dos posiciones del movimiento, el equipo y las series. Las fotos son una referencia visual.</p>
       <div class="day-tabs" id="move-day-tabs"></div>
       <div id="move-rutina"></div>
 
@@ -1201,7 +1201,7 @@
       </details>
       <details>
         <summary>¿Se guardan mis datos? ¿Es privado?</summary>
-        <p>Todo se calcula y se guarda solo en tu navegador (localStorage). No hay servidor ni cuenta: si abres la página en otro dispositivo o borras los datos del navegador, empiezas de cero.</p>
+        <p>El progreso se guarda en este navegador. Desde Tu cuenta puedes guardar una copia privada y cargarla en otro dispositivo. Guarda tu copia antes de cambiar de equipo o borrar los datos del navegador.</p>
       </details>
     </div>
   </div>
@@ -1973,7 +1973,7 @@ function ingItemHTML(i){
 <script>
 // ============================================================
 // Lógica: calculadora + menú automático + recetario + mi día + tracker 90 días.
-// Todo corre en el navegador del usuario, sin enviar datos a ningún servidor.
+// El progreso se guarda localmente; la cuenta permite guardar una copia privada opcional.
 // ============================================================
 
 const LS = {
@@ -2130,6 +2130,12 @@ function authCuentaHTML(){
     </div>
     <dl class="auth-facts">${filas}</dl>
     ${planes}
+    <button class="btn-secondary" type="button" onclick="gestionarSuscripcion()">Gestionar pagos o cancelar suscripción</button>
+    <p class="hint">Tu progreso se guarda en este navegador. Puedes guardar una copia privada en tu cuenta y cargarla en otra computadora o celular. La copia no se actualiza automáticamente.</p>
+    <div class="auth-actions">
+      <button class="btn-secondary" type="button" onclick="copiaProgreso('guardar')">Guardar copia en mi cuenta</button>
+      <button class="btn-secondary" type="button" onclick="copiaProgreso('cargar')">Cargar copia de mi cuenta</button>
+    </div>
     <div class="auth-actions">
       <button class="btn-secondary" type="button" onclick="cerrarSesion()">Cerrar sesión</button>
       <button class="btn-primary" type="button" onclick="cerrarAuth()">Volver a mi espacio</button>
@@ -2347,6 +2353,46 @@ async function iniciarCheckout(plan){
   }catch(e){
     toast('No se pudo contactar el servicio de pago. Revisa tu conexión.');
   }
+}
+
+async function cuentaRequest(path, options = {}){
+  if(!sesion) throw new Error('Inicia sesión primero.');
+  const response = await fetch(IA_WORKER_URL + path, { ...options, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + sesion.token } });
+  const result = await response.json();
+  if(!response.ok || !result.ok) throw new Error(result.error || 'No se pudo completar la operación.');
+  return result;
+}
+async function gestionarSuscripcion(){
+  try { const result = await cuentaRequest('/billing/portal', { method: 'POST' }); location.href = result.url; }
+  catch(error){ toast(error.message); }
+}
+let copiaOcupada = false;
+async function copiaProgreso(accion){
+  if(copiaOcupada) return;
+  copiaOcupada = true;
+  const email = sesion?.email;
+  const keys = Object.values(LS).filter(key => key !== LS.sesion);
+  try {
+    const remote = await cuentaRequest('/progreso');
+    if(sesion?.email !== email) throw new Error('La cuenta cambió. Intenta de nuevo.');
+    if(accion === 'guardar'){
+      if(!confirm('Guardar el progreso de este navegador en ' + email + '? Reemplazará la copia anterior de esta cuenta.')) return;
+      const snapshot = Object.fromEntries(keys.filter(key => localStorage.getItem(key) !== null).map(key => [key, lsGet(key, null)]));
+      await cuentaRequest('/progreso', { method: 'PUT', body: JSON.stringify({ data: snapshot, revision: remote.revision }) });
+      toast('Copia guardada en tu cuenta.');
+    } else {
+      if(!remote.data){ toast('Tu cuenta todavía no tiene una copia guardada.'); return; }
+      if(!confirm('Cargar la copia de ' + email + '? Reemplazará el progreso de este navegador.')) return;
+      // Conservar una copia local de seguridad antes de restaurar.
+      localStorage.setItem('rp90_respaldo_antes_de_cargar', JSON.stringify(Object.fromEntries(keys.map(key => [key, localStorage.getItem(key)]))));
+      for(const key of keys){
+        if(Object.prototype.hasOwnProperty.call(remote.data, key)) localStorage.setItem(key, JSON.stringify(remote.data[key]));
+        else localStorage.removeItem(key);
+      }
+      location.reload();
+    }
+  } catch(error){ toast(error.message); }
+  finally { copiaOcupada = false; }
 }
 
 // Si la URL trae ?checkout=success|cancel (vuelta del Checkout de Stripe), limpia la URL
@@ -2791,15 +2837,20 @@ const TIPO_FOTO = {
   nuez:     {file:'MixedNutsInGlassBowl.JPG', artist:'Simon Speed', license:'CC0', page:'https://commons.wikimedia.org/wiki/File:MixedNutsInGlassBowl.JPG'},
   plato:    {file:'A Nigerian balanced diet.jpg', artist:'PhoToria', license:'CC BY-SA 4.0', page:'https://commons.wikimedia.org/wiki/File:A_Nigerian_balanced_diet.jpg'}
 };
+const FOTOS_PLATOS_LOCALES = new Set(["avena", "batido", "carne", "ensalada", "fruta", "huevo", "lacteo", "legumbre", "nuez", "pescado", "plato", "pollo", "sopa", "tofu", "wrap"]);
 function fotoTipoInfo(r){ return TIPO_FOTO[recetaTipoId(r)] || TIPO_FOTO.plato; }
-function fotoTipoURL(info, width){ return WM_FILEPATH + encodeURIComponent(info.file) + '?width=' + (width || 480); }
+function fotoTipoURL(info, width){
+  const tipo = Object.keys(TIPO_FOTO).find(key => TIPO_FOTO[key] === info);
+  if(FOTOS_PLATOS_LOCALES.has(tipo)) return 'assets/recipes/' + tipo + '.jpg';
+  return WM_FILEPATH + encodeURIComponent(info.file) + '?width=' + (width || 480);
+}
 
 // Foto representativa + respaldo automático al glifo SVG si la imagen no carga (sin internet, CDN bloqueado, etc.)
 function recetaMediaHTML(r){
   const info = fotoTipoInfo(r);
   const url = fotoTipoURL(info);
   return `<div class="rc-media">
-    <img class="rc-photo-img" src="${url}" alt="${esc(r.nombre)}" loading="lazy" decoding="async"
+    <img class="rc-photo-img" src="${url}" alt="Foto ilustrativa del tipo de plato: ${esc(r.nombre)}" loading="lazy" decoding="async"
          onerror="this.parentElement.classList.add('foto-error');">
     <div class="rc-thumb-fallback">${recetaThumb(r)}</div>
     <span class="rc-photo-tag">Foto ilustrativa</span>
@@ -3546,7 +3597,10 @@ function renderPesos(){
 // ============================================================
 const DIAS_ENTRE_CHECKINS = 14;
 
-function hoyISO(){ return new Date().toISOString().slice(0,10); }
+function fechaLocalISO(fecha){
+  return `${fecha.getFullYear()}-${String(fecha.getMonth()+1).padStart(2,'0')}-${String(fecha.getDate()).padStart(2,'0')}`;
+}
+function hoyISO(){ return fechaLocalISO(new Date()); }
 function diasEntre(a, b){
   return Math.round((new Date(b+'T00:00:00') - new Date(a+'T00:00:00')) / 86400000);
 }
@@ -3840,12 +3894,12 @@ const FIG = {
 };
 
 // ============================================================
-// Fotos reales de cada ejercicio (postura correcta: 0 = inicio, 1 = fin).
+// Fotografías de dos posiciones de cada ejercicio; el orden del catálogo no indica inicio o fin.
 // Fuente: free-exercise-db (github.com/yuhonas/free-exercise-db), licencia libre,
-// servida por el CDN de jsDelivr. Si una imagen no carga en el navegador,
+// incluida en assets/exercises. Si una imagen no carga en el navegador,
 // la tarjeta cae automáticamente al diagrama SVG de FIG (ver exFotoFalla).
 // ============================================================
-const EX_FOTO_BASE = 'https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@main/exercises/';
+const EX_FOTO_BASE = 'assets/exercises/';
 const EX_FOTOS = {
   bench:      ["Barbell_Bench_Press_-_Medium_Grip/0.jpg", "Barbell_Bench_Press_-_Medium_Grip/1.jpg"],  // Barbell Bench Press - Medium Grip
   incline:    ["Incline_Dumbbell_Press/0.jpg", "Incline_Dumbbell_Press/1.jpg"],  // Incline Dumbbell Press
@@ -3874,6 +3928,7 @@ const EX_FOTOS = {
   pushdown:   ["Triceps_Pushdown/0.jpg", "Triceps_Pushdown/1.jpg"],  // Triceps Pushdown
   conccurl:   ["Concentration_Curls/0.jpg", "Concentration_Curls/1.jpg"],  // Concentration Curls
 };
+const EX_EQUIPO = {"bench": "Barra y banco plano", "incline": "Mancuernas y banco inclinado", "fly": "Mancuernas y banco plano", "dips": "Paralelas", "pushup": "Peso corporal", "pullup": "Barra de dominadas", "bbrow": "Barra", "cablerow": "Polea", "deadlift": "Barra", "machrow": "Máquina", "squat": "Barra y soporte", "legpress": "Máquina", "lunge": "Mancuernas", "legcurl": "Máquina", "legext": "Máquina", "calf": "Máquina", "ohp": "Barra", "latraise": "Mancuernas", "frontraise": "Mancuernas", "reardelt": "Mancuernas y banco inclinado", "arnold": "Mancuernas y banco", "bbcurl": "Barra", "hammer": "Mancuernas", "skull": "Barra Z y banco", "pushdown": "Polea", "conccurl": "Mancuerna y banco"};
 // Índice inverso valor-de-FIG -> clave, para elegir las fotos por ejercicio sin tocar RUTINA_SEMANAL.
 const FIG_CLAVE = new Map(Object.entries(FIG).map(([k, v]) => [v, k]));
 function exFotosDe(e){
@@ -3887,30 +3942,30 @@ const RUTINA_SEMANAL = {
   1: { grupo: 'Pecho', ejercicios: [
     { nombre: 'Press de banca plano', musculo: 'Pectoral mayor', series: '4 × 8–10', pesado: true, fig: FIG.bench },
     { nombre: 'Press inclinado con mancuerna', musculo: 'Pectoral superior', series: '4 × 10–12', fig: FIG.incline },
-    { nombre: 'Aperturas con mancuerna o cable', musculo: 'Pectoral (apertura)', series: '3 × 12–15', fig: FIG.fly },
-    { nombre: 'Fondos en paralelas (o press declinado)', musculo: 'Pectoral inferior y tríceps', series: '3 × 8–12', fig: FIG.dips },
+    { nombre: 'Aperturas con mancuernas', musculo: 'Pectoral (apertura)', series: '3 × 12–15', fig: FIG.fly },
+    { nombre: 'Fondos en paralelas', musculo: 'Pectoral inferior y tríceps', series: '3 × 8–12', fig: FIG.dips },
     { nombre: 'Flexiones', musculo: 'Pectoral y core', series: '3 × 12–20', fig: FIG.pushup },
   ]},
   2: { grupo: 'Espalda', ejercicios: [
-    { nombre: 'Dominadas o jalón al pecho', musculo: 'Dorsal ancho', series: '4 × 8–12', fig: FIG.pullup },
+    { nombre: 'Dominadas', musculo: 'Dorsal ancho', series: '4 × 8–12', fig: FIG.pullup },
     { nombre: 'Remo con barra', musculo: 'Dorsal y romboides', series: '4 × 8–10', fig: FIG.bbrow },
     { nombre: 'Remo sentado en polea', musculo: 'Dorsal medio', series: '3 × 10–12', fig: FIG.cablerow },
     { nombre: 'Peso muerto', musculo: 'Espalda baja, glúteo y femoral', series: '4 × 5–8', pesado: true, fig: FIG.deadlift },
     { nombre: 'Remo en máquina', musculo: 'Dorsal y trapecio', series: '3 × 10–12', fig: FIG.machrow },
   ]},
   3: { grupo: 'Pierna', ejercicios: [
-    { nombre: 'Sentadilla', musculo: 'Cuádriceps y glúteo', series: '4 × 8–10', pesado: true, fig: FIG.squat },
+    { nombre: 'Sentadilla con barra', musculo: 'Cuádriceps y glúteo', series: '4 × 8–10', pesado: true, fig: FIG.squat },
     { nombre: 'Prensa de piernas', musculo: 'Cuádriceps y glúteo', series: '4 × 10–12', fig: FIG.legpress },
-    { nombre: 'Zancadas', musculo: 'Cuádriceps y glúteo', series: '3 × 10–12 / pierna', fig: FIG.lunge },
-    { nombre: 'Curl femoral', musculo: 'Isquiotibiales', series: '3 × 12–15', fig: FIG.legcurl },
+    { nombre: 'Zancadas con mancuernas', musculo: 'Cuádriceps y glúteo', series: '3 × 10–12 / pierna', fig: FIG.lunge },
+    { nombre: 'Curl femoral acostado', musculo: 'Isquiotibiales', series: '3 × 12–15', fig: FIG.legcurl },
     { nombre: 'Extensión de cuádriceps', musculo: 'Cuádriceps', series: '3 × 12–15', fig: FIG.legext },
     { nombre: 'Elevación de talones (gemelos)', musculo: 'Gastrocnemio y sóleo', series: '4 × 15–20', fig: FIG.calf },
   ]},
   4: { grupo: 'Hombro', ejercicios: [
-    { nombre: 'Press militar', musculo: 'Deltoides (todo)', series: '4 × 8–10', fig: FIG.ohp },
+    { nombre: 'Press militar con barra', musculo: 'Deltoides (todo)', series: '4 × 8–10', fig: FIG.ohp },
     { nombre: 'Elevaciones laterales', musculo: 'Deltoides lateral', series: '4 × 12–15', fig: FIG.latraise },
     { nombre: 'Elevaciones frontales', musculo: 'Deltoides anterior', series: '3 × 12–15', fig: FIG.frontraise },
-    { nombre: 'Pájaros (elevación posterior)', musculo: 'Deltoides posterior', series: '3 × 15–20', fig: FIG.reardelt },
+    { nombre: 'Aperturas posteriores en banco inclinado', musculo: 'Deltoides posterior', series: '3 × 15–20', fig: FIG.reardelt },
     { nombre: 'Press Arnold', musculo: 'Deltoides (todo)', series: '3 × 10–12', fig: FIG.arnold },
   ]},
   5: { grupo: 'Brazo', ejercicios: [
@@ -3961,15 +4016,15 @@ function renderMovimiento(){
   const cntEl = document.getElementById('move-count');
   if(cntEl){
     const semana = hechos.filter(dd => { const n = diasEntre(dd, hoy); return n >= 0 && n < 7; }).length;
-    cntEl.innerHTML = `<b>${hechos.length}</b> sesión${hechos.length === 1 ? '' : 'es'} en total · <b>${semana}</b> en los últimos 7 días · meta 5 por semana`;
+    cntEl.innerHTML = `<b>${hechos.length}</b> ${hechos.length === 1 ? 'sesión' : 'sesiones'} en total · <b>${semana}</b> en los últimos 7 días · meta 5 por semana`;
   }
   const grid = document.getElementById('move-grid');
   if(grid){
     let html = '';
     for(let i = 13; i >= 0; i--){
       const dt = new Date(); dt.setDate(dt.getDate() - i);
-      const iso = dt.toISOString().slice(0, 10);
-      html += `<div class="cal-day ${hechos.includes(iso) ? 'done' : ''}" onclick="toggleRutina('${iso}')" title="${iso}">${dt.getDate()}</div>`;
+      const iso = fechaLocalISO(dt);
+      html += `<button type="button" class="cal-day ${hechos.includes(iso) ? 'done' : ''}" onclick="toggleRutina('${iso}')" aria-label="Actividad del ${iso}" aria-pressed="${hechos.includes(iso)}" title="${iso}">${dt.getDate()}</button>`;
     }
     grid.innerHTML = html;
   }
@@ -4006,7 +4061,7 @@ function renderRutinaMov(){
     if(d === diaMovActivo) cls.push('active');
     if(r.descanso) cls.push('rest');
     return `<button type="button" class="${cls.join(' ')}" onclick="setDiaMov(${d})" `
-      + `title="${DIAS_NOMBRE[d]}${d === hoy ? ' (hoy)' : ''}">${DIAS_CORTO[d]}${d === hoy ? '<span aria-hidden="true"> •</span>' : ''}</button>`;
+      + `aria-pressed="${d === diaMovActivo}" aria-label="${DIAS_NOMBRE[d]}: ${r.grupo}" title="${DIAS_NOMBRE[d]}${d === hoy ? ' (hoy)' : ''}">${DIAS_CORTO[d]}${d === hoy ? '<span aria-hidden="true"> •</span>' : ''}</button>`;
   }).join('');
 
   const r = RUTINA_SEMANAL[diaMovActivo];
@@ -4021,29 +4076,31 @@ function renderRutinaMov(){
   }
 
   const peso = pesoUsuario();
-  let html = cab + ` — ${r.grupo}<small>${r.ejercicios.length} ejercicios · 4x10–12 orientativo</small></div>`;
+  let html = cab + ` — ${r.grupo}<small>${r.ejercicios.length} ejercicios · Series y repeticiones en cada tarjeta</small></div>`;
   if(peso == null){
     html += '<div class="move-need-weight">Calcula tu plan en la calculadora (paso 1) para ver las calorías estimadas de cada ejercicio.</div>';
   }
   let total = 0;
-  r.ejercicios.forEach(e => {
+  r.ejercicios.forEach((e, indice) => {
     const kc = kcalEjercicio(e.pesado);
     if(kc != null) total += kc;
     const fotos = exFotosDe(e);
+    const equipo = EX_EQUIPO[FIG_CLAVE.get(e.fig)] || 'Gimnasio';
     const ilustracion = fotos
       ? `<div class="ex-illus">
           <div class="ex-photos">
-            <figure><img src="${fotos[0]}" alt="${e.nombre}: posición inicial" loading="lazy" onerror="exFotoFalla(this)"><figcaption>Inicio</figcaption></figure>
-            <figure><img src="${fotos[1]}" alt="${e.nombre}: posición final" loading="lazy" onerror="exFotoFalla(this)"><figcaption>Fin</figcaption></figure>
+            <figure><a href="${fotos[0]}" target="_blank" rel="noopener" aria-label="Ampliar ${e.nombre}, posición A"><img src="${fotos[0]}" alt="${e.nombre}: posición A" loading="lazy" decoding="async" onerror="exFotoFalla(this)"></a><figcaption>Posición A</figcaption></figure>
+            <figure><a href="${fotos[1]}" target="_blank" rel="noopener" aria-label="Ampliar ${e.nombre}, posición B"><img src="${fotos[1]}" alt="${e.nombre}: posición B" loading="lazy" decoding="async" onerror="exFotoFalla(this)"></a><figcaption>Posición B</figcaption></figure>
           </div>
           <div class="ex-fig-wrap" hidden>${e.fig}</div>
         </div>`
       : e.fig;
-    html += `<details class="ex-card">
-      <summary><span class="ex-sum-name">${e.nombre}</span><span class="ex-sum-series">${e.series}</span></summary>
+    html += `<details class="ex-card" ${indice === 0 ? 'open' : ''}>
+      <summary>${fotos ? `<img class="ex-thumb" src="${fotos[0]}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true">` : ''}<span class="ex-sum-copy"><span class="ex-sum-name">${e.nombre}</span><span class="ex-sum-series">${e.series} <span aria-hidden="true">·</span> ${equipo}</span></span></summary>
       <div class="ex-body">
         ${ilustracion}
-        <div class="ex-meta"><b>Músculo principal:</b> ${e.musculo}<br><b>Series × repeticiones:</b> ${e.series}</div>
+        <p class="ex-photo-hint">Dos posiciones del movimiento. Toca una foto para ampliarla.</p>
+        <div class="ex-meta"><b>Equipo:</b> ${equipo}<br><b>Músculo principal:</b> ${e.musculo}<br><b>Series × repeticiones:</b> ${e.series}</div>
         ${kc != null ? `<div class="ex-kcal"><span class="n">≈ ${kc} kcal</span><span class="aprox">Aproximado, varía según intensidad, descansos y técnica.</span></div>` : ''}
       </div>
     </details>`;
@@ -4051,6 +4108,7 @@ function renderRutinaMov(){
   if(peso != null){
     html += `<div class="day-total"><span>Total aproximado de la rutina</span><span class="n">≈ ${total} kcal</span></div>`;
   }
+  html += '<p class="exercise-credit">Fotos: <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener">Free Exercise DB</a>.</p>';
   cont.innerHTML = html;
 }
 

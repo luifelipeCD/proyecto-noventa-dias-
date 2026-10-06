@@ -48,6 +48,7 @@ database_id = "e1fb6282-6a08-4744-bc6d-2e4a59f32c3b"
 
 # --- VARIABLES (no secretas) ---
 [vars]
+APP_URL = "https://luifelipecd.github.io/proyecto-noventa-dias-/"
 STRIPE_PRICE_MENSUAL = ""
 STRIPE_PRICE_ANUAL = ""
 # RESEND_FROM = "Transforma tu Cuerpo <hola@tudominio.com>"
