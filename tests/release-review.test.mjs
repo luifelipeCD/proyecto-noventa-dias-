@@ -21,7 +21,7 @@ test('la solicitud de IA incluye la sesión y escapa los errores recibidos', asy
   let sent;
   const scope = {
     document: { getElementById: id => elements[id] }, favIng: ['tofu'], dieta: 'vegana',
-    IA_WORKER_URL: 'https://example.com', sesion: { token: 'test-session' }, tienePremium: () => true,
+    APP_GRATUITA: false, IA_WORKER_URL: 'https://example.com', sesion: { token: 'test-session' }, tienePremium: () => true,
     disponibilidad: { generacionIA: true }, disponibilidadError: false,
     window: { turnstileToken: 'test-captcha' },
     esc: s => String(s).replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
@@ -79,4 +79,29 @@ test('las claves sueltas no anuncian servicios disponibles sin sus dependencias'
   env.DB = {}; env.SESSION_SECRET = 'test';
   data = await (await worker.default.fetch(request, env)).json();
   assert.deepEqual(data.disponible, { correo: false, generacionIA: false, pagos: { mensual: false, anual: false } });
+});
+
+test('modo gratuito abre menú, progreso y rutina sin sesión ni red y mantiene IA desactivada', async () => {
+  const nodes = {};
+  const ids = ['midia', 'progreso', 'movimiento', 'ia'];
+  for(const id of ids){ nodes['content-' + id] = { hidden: true }; nodes['gate-' + id] = { hidden: false }; }
+  nodes['auth-area'] = { innerHTML: '', classList: { remove() {} } };
+  nodes['trial-banner'] = { hidden: false };
+  const scope = { APP_GRATUITA: true, sesion: { token: 'old-session' }, tienePremium: () => false,
+    document: { getElementById: id => nodes[id] },
+    fetch: () => { throw new Error('No debe usar el servidor'); } };
+  vm.runInNewContext(slice('const GATES_PREMIUM =', '// Banner de'), scope);
+  scope.aplicarGatingPremium();
+  for(const id of ids){ assert.equal(nodes['content-' + id].hidden, id === 'ia'); assert.equal(nodes['gate-' + id].hidden, true); }
+  vm.runInNewContext(slice('function renderAuthArea(){', '// Columna lateral lila'), scope);
+  scope.renderAuthArea();
+  assert.ok(nodes['auth-area'].innerHTML.includes('Gratis'));
+  assert.ok(!nodes['auth-area'].innerHTML.includes('button'));
+  vm.runInNewContext(slice('function abrirAuth(){', 'function cerrarAuth(){'), scope);
+  scope.abrirAuth();
+  vm.runInNewContext(slice('async function iniciarCheckout(plan){', 'async function cuentaRequest('), scope);
+  await scope.iniciarCheckout('mensual');
+  const start = html.indexOf('async function generarRecetaIA(){');
+  vm.runInNewContext(html.slice(start, html.indexOf('\n}', start) + 2), scope);
+  await scope.generarRecetaIA();
 });

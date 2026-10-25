@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@700;800&display=swap" rel="stylesheet">
 <!-- Cloudflare Turnstile (captcha invisible) para el generador de recetas con IA -->
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<!-- Generación remota con IA pausada durante la versión gratuita local. -->
 <script src="assets/recipes/catalog.js"></script>
 <script>
   // El widget entrega el token aquí (se define antes de nada por si Turnstile carga temprano).
@@ -1037,10 +1037,10 @@
 
     <!-- RECETARIO: referencia de recetas, ya no es una pestaña independiente (ver setTab) -->
     <section class="panel main-panel" data-panel="recetario" id="panel-recetario">
-      <div class="recipe-toolbar"><div><h2>Ideas que dan ganas.</h2><p class="hint">72 recetas para explorar. Tu menú personal está en Comidas.</p></div><button class="btn-secondary" onclick="toggleRecipeAI()" id="ai-toggle" aria-expanded="false" aria-controls="ai-details">✦ Crear con IA</button></div>
+      <div class="recipe-toolbar"><div><h2>Ideas que dan ganas.</h2><p class="hint">72 recetas para explorar. Tu menú personal está en Comidas.</p></div><button class="btn-secondary" onclick="toggleRecipeAI()" id="ai-toggle" hidden aria-expanded="false" aria-controls="ai-details">✦ Crear con IA</button></div>
 
       <!-- Generador de recetas con IA -->
-      <details class="ia-disclosure" id="ai-details"><summary>Tu cocina con IA <span>Elige ingredientes y crea una receta</span></summary><div class="ia-box" id="content-ia">
+      <details class="ia-disclosure" id="ai-details" hidden><summary>Tu cocina con IA <span>Elige ingredientes y crea una receta</span></summary><div class="ia-box" id="content-ia">
         <h3>Tus ingredientes favoritos</h3>
         <p class="section-sub">Elige o escribe ingredientes que te gusten y la IA arma una receta alta en proteína.</p>
         <div class="ia-input-row">
@@ -1263,7 +1263,7 @@
       </details>
       <details>
         <summary>¿Se guardan mis datos? ¿Es privado?</summary>
-        <p>Los datos se guardan en este navegador. El acceso con cuenta está pausado temporalmente. No borres los datos del navegador si quieres conservar tu plan; no se trasladan automáticamente a otro dispositivo.</p>
+        <p>Los datos se guardan en este navegador. La app es gratis y no requiere cuenta. No borres los datos del navegador si quieres conservar tu plan; no se trasladan automáticamente a otro dispositivo.</p>
       </details>
     </div>
   </div>
@@ -2089,6 +2089,7 @@ let iaIdSeq = 9000;                // ids para las recetas de IA (fuera del rang
 // CUENTA (login por correo, sin contraseña — mismo Worker que la IA)
 // ============================================================
 // Pausa temporal hasta disponer de un dominio de correo verificado.
+const APP_GRATUITA = true;
 const ACCESO_CORREO_HABILITADO = false;
 let sesion = lsGet(LS.sesion, null);   // { token, email } o null si nadie inició sesión
 let cuenta = null;                     // { email, subscription } — se llena al validar /me
@@ -2110,6 +2111,11 @@ const MAIL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" st
 function renderAuthArea(){
   const cont = document.getElementById('auth-area');
   if(!cont) return;
+  if(APP_GRATUITA){
+    cont.classList.remove('signed-in');
+    cont.innerHTML = '<span class="auth-dot"></span><i class="auth-status-text">Gratis · Guardado local</i>';
+    return;
+  }
   if(sesion){
     const inicial = esc((sesion.email || '?').trim().charAt(0).toUpperCase());
     cont.classList.add('signed-in');
@@ -2236,7 +2242,7 @@ function mostrarFormularioAuth(){
 }
 
 function abrirAuth(){
-  if(!sesion && !ACCESO_CORREO_HABILITADO) return;
+  if(APP_GRATUITA || (!sesion && !ACCESO_CORREO_HABILITADO)) return;
   const body = document.getElementById('auth-modal-body');
   if(sesion){
     body.innerHTML = authCuentaHTML();
@@ -2252,7 +2258,7 @@ function cerrarAuth(){
 }
 
 async function solicitarLink(){
-  if(!ACCESO_CORREO_HABILITADO) return;
+  if(APP_GRATUITA || !ACCESO_CORREO_HABILITADO) return;
   const input = document.getElementById('auth-email');
   const btn = document.getElementById('auth-enviar');
   const estado = document.getElementById('auth-estado');
@@ -2514,9 +2520,10 @@ function aplicarGatingPremium(){
     const contEl = document.getElementById(cont);
     const gateEl = document.getElementById(gate);
     if(!contEl || !gateEl) return;
-    contEl.hidden = !premium;
-    gateEl.hidden = premium;
-    if(!premium) gateEl.innerHTML = premiumGateHTML(desc);
+    const disponible = APP_GRATUITA ? cont !== 'content-ia' : premium;
+    contEl.hidden = !disponible;
+    gateEl.hidden = APP_GRATUITA || disponible;
+    if(!APP_GRATUITA && !disponible) gateEl.innerHTML = premiumGateHTML(desc);
   });
 }
 
@@ -2524,6 +2531,7 @@ function aplicarGatingPremium(){
 function renderTrialBanner(){
   const el = document.getElementById('trial-banner');
   if(!el) return;
+  if(APP_GRATUITA){ el.hidden = true; return; }
   const sub = cuenta && cuenta.subscription;
   const enPrueba = sub && String(sub.status).toLowerCase() === 'trialing' && sub.trial_end;
   const msRestantes = enPrueba ? sub.trial_end - Date.now() : Infinity;
@@ -2540,6 +2548,7 @@ function renderTrialBanner(){
 
 // Crea la sesión de Checkout de Stripe y redirige (hosted Checkout: no hace falta Stripe.js).
 async function iniciarCheckout(plan){
+  if(APP_GRATUITA) return;
   if(!sesion){ abrirAuth(); return; }
   toast('Conectando con el pago…');
   try{
@@ -3204,6 +3213,7 @@ function quitarIngrediente(i){
 }
 
 async function generarRecetaIA(){
+  if(APP_GRATUITA) return;
   const estado = document.getElementById('ia-estado');
   const cont = document.getElementById('ia-resultado');
   const btn = document.getElementById('ia-generar');
@@ -4876,14 +4886,19 @@ function endTour(){
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
   setTab('inicio');
-  // Cuenta por correo + suscripción: bloquea de entrada (hasta confirmar premium),
-  // pinta el estado, canjea ?login_token=.../?checkout=... y valida todo contra el Worker.
+  // Modo gratuito: funciones locales disponibles sin cuenta ni comprobaciones remotas.
   aplicarGatingPremium();
   renderAuthArea();
-  verificarLoginDesdeURL().then(() => verificarCheckoutDesdeURL()).then(cargarCuenta);
-  // En paralelo: disponibilidad pública del Worker (correo, IA, planes). No bloquea el
-  // inicio de sesión; cuando responde, refresca el paywall para no prometer de más.
-  cargarDisponibilidad().then(aplicarGatingPremium);
+  if(!APP_GRATUITA){
+    verificarLoginDesdeURL().then(() => verificarCheckoutDesdeURL()).then(cargarCuenta);
+    cargarDisponibilidad().then(aplicarGatingPremium);
+  } else {
+    // No se consumen enlaces de cuenta ni se consulta el servidor en modo local.
+    const params = new URLSearchParams(location.search);
+    params.delete('login_token');
+    params.delete('checkout');
+    history.replaceState(null, '', location.pathname + (params.size ? '?' + params : '') + location.hash);
+  }
   document.getElementById('intro-date').textContent = new Date().toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long'});
   document.getElementById('ai-details').addEventListener('toggle',function(){document.getElementById('ai-toggle').setAttribute('aria-expanded',String(this.open));});
   const focusOrigins = new WeakMap();

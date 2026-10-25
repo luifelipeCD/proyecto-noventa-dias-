@@ -161,7 +161,7 @@ test('el envío deja de esperar cuando el proveedor no responde', async t => {
 function frontendHarness(payload, status=200) {
   const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
   const nodes = { 'auth-email': { value: 'persona@example.com' }, 'auth-enviar': { disabled: false }, 'auth-estado': { innerHTML: '' }, 'auth-modal-body': { innerHTML: '' }, 'auth-disponibilidad': { innerHTML: '' } };
-  const scope = { ACCESO_CORREO_HABILITADO: true, document: { getElementById: id => nodes[id] }, disponibilidad: { correo: true }, disponibilidadError: false,
+  const scope = { APP_GRATUITA: false, ACCESO_CORREO_HABILITADO: true, document: { getElementById: id => nodes[id] }, disponibilidad: { correo: true }, disponibilidadError: false,
     location: { hostname: 'luifelipecd.github.io' }, IA_WORKER_URL: 'https://worker.example', AbortController, setTimeout, clearTimeout,
     authShell: s => s, MAIL_ICON: '', esc: s => String(s).replaceAll('<','&lt;'),
     fetch: async () => new Response(JSON.stringify(payload), { status }),
