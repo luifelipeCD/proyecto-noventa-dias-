@@ -1125,7 +1125,7 @@
     <!-- MOVIMIENTO -->
     <section class="panel main-panel" data-panel="movimiento" id="panel-movimiento">
       <h2>Movimiento</h2>
-      <p class="hint">Rutina de gimnasio por grupo muscular y un conversor rápido de pasos a calorías. Usa el peso que guardaste en la calculadora.</p>
+      <p class="hint">Elige entrenar en casa o en gimnasio, prepara tu selección de ejercicios y sigue tu actividad. El conversor de pasos usa el peso de tu plan.</p>
       <div id="content-movimiento">
 
       <div class="move-steps">
@@ -1142,8 +1142,10 @@
         <div class="steps-out" id="pasos-out"></div>
       </div>
 
-      <h3>Rutina de gimnasio</h3>
-      <p class="section-sub">Un grupo muscular por día, con descanso el fin de semana. Abre cada ejercicio para ver dos posiciones del movimiento, el equipo y las series. Las fotos son una referencia visual.</p>
+      <h3>Tu rutina, donde tú elijas</h3>
+      <div id="training-place" class="training-place" role="group" aria-label="Dónde vas a entrenar"></div>
+      <p id="training-advice" class="note"></p>
+      <p class="section-sub">Escoge casa o gimnasio y adapta los ejercicios de cada día. Abre las tarjetas para ver fotos, técnica, equipo y series.</p>
       <div class="day-tabs" id="move-day-tabs"></div>
       <div id="move-rutina"></div>
 
@@ -4287,6 +4289,7 @@ const EX_EQUIPO = {"bench": "Barra y banco plano", "incline": "Mancuernas y banc
 // Índice inverso valor-de-FIG -> clave, para elegir las fotos por ejercicio sin tocar RUTINA_SEMANAL.
 const FIG_CLAVE = new Map(Object.entries(FIG).map(([k, v]) => [v, k]));
 function exFotosDe(e){
+  if(e.fotos) return e.fotos;
   const clave = FIG_CLAVE.get(e.fig);
   const par = clave && EX_FOTOS[clave];
   return par ? [EX_FOTO_BASE + par[0], EX_FOTO_BASE + par[1]] : null;
@@ -4333,6 +4336,96 @@ const RUTINA_SEMANAL = {
   6: { grupo: 'Descanso', descanso: true },
   0: { grupo: 'Descanso', descanso: true },
 };
+// Entrenamiento local: selección y registro estables por lugar, día e ID de ejercicio.
+const ENTRENAMIENTO_KEY = 'rp90_entrenamiento_v2';
+const entrenamientoGuardado = lsGet(ENTRENAMIENTO_KEY, {});
+let lugarEntreno = entrenamientoGuardado?.lugar === 'casa' ? 'casa' : 'gimnasio';
+let seleccionEntreno = entrenamientoGuardado?.seleccion && typeof entrenamientoGuardado.seleccion === 'object' ? entrenamientoGuardado.seleccion : {};
+let registroEntreno = entrenamientoGuardado?.registro && typeof entrenamientoGuardado.registro === 'object' ? entrenamientoGuardado.registro : {};
+const TECNICA_GYM = {
+ bench:['Apoya pies, glúteos y espalda en el banco. Sujeta la barra con un agarre cómodo.','Baja hacia el pecho con control y empuja sin rebotar. Usa soportes y ayuda para cargas exigentes.'],
+ incline:['Apoya la espalda en el banco inclinado y los pies en el suelo.','Baja las mancuernas a los lados del pecho y empuja sin juntar los hombros hacia las orejas.'],
+ fly:['Túmbate con pies apoyados y mancuernas sobre el pecho; flexiona ligeramente los codos.','Abre los brazos hasta un rango cómodo y vuelve con control, sin estirar de más los hombros.'],
+ dips:['Sujeta las paralelas y estabiliza los hombros.','Flexiona los codos solo hasta un rango cómodo y empuja para volver. Usa asistencia si no controlas tu peso.'],
+ pushup:['Coloca las manos bajo los hombros y forma una línea con el cuerpo.','Baja el pecho flexionando los codos y empuja sin hundir la cadera. Apoya las rodillas si necesitas reducir la dificultad.'],
+ pullup:['Cuelga de una barra estable con agarre cómodo y hombros activos.','Acerca el pecho a la barra sin balancearte y baja con control. Usa una máquina asistida si hace falta.'],
+ bbrow:['Con rodillas ligeramente flexionadas, inclina el tronco desde las caderas y mantén la espalda estable.','Lleva la barra hacia el abdomen y baja sin tirar con la zona lumbar.'],
+ cablerow:['Siéntate con pies apoyados y espalda estable, sin bloquear las rodillas.','Lleva el agarre hacia el abdomen y vuelve sin balancear el tronco.'],
+ deadlift:['Sitúa la barra cerca de las piernas, flexiona caderas y rodillas y sujeta con firmeza.','Empuja el suelo y extiende la cadera manteniendo la barra cerca; vuelve con control. Aprende la técnica con supervisión antes de añadir carga.'],
+ machrow:['Ajusta el asiento para alcanzar los agarres sin encorvarte y apoya el pecho si la máquina tiene soporte.','Lleva los codos atrás y vuelve despacio sin elevar los hombros.'],
+ squat:['Ajusta los soportes de seguridad y coloca la barra estable sobre la parte alta de la espalda.','Flexiona caderas y rodillas manteniendo los pies apoyados; sube con control. Aprende primero sin carga.'],
+ legpress:['Ajusta el asiento y apoya toda la espalda; coloca los pies sobre la plataforma.','Baja sin despegar la pelvis y empuja sin bloquear las rodillas. Usa los topes de seguridad.'],
+ lunge:['De pie, sujeta las mancuernas a los lados y da un paso con espacio suficiente.','Flexiona ambas rodillas manteniendo el equilibrio y vuelve con control. Repite con la otra pierna.'],
+ legcurl:['Ajusta el rodillo sobre la parte baja de las piernas y alinea las rodillas con el eje de la máquina.','Flexiona las rodillas sin levantar las caderas y vuelve despacio.'],
+ legext:['Ajusta el asiento, alinea las rodillas con el eje y coloca el rodillo sobre los tobillos.','Extiende las piernas con control y baja despacio sin golpear los topes.'],
+ calf:['Ajusta la máquina y coloca la parte delantera de los pies sobre la plataforma.','Eleva y baja los talones con control, sin rebotes.'],
+ ohp:['Sujeta la barra delante de los hombros con abdomen activo y pies firmes.','Empuja sobre la cabeza sin arquear la espalda y baja con control.'],
+ latraise:['De pie, sujeta las mancuernas a los lados con codos ligeramente flexionados.','Eleva los brazos hasta aproximadamente la altura de los hombros y baja sin balancearte.'],
+ frontraise:['Sujeta las mancuernas delante de los muslos y mantén el abdomen activo.','Eleva los brazos hacia delante hasta la altura de los hombros y baja con control.'],
+ reardelt:['Apoya el pecho en el banco inclinado y deja los brazos hacia el suelo.','Abre los brazos con codos ligeramente flexionados y vuelve sin encoger los hombros.'],
+ arnold:['Siéntate con espalda apoyada y mancuernas frente a los hombros, palmas hacia ti.','Empuja hacia arriba girando las palmas hacia delante y vuelve invirtiendo el movimiento sin forzar.'],
+ bbcurl:['De pie, sujeta la barra con las palmas hacia delante y codos cerca del cuerpo.','Flexiona los codos sin balancear el tronco y baja despacio.'],
+ hammer:['Sujeta las mancuernas a los lados con palmas enfrentadas.','Flexiona los codos manteniendo las muñecas neutras y baja con control.'],
+ skull:['Túmbate en el banco con la barra sobre el pecho y brazos estables.','Flexiona los codos llevando la barra hacia la frente con cuidado y extiende sin mover los hombros. Usa una carga ligera.'],
+ pushdown:['De pie frente a la polea, mantén los codos cerca del tronco.','Extiende los codos hacia abajo sin balancearte y vuelve despacio.'],
+ conccurl:['Siéntate y apoya la parte posterior del brazo en la cara interna del muslo.','Flexiona el codo sin mover el hombro y baja despacio. Cambia de lado.']
+};
+const EJERCICIOS_GYM = Object.values(RUTINA_SEMANAL).flatMap(r => r.ejercicios || []).map(e => {
+  const id = FIG_CLAVE.get(e.fig);
+  return {...e, id, equipo: EX_EQUIPO[id], pasos: TECNICA_GYM[id] || []};
+});
+const EJERCICIOS_CASA = [
+ {id:'home-squat',nombre:'Sentadilla sin peso',musculo:'Piernas y glúteos',series:'2 × 8–12',foto:'Bodyweight_Squat',pasos:['Separa los pies a un ancho cómodo. Puedes llevar las manos detrás de la cabeza sin tirar del cuello, como en las fotos, o extender los brazos para equilibrarte.','Lleva las caderas atrás y flexiona las rodillas con los talones apoyados. Vuelve a subir con control.']},
+ {id:'home-bridge',nombre:'Puente de glúteos',musculo:'Glúteos',series:'2 × 10–12',foto:'Butt_Lift_Bridge',pasos:['Túmbate boca arriba con rodillas flexionadas y pies apoyados cerca de los glúteos.','Eleva la pelvis apretando glúteos sin arquear la espalda y baja despacio.']},
+ {...EJERCICIOS_GYM.find(e=>e.id==='pushup'),id:'home-pushup',nombre:'Flexiones en el suelo',series:'2 × 6–10',fotos:EX_FOTOS.pushup.map(p=>EX_FOTO_BASE+p)},
+ {id:'home-lunge',nombre:'Zancadas sin peso',musculo:'Piernas y glúteos',series:'2 × 8 por lado',foto:'Bodyweight_Walking_Lunge',pasos:['Da un paso hacia delante manteniendo el tronco erguido y los pies separados a lo ancho de las caderas.','Flexiona ambas rodillas hasta un rango cómodo y empuja el suelo para avanzar. Alterna las piernas sin perder el equilibrio.']},
+ {id:'home-plank',nombre:'Plancha de antebrazos',musculo:'Abdomen y estabilidad',series:'2 × 15–25 s',foto:'Plank',pasos:['Apoya antebrazos y puntas de los pies con codos debajo de los hombros.','Mantén el cuerpo alineado, respira y evita hundir la cadera. Termina la serie si pierdes la postura.']},
+ {id:'home-heel',nombre:'Toques de talón',musculo:'Abdomen y oblicuos',series:'2 × 8 por lado',foto:'Alternate_Heel_Touchers',pasos:['Túmbate boca arriba con rodillas flexionadas y pies apoyados.','Eleva ligeramente los hombros y acerca una mano al talón del mismo lado. Alterna con un movimiento corto sin tirar del cuello.']},
+].map(e=>({...e,equipo:'Sin máquinas · peso corporal',fig:e.fig || '',fotos:e.fotos || [0,1].map(n=>`assets/exercises-home/${e.foto}/${n}.jpg`)}));
+const CASA_DIAS = {1:['home-squat','home-pushup','home-bridge','home-plank'],3:['home-lunge','home-pushup','home-bridge','home-heel'],5:['home-squat','home-pushup','home-lunge','home-plank']};
+function guardarEntrenamiento(){ lsSet(ENTRENAMIENTO_KEY,{lugar:lugarEntreno,seleccion:seleccionEntreno,registro:registroEntreno}); }
+function catalogoEntreno(){ return lugarEntreno === 'casa' ? EJERCICIOS_CASA : EJERCICIOS_GYM; }
+function claveEntreno(dia){ return lugarEntreno + ':' + dia; }
+function idsRecomendados(dia){ return lugarEntreno === 'casa' ? (CASA_DIAS[dia] || []) : (RUTINA_SEMANAL[dia].ejercicios || []).map(e=>FIG_CLAVE.get(e.fig)); }
+function rutinaActual(dia){
+ const clave=claveEntreno(dia), personalizados=Array.isArray(seleccionEntreno[clave]);
+ const ids=personalizados ? seleccionEntreno[clave] : idsRecomendados(dia);
+ const ejercicios=ids.map(id=>catalogoEntreno().find(e=>e.id===id)).filter(Boolean);
+ return {grupo:!ejercicios.length && !personalizados ? 'Descanso' : lugarEntreno==='casa' ? 'Cuerpo completo · Casa' : (RUTINA_SEMANAL[dia].descanso ? 'Selección personal' : RUTINA_SEMANAL[dia].grupo),ejercicios,descanso:!personalizados && !ejercicios.length};
+}
+function setLugarEntreno(lugar){
+ if(!['casa','gimnasio'].includes(lugar)) return;
+ lugarEntreno=lugar; guardarEntrenamiento(); renderMovimiento(); renderHome();
+}
+function elegirEjercicio(id){
+ const cat=catalogoEntreno(); if(!cat.some(e=>e.id===id)) return;
+ const clave=claveEntreno(diaMovActivo), ids=rutinaActual(diaMovActivo).ejercicios.map(e=>e.id);
+ seleccionEntreno[clave]=ids.includes(id) ? ids.filter(x=>x!==id) : [...ids,id];
+ guardarEntrenamiento(); renderRutinaMov(); renderHome();
+}
+function restaurarEntreno(){ delete seleccionEntreno[claveEntreno(diaMovActivo)]; guardarEntrenamiento(); renderRutinaMov(); renderHome(); }
+function hechosEntreno(dia){
+ const ids=registroEntreno[hoyISO()]?.[claveEntreno(dia)];
+ if(Array.isArray(ids)) return ids;
+ // Conserva las marcas previas del gimnasio usando sus IDs, aunque se cambie la selección.
+ if(lugarEntreno==='gimnasio') return sesionEjercicios(hoyISO(),dia).map(i=>(RUTINA_SEMANAL[dia].ejercicios || [])[i]).filter(Boolean).map(e=>FIG_CLAVE.get(e.fig));
+ return [];
+}
+function marcarEjercicioEntreno(id){
+ if(!rutinaActual(diaMovActivo).ejercicios.some(e=>e.id===id)) return;
+ const fecha=hoyISO(), clave=claveEntreno(diaMovActivo), ids=hechosEntreno(diaMovActivo);
+ if(!registroEntreno[fecha]) registroEntreno[fecha]={};
+ registroEntreno[fecha][clave]=ids.includes(id) ? ids.filter(x=>x!==id) : [...ids,id];
+ guardarEntrenamiento(); renderRutinaMov();
+}
+function selectorEntrenoHTML(){
+ const seleccionados=rutinaActual(diaMovActivo).ejercicios.map(e=>e.id);
+ return `<details class="training-library"><summary>Elegir ejercicios · ${catalogoEntreno().length} disponibles</summary><p class="hint">Añade o quita ejercicios para ${DIAS_NOMBRE[diaMovActivo].toLowerCase()}. Tu selección se conserva para ese día de la semana.</p><div class="training-options">`+catalogoEntreno().map(e=>{
+ const fotos=exFotosDe(e), activo=seleccionados.includes(e.id);
+ return `<label class="training-option"><input type="checkbox" ${activo?'checked':''} onchange="elegirEjercicio('${e.id}')">${fotos?`<img src="${fotos[0]}" alt="" loading="lazy">`:''}<span><strong>${esc(e.nombre)}</strong><small>${esc(e.equipo)} · ${esc(e.series)}</small></span></label>`;
+ }).join('')+`</div><button type="button" class="btn-secondary" onclick="restaurarEntreno()">Restaurar sugerencia del día</button></details>`;
+}
+
 const DIAS_NOMBRE = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 const DIAS_CORTO  = ['D','L','M','X','J','V','S'];
 const ORDEN_DIAS  = [1,2,3,4,5,6,0];
@@ -4371,7 +4464,7 @@ function renderMovimiento(){
   const cntEl = document.getElementById('move-count');
   if(cntEl){
     const semana = hechos.filter(dd => { const n = diasEntre(dd, hoy); return n >= 0 && n < 7; }).length;
-    cntEl.innerHTML = `<b>${hechos.length}</b> ${hechos.length === 1 ? 'sesión' : 'sesiones'} en total · <b>${semana}</b> en los últimos 7 días · meta 5 por semana`;
+    cntEl.innerHTML = `<b>${hechos.length}</b> ${hechos.length === 1 ? 'sesión' : 'sesiones'} en total · <b>${semana}</b> en los últimos 7 días · referencia ${lugarEntreno === 'casa' ? 3 : 5} por semana`;
   }
   const grid = document.getElementById('move-grid');
   if(grid){
@@ -4407,11 +4500,16 @@ function renderRutinaMov(){
   const cont = document.getElementById('move-rutina');
   const tabs = document.getElementById('move-day-tabs');
   if(!cont || !tabs) return;
+  const bibliotecaAbierta = cont.querySelector('.training-library')?.open || false;
   const hoy = new Date().getDay();
   if(diaMovActivo === null) diaMovActivo = hoy;
 
+  document.getElementById('training-place').innerHTML = ['casa','gimnasio'].map(l=>`<button type="button" class="btn-secondary ${lugarEntreno===l?'on':''}" aria-pressed="${lugarEntreno===l}" onclick="setLugarEntreno('${l}')">${l==='casa'?'En casa':'En gimnasio'}</button>`).join('');
+  document.getElementById('training-advice').innerHTML = lugarEntreno==='casa'
+    ? 'Para empezar: una selección de cuerpo completo lunes, miércoles y viernes, con descanso entre sesiones. Usa una superficie estable y deja espacio para moverte. Puedes ajustar los días y ejercicios.'
+    : 'Elige según el equipo que tengas. Si empiezas, prioriza técnica y cargas ligeras; pide al personal del gimnasio que ajuste las máquinas y revise los movimientos con barra.';
   tabs.innerHTML = ORDEN_DIAS.map(d => {
-    const r = RUTINA_SEMANAL[d];
+    const r = rutinaActual(d);
     const cls = ['day-tab'];
     if(d === diaMovActivo) cls.push('active');
     if(r.descanso) cls.push('rest');
@@ -4419,23 +4517,23 @@ function renderRutinaMov(){
       + `aria-pressed="${d === diaMovActivo}" aria-label="${DIAS_NOMBRE[d]}: ${r.grupo}" title="${DIAS_NOMBRE[d]}${d === hoy ? ' (hoy)' : ''}">${DIAS_CORTO[d]}${d === hoy ? '<span aria-hidden="true"> •</span>' : ''}</button>`;
   }).join('');
 
-  const r = RUTINA_SEMANAL[diaMovActivo];
+  const r = rutinaActual(diaMovActivo);
   const esHoy = diaMovActivo === hoy;
   const cab = `<div class="rutina-head">${DIAS_NOMBRE[diaMovActivo]}${esHoy ? ' · hoy' : ''}`;
 
   if(r.descanso){
     cont.innerHTML = cab + ' — Descanso<small>Descanso o cardio opcional</small></div>'
       + '<div class="rest-day"><span class="big">Día de descanso</span>'
-      + '<p>Descansa o haz cardio suave: sal a caminar y usa el conversor de pasos de arriba.</p></div>';
+      + '<p>Descansa o sal a caminar. También puedes elegir ejercicios para este día si vas a reorganizar tu semana.</p></div>' + selectorEntrenoHTML();
     return;
   }
 
   const peso = pesoUsuario();
-  const hechos = sesionEjercicios(hoyISO(), diaMovActivo);
-  let html = cab + ` — ${r.grupo}<small>${r.ejercicios.length} ejercicios · Series y repeticiones en cada tarjeta</small></div>`;
+  const hechos = hechosEntreno(diaMovActivo).filter(id=>r.ejercicios.some(e=>e.id===id));
+  let html = selectorEntrenoHTML() + cab + ` — ${r.grupo}<small>${r.ejercicios.length} ejercicios · Series y repeticiones en cada tarjeta</small></div>`;
   html += `<div class="session-progress">
     <div class="session-progress-label"><span>Avance de la sesión</span><b>${hechos.length} / ${r.ejercicios.length}</b></div>
-    <div class="bar-track"><div class="bar-fill" style="width:${Math.round(hechos.length / r.ejercicios.length * 100)}%"></div></div>
+    <div class="bar-track"><div class="bar-fill" style="width:${(r.ejercicios.length ? Math.round(hechos.length / r.ejercicios.length * 100) : 0)}%"></div></div>
   </div>`;
   if(peso == null){
     html += '<div class="move-need-weight">Calcula tu plan en la calculadora (paso 1) para ver las calorías estimadas de cada ejercicio.</div>';
@@ -4445,7 +4543,7 @@ function renderRutinaMov(){
     const kc = kcalEjercicio(e.pesado);
     if(kc != null) total += kc;
     const fotos = exFotosDe(e);
-    const equipo = EX_EQUIPO[FIG_CLAVE.get(e.fig)] || 'Gimnasio';
+    const equipo = e.equipo || EX_EQUIPO[FIG_CLAVE.get(e.fig)] || 'Gimnasio';
     const ilustracion = fotos
       ? `<div class="ex-illus">
           <div class="ex-photos">
@@ -4455,23 +4553,27 @@ function renderRutinaMov(){
           <div class="ex-fig-wrap" hidden>${e.fig}</div>
         </div>`
       : e.fig;
-    const hecho = hechos.includes(indice);
+    const hecho = hechos.includes(e.id);
     html += `<details class="ex-card ${hecho ? 'done' : ''}" ${indice === 0 ? 'open' : ''}>
       <summary>${fotos ? `<img class="ex-thumb" src="${fotos[0]}" alt="" loading="lazy" decoding="async" onerror="this.hidden=true">` : ''}<span class="ex-sum-copy"><span class="ex-sum-name">${e.nombre}</span><span class="ex-sum-series">${e.series} <span aria-hidden="true">·</span> ${equipo}</span></span></summary>
       <div class="ex-body">
         ${ilustracion}
         <p class="ex-photo-hint">Dos posiciones del movimiento. Toca una foto para ampliarla.</p>
+        <div class="ex-technique"><h4>Cómo hacerlo</h4><ol>${(e.pasos || []).map(p=>`<li>${esc(p)}</li>`).join('')}</ol><p class="hint">Muévete con control y respira. Si aparece dolor, detén el ejercicio.</p></div>
         <div class="ex-meta"><b>Equipo:</b> ${equipo}<br><b>Músculo principal:</b> ${e.musculo}<br><b>Series × repeticiones:</b> ${e.series}</div>
         ${kc != null ? `<div class="ex-kcal"><span class="n">≈ ${kc} kcal</span><span class="aprox">Aproximado, varía según intensidad, descansos y técnica.</span></div>` : ''}
-        <button type="button" class="btn-secondary ex-done-btn ${hecho ? 'on' : ''}" aria-pressed="${hecho}" onclick="toggleEjercicioHecho(${diaMovActivo},${indice})">${hecho ? '✓ Hecho hoy' : '☐ Marcar hecho'}</button>
+        <button type="button" class="btn-secondary ex-done-btn ${hecho ? 'on' : ''}" aria-pressed="${hecho}" onclick="marcarEjercicioEntreno('${e.id}')">${hecho ? '✓ Hecho hoy' : '☐ Marcar hecho'}</button>
       </div>
     </details>`;
   });
-  if(peso != null){
+  if(!r.ejercicios.length) html += '<p class="note">Todavía no elegiste ejercicios. Abre «Elegir ejercicios» para añadirlos o restaurar la sugerencia.</p>';
+  if(peso != null && r.ejercicios.length){
     html += `<div class="day-total"><span>Total aproximado de la rutina</span><span class="n">≈ ${total} kcal</span></div>`;
   }
+  html += '<p class="hint">Referencia general para adultos, ajustable a tu experiencia. Empieza con menos series si lo necesitas y descansa entre sesiones. <a href="https://www.cdc.gov/physical-activity-basics/guidelines/adults.html" target="_blank" rel="noopener">Guía de actividad física</a> · <a href="https://www.acefitness.org/resources/everyone/exercise-library/" target="_blank" rel="noopener">Biblioteca de técnica ACE</a>.</p>';
   html += '<p class="exercise-credit">Fotos: <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener">Free Exercise DB</a>.</p>';
   cont.innerHTML = html;
+  if(bibliotecaAbierta) cont.querySelector('.training-library').open = true;
 }
 
 // Ejercicios marcados como hechos para una fecha + día de rutina concretos. Si la fecha
@@ -4724,7 +4826,7 @@ function renderHome(){
   const finished=diasTerminados[today];
   const marks=(finished ? finished.meals : comidasMarcadas[today]) || {};
   const eaten=MEAL_ORDER.filter(m=>marks[m]).length;
-  const routine=RUTINA_SEMANAL[new Date().getDay()];
+  const routine=rutinaActual(new Date().getDay());
   const workoutDone=lsGet(LS.mov,[]).includes(today);
   const totals=plan && planDias ? totalesMarcados(planDias[diaIndexActual()],marks) : {kcal:0};
   const consumed=finished ? finished.kcal : Math.round(totals.kcal);

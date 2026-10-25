@@ -2,12 +2,23 @@
  * App shell cacheada para carga instantánea y uso offline.
  * No toca las peticiones POST (p. ej. el Worker de recetas con IA).
  */
-const VERSION = 'v15-gratis-sin-cuenta';
+const VERSION = 'v16-rutinas-casa-gimnasio';
 const CACHE = 'transforma90-' + VERSION;
 const FONT_CACHE = 'transforma90-fonts-' + VERSION;
 
 // La app entera vive en index.html; el resto son recursos de la PWA.
 const CORE = [
+  './assets/exercises-home/Alternate_Heel_Touchers/0.jpg',
+  './assets/exercises-home/Alternate_Heel_Touchers/1.jpg',
+  './assets/exercises-home/Bodyweight_Squat/0.jpg',
+  './assets/exercises-home/Bodyweight_Squat/1.jpg',
+  './assets/exercises-home/Bodyweight_Walking_Lunge/0.jpg',
+  './assets/exercises-home/Bodyweight_Walking_Lunge/1.jpg',
+  './assets/exercises-home/Butt_Lift_Bridge/0.jpg',
+  './assets/exercises-home/Butt_Lift_Bridge/1.jpg',
+  './assets/exercises-home/Plank/0.jpg',
+  './assets/exercises-home/Plank/1.jpg',
+
   './',
   './index.html',
   './redesign.css',

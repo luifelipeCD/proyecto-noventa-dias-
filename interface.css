@@ -125,3 +125,17 @@ body.dialog-open{overflow:hidden;}
 .ex-photo-hint,.exercise-credit{font-size:12px;line-height:1.6;color:var(--ink-var);}
 .exercise-credit{margin:20px 0;}.exercise-credit a{color:var(--primary);}
 @media(max-width:600px){.ex-photos{grid-template-columns:1fr;max-width:440px;}.ex-thumb{width:68px;height:58px;flex-basis:68px;}.ex-card > summary{gap:10px;}}
+
+/* Selección de rutinas en casa o gimnasio */
+.training-place{display:flex;gap:12px;margin:16px 0;flex-wrap:wrap;}
+.training-place button{flex:1;min-width:120px;}
+.training-place button[aria-pressed="true"]{background:var(--primary,#754990);color:white;border-color:var(--primary,#754990);}
+.training-library{border:1px solid var(--outline-soft,#ded9e5);border-radius:18px;padding:16px;margin:16px 0 24px;}
+.training-library>summary{cursor:pointer;font-weight:700;min-height:28px;}
+.training-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:10px;margin:16px 0;}
+.training-option{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--outline-soft,#ded9e5);border-radius:12px;cursor:pointer;min-width:0;}
+.training-option img{width:58px;height:58px;object-fit:contain;background:white;border-radius:8px;}
+.training-option input{width:20px;height:20px;flex-shrink:0;accent-color:#754990;}
+.training-option span{min-width:0;}.training-option strong,.training-option small{display:block;overflow-wrap:anywhere;}
+.training-option small{font-size:12px;line-height:1.5;margin-top:4px;}
+.ex-technique{padding:12px 0;}.ex-technique h4{margin:0 0 10px;}.ex-technique ol{padding-left:22px;line-height:1.65;}.ex-technique li+li{margin-top:8px;}
