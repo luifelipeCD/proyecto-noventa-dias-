@@ -903,7 +903,7 @@
 
     <!-- 1 · CALCULADORA -->
     <section class="panel side-panel" data-panel="calculadora" id="panel-calculadora">
-      <div class="plan-shell"><aside class="plan-guide"><span class="eyebrow">HECHO PARA TI</span><h2>El primer paso<br>es conocerte.</h2><p>Unos pocos datos para organizar tu alimentación de los próximos 90 días.</p><ol class="wizard-steps" aria-label="Pasos de configuración"><li data-wizard-indicator="1" class="current"><span>1</span><div>Tu objetivo<small>¿Qué quieres conseguir?</small></div></li><li data-wizard-indicator="2"><span>2</span><div>Sobre ti<small>Tu punto de partida</small></div></li><li data-wizard-indicator="3"><span>3</span><div>Tu ritmo<small>Actividad y preferencias</small></div></li></ol><div class="privacy-note">◈ Tus datos se guardan en este navegador.<br>Puedes guardar una copia opcional en tu cuenta.</div></aside>
+      <div class="plan-shell"><aside class="plan-guide"><span class="eyebrow">HECHO PARA TI</span><h2>El primer paso<br>es conocerte.</h2><p>Unos pocos datos para organizar tu alimentación de los próximos 90 días.</p><ol class="wizard-steps" aria-label="Pasos de configuración"><li data-wizard-indicator="1" class="current"><span>1</span><div>Tu objetivo<small>¿Qué quieres conseguir?</small></div></li><li data-wizard-indicator="2"><span>2</span><div>Sobre ti<small>Tu punto de partida</small></div></li><li data-wizard-indicator="3"><span>3</span><div>Tu ritmo<small>Actividad y preferencias</small></div></li></ol><div class="privacy-note">◈ Tus datos se guardan en este navegador.<br>Conserva los datos de este navegador para mantener tu plan.</div></aside>
       <div class="plan-workspace"><div id="wizard-editor"><div class="wizard-topline"><span id="wizard-step-label">PASO 1 DE 3</span><span>Tu plan personal</span></div>
       <div class="wizard-page" data-wizard-page="1"><h2>¿Qué te gustaría lograr?</h2><p class="hint">Elige un objetivo. Puedes cambiarlo más adelante.</p>
       <div class="field">
@@ -1263,7 +1263,7 @@
       </details>
       <details>
         <summary>¿Se guardan mis datos? ¿Es privado?</summary>
-        <p>El progreso se guarda en este navegador. Desde Tu cuenta puedes guardar una copia privada y cargarla en otro dispositivo. Guarda tu copia antes de cambiar de equipo o borrar los datos del navegador.</p>
+        <p>Los datos se guardan en este navegador. El acceso con cuenta está pausado temporalmente. No borres los datos del navegador si quieres conservar tu plan; no se trasladan automáticamente a otro dispositivo.</p>
       </details>
     </div>
   </div>
@@ -2088,6 +2088,8 @@ let iaIdSeq = 9000;                // ids para las recetas de IA (fuera del rang
 // ============================================================
 // CUENTA (login por correo, sin contraseña — mismo Worker que la IA)
 // ============================================================
+// Pausa temporal hasta disponer de un dominio de correo verificado.
+const ACCESO_CORREO_HABILITADO = false;
 let sesion = lsGet(LS.sesion, null);   // { token, email } o null si nadie inició sesión
 let cuenta = null;                     // { email, subscription } — se llena al validar /me
 
@@ -2113,6 +2115,9 @@ function renderAuthArea(){
     cont.classList.add('signed-in');
     cont.innerHTML = `<span class="auth-dot"></span><i class="auth-status-text">Sesión iniciada</i>
       <button class="profile-button has-initial" onclick="abrirAuth()" aria-label="Tu cuenta: ${esc(sesion.email)}">${inicial}</button>`;
+  } else if(!ACCESO_CORREO_HABILITADO){
+    cont.classList.remove('signed-in');
+    cont.innerHTML = '<span class="auth-dot"></span><i class="auth-status-text">Guardado local</i>';
   } else {
     cont.classList.remove('signed-in');
     cont.innerHTML = `<span class="auth-dot"></span><i class="auth-status-text">Guardado local</i>
@@ -2231,6 +2236,7 @@ function mostrarFormularioAuth(){
 }
 
 function abrirAuth(){
+  if(!sesion && !ACCESO_CORREO_HABILITADO) return;
   const body = document.getElementById('auth-modal-body');
   if(sesion){
     body.innerHTML = authCuentaHTML();
@@ -2246,6 +2252,7 @@ function cerrarAuth(){
 }
 
 async function solicitarLink(){
+  if(!ACCESO_CORREO_HABILITADO) return;
   const input = document.getElementById('auth-email');
   const btn = document.getElementById('auth-enviar');
   const estado = document.getElementById('auth-estado');
@@ -2437,6 +2444,13 @@ function fmtFechaCorta(epochMs){
 // Contenido de la pantalla de bloqueo: pide iniciar sesión si hace falta, o elegir un
 // plan si ya hay cuenta pero sin suscripción activa.
 function premiumGateHTML(desc){
+  if(!sesion && !ACCESO_CORREO_HABILITADO){
+    return `<div class="premium-gate">
+      <span class="premium-gate-icon" aria-hidden="true">✦</span>
+      <h3>Próximamente</h3>
+      <p>${desc} El acceso con cuenta está pausado temporalmente. Puedes seguir usando las funciones disponibles con guardado en este navegador.</p>
+    </div>`;
+  }
   if(!sesion){
     return `<div class="premium-gate">
       <span class="premium-gate-icon" aria-hidden="true">${AUTH_ICON}</span>

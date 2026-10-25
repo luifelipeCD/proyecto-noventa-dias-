@@ -161,7 +161,7 @@ test('el envío deja de esperar cuando el proveedor no responde', async t => {
 function frontendHarness(payload, status=200) {
   const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
   const nodes = { 'auth-email': { value: 'persona@example.com' }, 'auth-enviar': { disabled: false }, 'auth-estado': { innerHTML: '' }, 'auth-modal-body': { innerHTML: '' }, 'auth-disponibilidad': { innerHTML: '' } };
-  const scope = { document: { getElementById: id => nodes[id] }, disponibilidad: { correo: true }, disponibilidadError: false,
+  const scope = { ACCESO_CORREO_HABILITADO: true, document: { getElementById: id => nodes[id] }, disponibilidad: { correo: true }, disponibilidadError: false,
     location: { hostname: 'luifelipecd.github.io' }, IA_WORKER_URL: 'https://worker.example', AbortController, setTimeout, clearTimeout,
     authShell: s => s, MAIL_ICON: '', esc: s => String(s).replaceAll('<','&lt;'),
     fetch: async () => new Response(JSON.stringify(payload), { status }),
@@ -194,4 +194,27 @@ test('actualizar disponibilidad conserva el correo escrito y bloquea envíos no 
   scope.actualizarDisponibilidadAuth();
   assert.equal(nodes['auth-enviar'].disabled, false);
   assert.equal(nodes['auth-email'].value, 'persona@example.com');
+});
+
+// La pausa pública no debe abrir el formulario ni enviar correos, ni desde Enter.
+test('la pausa de cuentas oculta el acceso y evita solicitar enlaces', async () => {
+  const { scope, nodes } = frontendHarness({ok:true,enviado:true});
+  scope.ACCESO_CORREO_HABILITADO = false;
+  scope.fetch = () => { throw new Error('No debe enviar solicitudes'); };
+  await scope.solicitarLink();
+  assert.equal(nodes['auth-modal-body'].innerHTML, '');
+  assert.equal(nodes['auth-estado'].innerHTML, '');
+  const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+  scope.sesion = null;
+  nodes['auth-area'] = { classList: { remove() {} }, innerHTML: '' };
+  vm.runInNewContext(html.slice(html.indexOf('function renderAuthArea(){'), html.indexOf('// Columna lateral lila')), scope);
+  scope.renderAuthArea();
+  assert.ok(nodes['auth-area'].innerHTML.includes('Guardado local'));
+  assert.ok(!nodes['auth-area'].innerHTML.includes('button'));
+  vm.runInNewContext(html.slice(html.indexOf('function abrirAuth(){'), html.indexOf('function cerrarAuth(){')), scope);
+  scope.abrirAuth(); // No toca el modal, ausente en este harness.
+  vm.runInNewContext(html.slice(html.indexOf('function premiumGateHTML(desc){'), html.indexOf('// Panel (contenedor real)')), scope);
+  const gate = scope.premiumGateHTML('Función premium.');
+  assert.ok(gate.includes('Próximamente'));
+  assert.ok(!gate.includes('onclick') && !gate.includes('Iniciar sesión'));
 });
