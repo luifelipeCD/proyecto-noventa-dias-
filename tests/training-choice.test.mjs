@@ -48,3 +48,31 @@ test('gimnasio conserva los 26 ejercicios y sus instrucciones y migra marcas ant
  run('diaMovActivo=1');scope.marcarEjercicioEntreno('bench');
  assert.equal(JSON.stringify(scope.hechosEntreno(1)),'["incline","bench"]');
 });
+
+test('repeticiones, series y kilos se guardan sin perder progreso y separados por lugar',()=>{
+ const {scope,run,saved}=harness();
+ assert.equal(scope.guardarValorEjercicio('bench','reps','12'),true);
+ assert.equal(scope.guardarValorEjercicio('bench','series','3'),true);
+ assert.equal(scope.guardarValorEjercicio('bench','kg','22,5'),true);
+ assert.equal(scope.valoresEjercicio('bench').kg,22.5);
+ run('diaMovActivo=1');scope.marcarEjercicioEntreno('bench');
+ const reloaded=harness(saved());
+ assert.equal(reloaded.scope.valoresEjercicio('bench').reps,12);
+ assert.equal(reloaded.scope.valoresEjercicio('bench').series,3);
+ assert.ok(reloaded.scope.hechosEntreno(1).includes('bench'));
+ run("lugarEntreno='casa'");
+ assert.equal(Object.keys(scope.valoresEjercicio('bench')).length,0);
+ assert.equal(scope.guardarValorEjercicio('home-squat','kg','0'),true);
+ assert.equal(scope.valoresEjercicio('home-squat').kg,0);
+ run("lugarEntreno='gimnasio'");assert.equal(scope.valoresEjercicio('bench').kg,22.5);
+ for(const [campo,valor] of [['reps','0'],['reps','2.5'],['series','-1'],['series','21'],['kg','-5'],['kg','Infinity'],['kg','texto']]) assert.equal(scope.guardarValorEjercicio('bench',campo,valor),false);
+ assert.equal(scope.guardarValorEjercicio('unknown','kg','10'),false);
+ assert.equal(scope.valoresEjercicio('bench').kg,22.5);
+ assert.equal(scope.guardarValorEjercicio('bench','kg',''),true);
+ assert.equal(scope.valoresEjercicio('bench').kg,undefined);
+});
+test('plancha pide segundos y los ejercicios por repeticiones piden repeticiones',()=>{
+ const {scope,run}=harness();
+ assert.ok(scope.valoresEjercicioHTML(run('EJERCICIOS_CASA.find(e=>e.id==="home-plank")')).includes('Segundos por serie'));
+ assert.ok(scope.valoresEjercicioHTML(run('EJERCICIOS_GYM[0]')).includes('Repeticiones por serie'));
+});

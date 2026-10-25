@@ -4341,6 +4341,7 @@ const ENTRENAMIENTO_KEY = 'rp90_entrenamiento_v2';
 const entrenamientoGuardado = lsGet(ENTRENAMIENTO_KEY, {});
 let lugarEntreno = entrenamientoGuardado?.lugar === 'casa' ? 'casa' : 'gimnasio';
 let seleccionEntreno = entrenamientoGuardado?.seleccion && typeof entrenamientoGuardado.seleccion === 'object' ? entrenamientoGuardado.seleccion : {};
+let cargasEntreno = entrenamientoGuardado?.cargas && typeof entrenamientoGuardado.cargas === 'object' ? entrenamientoGuardado.cargas : {};
 let registroEntreno = entrenamientoGuardado?.registro && typeof entrenamientoGuardado.registro === 'object' ? entrenamientoGuardado.registro : {};
 const TECNICA_GYM = {
  bench:['Apoya pies, glúteos y espalda en el banco. Sujeta la barra con un agarre cómodo.','Baja hacia el pecho con control y empuja sin rebotar. Usa soportes y ayuda para cargas exigentes.'],
@@ -4383,7 +4384,7 @@ const EJERCICIOS_CASA = [
  {id:'home-heel',nombre:'Toques de talón',musculo:'Abdomen y oblicuos',series:'2 × 8 por lado',foto:'Alternate_Heel_Touchers',pasos:['Túmbate boca arriba con rodillas flexionadas y pies apoyados.','Eleva ligeramente los hombros y acerca una mano al talón del mismo lado. Alterna con un movimiento corto sin tirar del cuello.']},
 ].map(e=>({...e,equipo:'Sin máquinas · peso corporal',fig:e.fig || '',fotos:e.fotos || [0,1].map(n=>`assets/exercises-home/${e.foto}/${n}.jpg`)}));
 const CASA_DIAS = {1:['home-squat','home-pushup','home-bridge','home-plank'],3:['home-lunge','home-pushup','home-bridge','home-heel'],5:['home-squat','home-pushup','home-lunge','home-plank']};
-function guardarEntrenamiento(){ lsSet(ENTRENAMIENTO_KEY,{lugar:lugarEntreno,seleccion:seleccionEntreno,registro:registroEntreno}); }
+function guardarEntrenamiento(){ lsSet(ENTRENAMIENTO_KEY,{lugar:lugarEntreno,seleccion:seleccionEntreno,registro:registroEntreno,cargas:cargasEntreno}); }
 function catalogoEntreno(){ return lugarEntreno === 'casa' ? EJERCICIOS_CASA : EJERCICIOS_GYM; }
 function claveEntreno(dia){ return lugarEntreno + ':' + dia; }
 function idsRecomendados(dia){ return lugarEntreno === 'casa' ? (CASA_DIAS[dia] || []) : (RUTINA_SEMANAL[dia].ejercicios || []).map(e=>FIG_CLAVE.get(e.fig)); }
@@ -4418,6 +4419,31 @@ function marcarEjercicioEntreno(id){
  registroEntreno[fecha][clave]=ids.includes(id) ? ids.filter(x=>x!==id) : [...ids,id];
  guardarEntrenamiento(); renderRutinaMov();
 }
+function valoresEjercicio(id){ return cargasEntreno[lugarEntreno + ':' + id] || {}; }
+function guardarValorEjercicio(id, campo, valor){
+ const ejercicio=catalogoEntreno().find(e=>e.id===id);
+ if(!ejercicio || !['series','reps','kg'].includes(campo)) return false;
+ const clave=lugarEntreno + ':' + id;
+ const texto=String(valor).trim().replace(',', '.');
+ const numero=Number(texto);
+ const max=campo==='series' ? 20 : campo==='reps' ? 1000 : 2000;
+ if(texto!=='' && (!Number.isFinite(numero) || numero<(campo==='kg'?0:1) || numero>max || (campo!=='kg' && !Number.isInteger(numero)))) return false;
+ if(!cargasEntreno[clave]) cargasEntreno[clave]={};
+ if(texto==='') delete cargasEntreno[clave][campo]; else cargasEntreno[clave][campo]=numero;
+ guardarEntrenamiento(); return true;
+}
+function actualizarValorEjercicio(id,campo,input){
+ const estado=document.getElementById('carga-estado-'+id);
+ const valido=input.validity.valid && guardarValorEjercicio(id,campo,input.value);
+ input.setAttribute('aria-invalid',String(!valido));
+ if(estado) estado.textContent=valido ? 'Valores guardados en este navegador.' : 'Revisa el valor: usa un número dentro del rango indicado.';
+}
+function valoresEjercicioHTML(e){
+ const valores=valoresEjercicio(e.id), tiempo=/\bs\b/.test(e.series);
+ const campos=[['series','Series',1,20,1,'numeric'],['reps',tiempo?'Segundos por serie':'Repeticiones por serie',1,1000,1,'numeric'],['kg','Peso añadido (kg)',0,2000,'any','decimal']];
+ return `<fieldset class="exercise-load"><legend>Mis series, ${tiempo?'tiempo':'repeticiones'} y peso</legend><p class="hint">Personaliza tus valores. Las series de arriba son una sugerencia.</p><div class="exercise-load-fields">`+campos.map(([campo,label,min,max,step,mode])=>`<div><label for="carga-${e.id}-${campo}">${label}</label><input id="carga-${e.id}-${campo}" type="number" inputmode="${mode}" min="${min}" max="${max}" step="${step}" value="${valores[campo] ?? ''}" placeholder="${campo==='kg'?'0':campo==='series'?'2':'10'}" oninput="actualizarValorEjercicio('${e.id}','${campo}',this)" aria-describedby="carga-ayuda-${e.id} carga-estado-${e.id}"></div>`).join('')+`</div><p class="hint" id="carga-ayuda-${e.id}">0 kg significa sin peso añadido. Registra el peso total utilizado; para dos mancuernas, suma ambas. Puedes dejar los campos vacíos. Los valores se recuerdan para este ejercicio.</p><p class="exercise-load-status" id="carga-estado-${e.id}" role="status">${Object.keys(valores).length?'Valores guardados en este navegador.':''}</p></fieldset>`;
+}
+
 function selectorEntrenoHTML(){
  const seleccionados=rutinaActual(diaMovActivo).ejercicios.map(e=>e.id);
  return `<details class="training-library"><summary>Elegir ejercicios · ${catalogoEntreno().length} disponibles</summary><p class="hint">Añade o quita ejercicios para ${DIAS_NOMBRE[diaMovActivo].toLowerCase()}. Tu selección se conserva para ese día de la semana.</p><div class="training-options">`+catalogoEntreno().map(e=>{
@@ -4562,6 +4588,7 @@ function renderRutinaMov(){
         <div class="ex-technique"><h4>Cómo hacerlo</h4><ol>${(e.pasos || []).map(p=>`<li>${esc(p)}</li>`).join('')}</ol><p class="hint">Muévete con control y respira. Si aparece dolor, detén el ejercicio.</p></div>
         <div class="ex-meta"><b>Equipo:</b> ${equipo}<br><b>Músculo principal:</b> ${e.musculo}<br><b>Series × repeticiones:</b> ${e.series}</div>
         ${kc != null ? `<div class="ex-kcal"><span class="n">≈ ${kc} kcal</span><span class="aprox">Aproximado, varía según intensidad, descansos y técnica.</span></div>` : ''}
+        ${valoresEjercicioHTML(e)}
         <button type="button" class="btn-secondary ex-done-btn ${hecho ? 'on' : ''}" aria-pressed="${hecho}" onclick="marcarEjercicioEntreno('${e.id}')">${hecho ? '✓ Hecho hoy' : '☐ Marcar hecho'}</button>
       </div>
     </details>`;

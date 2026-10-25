@@ -139,3 +139,11 @@ body.dialog-open{overflow:hidden;}
 .training-option span{min-width:0;}.training-option strong,.training-option small{display:block;overflow-wrap:anywhere;}
 .training-option small{font-size:12px;line-height:1.5;margin-top:4px;}
 .ex-technique{padding:12px 0;}.ex-technique h4{margin:0 0 10px;}.ex-technique ol{padding-left:22px;line-height:1.65;}.ex-technique li+li{margin-top:8px;}
+
+.exercise-load{margin:16px 0;padding:16px;border:1px solid var(--outline-soft,#ded9e5);border-radius:14px;min-width:0;}
+.exercise-load legend{font-weight:700;font-size:14px;padding:0 5px;}
+.exercise-load-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+.exercise-load-fields label{display:block;font-size:12px;line-height:1.5;margin-bottom:6px;}
+.exercise-load-fields input{width:100%;min-width:0;box-sizing:border-box;min-height:44px;}
+.exercise-load-status{font-size:12px;min-height:18px;margin-bottom:0;}
+@media(max-width:480px){.exercise-load-fields{grid-template-columns:1fr;gap:14px;}}
